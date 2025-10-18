@@ -11,6 +11,7 @@ import {
   Calendar, Bell, CheckCircle, GraduationCap, Baby, Heart, Zap, Save 
 } from 'lucide-react'
 import WelcomeScreen from './WelcomeScreen'
+import InteractivePreview from './InteractivePreview'
 
 // Core onboarding: 4 essential steps
 // Progressive onboarding: Additional personalization shown during first use
@@ -20,6 +21,7 @@ const TOTAL_STEPS = 12
 export default function ImprovedOnboarding({ onComplete }) {
   const navigate = useNavigate()
   const [showWelcome, setShowWelcome] = useState(true)
+  const [showPreview, setShowPreview] = useState(false)
   const [step, setStep] = useState(1)
   const [onboardingPhase, setOnboardingPhase] = useState('core') // 'core' or 'progressive'
   
@@ -231,7 +233,14 @@ export default function ImprovedOnboarding({ onComplete }) {
   }
 
   if (showWelcome) {
-    return <WelcomeScreen onContinue={() => setShowWelcome(false)} />
+    return <WelcomeScreen onContinue={() => {
+      setShowWelcome(false)
+      setShowPreview(true)
+    }} />
+  }
+
+  if (showPreview) {
+    return <InteractivePreview onComplete={() => setShowPreview(false)} />
   }
 
   return (

@@ -10,6 +10,8 @@ import {
   Users, Menu, Share2, DollarSign
 } from 'lucide-react'
 import { getMotivationalMessage, getAchievementName } from '../lib/messageLibrary'
+import EmptyState from './EmptyState'
+import ProductTour from './ProductTour'
 
 export default function AdaptiveDashboard() {
   const navigate = useNavigate()
@@ -17,6 +19,8 @@ export default function AdaptiveDashboard() {
   const [currentMessage, setCurrentMessage] = useState('')
   const [tasks, setTasks] = useState([])
   const [showContextMenu, setShowContextMenu] = useState(false)
+  const [showTour, setShowTour] = useState(false)
+  const [showEmptyState, setShowEmptyState] = useState(false)
 
   useEffect(() => {
     // Load user data
@@ -26,6 +30,16 @@ export default function AdaptiveDashboard() {
     // Load tasks
     const userTasks = JSON.parse(localStorage.getItem('gitTasks') || '[]')
     setTasks(userTasks)
+
+    // Show empty state if no tasks and first time user
+    if (userTasks.length === 0 && userData.coreOnboardingComplete && !localStorage.getItem('tourCompleted')) {
+      setShowEmptyState(true)
+    }
+
+    // Show product tour after empty state or if returning user with no tour
+    if (userTasks.length > 0 && !localStorage.getItem('tourCompleted')) {
+      setShowTour(true)
+    }
 
     // Generate motivational message
     if (userData.id) {
@@ -123,10 +137,39 @@ export default function AdaptiveDashboard() {
     return completedToday >= 5 && selfCareToday === 0
   }
 
+  const handleTourComplete = () => {
+    localStorage.setItem('tourCompleted', 'true')
+    setShowTour(false)
+  }
+
+  const handleSampleTaskComplete = (taskId) => {
+    // Add sample task completion logic
+    console.log('Sample task completed:', taskId)
+  }
+
+  const handleAddFirstTask = () => {
+    setShowEmptyState(false)
+    localStorage.setItem('tourCompleted', 'true')
+    navigate('/tasks')
+  }
+
   if (!user || !user.id) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p>Loading...</p>
+      </div>
+    )
+  }
+
+  // Show empty state for new users with no tasks
+  if (showEmptyState && tasks.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-indigo-50/30 to-slate-50">
+        <EmptyState 
+          userRole={user.primaryRole || 'professional'}
+          onTaskComplete={handleSampleTaskComplete}
+          onAddTask={handleAddFirstTask}
+        />
       </div>
     )
   }
@@ -136,6 +179,7 @@ export default function AdaptiveDashboard() {
   const completionRate = getCompletionRate()
 
   return (
+    <>
     <div className="min-h-screen bg-gradient-to-br from-white via-indigo-50/30 to-slate-50">
       {/* Header with Context Switcher */}
       <div className="bg-[#3B4A6B] border-b shadow-sm">
@@ -574,6 +618,10 @@ export default function AdaptiveDashboard() {
         </div>
       </div>
     </div>
+      
+      {/* Product Tour Overlay */}
+      {showTour && <ProductTour onComplete={handleTourComplete} />}
+    </>
   )
 }
 
