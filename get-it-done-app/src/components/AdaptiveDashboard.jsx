@@ -430,17 +430,39 @@ export default function AdaptiveDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-orange-500 mb-2">
-                    {user.stats?.currentStreak || 0}
+                <div className="text-center relative">
+                  <div className="relative inline-block">
+                    <div className="text-6xl font-bold text-orange-500 mb-2">
+                      {user.stats?.currentStreak || 0}
+                    </div>
+                    {/* Milestone celebrations */}
+                    {(user.stats?.currentStreak || 0) >= 7 && (
+                      <div className="absolute -top-2 -right-2 text-4xl animate-bounce">🔥</div>
+                    )}
+                    {(user.stats?.currentStreak || 0) >= 30 && (
+                      <div className="absolute -top-2 -left-2 text-4xl animate-bounce" style={{ animationDelay: '0.2s' }}>⭐</div>
+                    )}
+                    {(user.stats?.currentStreak || 0) >= 100 && (
+                      <div className="absolute -bottom-2 -right-2 text-4xl animate-bounce" style={{ animationDelay: '0.4s' }}>🏆</div>
+                    )}
                   </div>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 mt-2">
                     {user.motivationStyle === 'cheeky' 
                       ? "days of actually doing things" 
                       : user.motivationStyle === 'autism'
                       ? "days completed"
                       : "days in a row"}
                   </p>
+                  {/* Milestone messages */}
+                  {(user.stats?.currentStreak || 0) >= 7 && (user.stats?.currentStreak || 0) < 30 && (
+                    <p className="text-xs text-orange-600 font-semibold mt-2">🎉 One week streak!</p>
+                  )}
+                  {(user.stats?.currentStreak || 0) >= 30 && (user.stats?.currentStreak || 0) < 100 && (
+                    <p className="text-xs text-orange-600 font-semibold mt-2">🎆 One month streak! Amazing!</p>
+                  )}
+                  {(user.stats?.currentStreak || 0) >= 100 && (
+                    <p className="text-xs text-orange-600 font-semibold mt-2">👑 100 day legend!</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -478,31 +500,40 @@ export default function AdaptiveDashboard() {
               <CardContent>
                 <div className="space-y-2">
                   {user.stats?.currentStreak >= 7 && (
-                    <div className="flex items-center gap-2 p-2 bg-yellow-50 rounded-lg">
-                      <Award className="w-5 h-5 text-yellow-600" />
-                      <span className="text-sm font-medium">
-                        {getAchievementName('week_streak', user.motivationStyle)}
-                      </span>
+                    <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg transition-all hover:scale-105">
+                      <div className="text-2xl animate-bounce">🏅</div>
+                      <div className="flex-1">
+                        <span className="text-sm font-semibold text-gray-900 block">
+                          {getAchievementName('week_streak', user.motivationStyle)}
+                        </span>
+                        <span className="text-xs text-gray-600">7 day streak</span>
+                      </div>
                     </div>
                   )}
                   
                   {user.stats?.tasksCompleted >= 10 && (
-                    <div className="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
-                      <Award className="w-5 h-5 text-green-600" />
-                      <span className="text-sm font-medium">
-                        {user.motivationStyle === 'cheeky' 
-                          ? "Task Terminator" 
-                          : user.motivationStyle === 'autism'
-                          ? "10 tasks completed"
-                          : "Getting Started"}
-                      </span>
+                    <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-teal-50 border border-green-200 rounded-lg transition-all hover:scale-105">
+                      <div className="text-2xl animate-bounce" style={{ animationDelay: '0.1s' }}>✅</div>
+                      <div className="flex-1">
+                        <span className="text-sm font-semibold text-gray-900 block">
+                          {user.motivationStyle === 'cheeky' 
+                            ? "Task Terminator" 
+                            : user.motivationStyle === 'autism'
+                            ? "10 tasks completed"
+                            : "Getting Started"}
+                        </span>
+                        <span className="text-xs text-gray-600">10 tasks done</span>
+                      </div>
                     </div>
                   )}
 
                   {user.roles?.includes('parent') && getSelfCareCount() >= 3 && (
-                    <div className="flex items-center gap-2 p-2 bg-pink-50 rounded-lg">
-                      <Heart className="w-5 h-5 text-pink-600" />
-                      <span className="text-sm font-medium">Self-Care Champion</span>
+                    <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200 rounded-lg transition-all hover:scale-105">
+                      <div className="text-2xl animate-bounce" style={{ animationDelay: '0.2s' }}>💖</div>
+                      <div className="flex-1">
+                        <span className="text-sm font-semibold text-gray-900 block">Self-Care Champion</span>
+                        <span className="text-xs text-gray-600">3 self-care tasks</span>
+                      </div>
                     </div>
                   )}
 

@@ -20,6 +20,7 @@ export default function TaskEntry({ user }) {
   const [isListening, setIsListening] = useState(false)
   const [currentTask, setCurrentTask] = useState(null)
   const [conversationState, setConversationState] = useState('initial') // initial, awaiting_time, awaiting_category, complete
+  const [showCelebration, setShowCelebration] = useState(false)
   const messagesEndRef = useRef(null)
   const recognitionRef = useRef(null)
 
@@ -163,6 +164,10 @@ export default function TaskEntry({ user }) {
     tasks.push(newTask)
     localStorage.setItem(`tasks_${user.id}`, JSON.stringify(tasks))
     console.log('Task saved:', newTask)
+    
+    // Trigger celebration animation
+    setShowCelebration(true)
+    setTimeout(() => setShowCelebration(false), 3000)
   }
 
   const handleKeyPress = (e) => {
@@ -173,16 +178,19 @@ export default function TaskEntry({ user }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-white via-indigo-50/30 to-slate-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-[#3B4A6B] shadow-sm border-b">
         <div className="container mx-auto px-4 py-4 flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} className="text-white hover:bg-white/10">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          <h1 className="text-xl font-bold text-gray-900">Add Task</h1>
-          <Badge variant="outline" className="ml-auto">
+          <div className="flex items-center gap-2">
+            <img src="/logo.png" alt="Get It Done!" className="w-8 h-8" />
+            <h1 className="text-xl font-bold text-white">Add Task</h1>
+          </div>
+          <Badge variant="outline" className="ml-auto border-white text-white">
             {user.motivationStyle === 'cheeky' ? '😏 Cheeky Mode' : 
              user.isAutistic ? '🧠 Clear Mode' : '✨ Chat Mode'}
           </Badge>
@@ -205,10 +213,14 @@ export default function TaskEntry({ user }) {
             <div className="border-t p-4 bg-gray-50">
               <div className="flex gap-2">
                 <Button
-                  variant={isListening ? "destructive" : "outline"}
+                  variant={isListening ? "destructive" : "default"}
                   size="icon"
                   onClick={toggleVoiceInput}
-                  className="flex-shrink-0"
+                  className={`flex-shrink-0 ${
+                    isListening 
+                      ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
+                      : 'bg-[#2DD4BF] hover:bg-[#2DD4BF]/80 text-white'
+                  }`}
                 >
                   {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                 </Button>
@@ -223,14 +235,19 @@ export default function TaskEntry({ user }) {
                 <Button
                   onClick={handleSend}
                   disabled={!inputText.trim()}
-                  className="flex-shrink-0 bg-indigo-600 hover:bg-indigo-700"
+                  className="flex-shrink-0 bg-[#3B4A6B] hover:bg-[#2D3A56]"
                 >
                   <Send className="w-4 h-4" />
                 </Button>
               </div>
               {isListening && (
-                <div className="mt-2 text-center">
-                  <span className="text-sm text-red-600 animate-pulse">● Recording...</span>
+                <div className="mt-3 flex items-center justify-center gap-2 bg-red-50 border border-red-200 rounded-lg p-3">
+                  <div className="flex gap-1">
+                    <div className="w-1 h-4 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0ms' }} />
+                    <div className="w-1 h-6 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '150ms' }} />
+                    <div className="w-1 h-4 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '300ms' }} />
+                  </div>
+                  <span className="text-sm font-medium text-red-700">Listening... Speak now</span>
                 </div>
               )}
             </div>
@@ -248,6 +265,20 @@ export default function TaskEntry({ user }) {
           </p>
         </div>
       </div>
+
+      {/* Celebration Overlay */}
+      {showCelebration && (
+        <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
+          <div className="animate-bounce">
+            <div className="bg-green-500 text-white rounded-full p-8 shadow-2xl">
+              <CheckCircle className="w-16 h-16" />
+            </div>
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-6xl animate-ping">✨</div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -256,14 +287,23 @@ function ChatMessage({ message, user }) {
   const isApp = message.sender === 'app'
   
   return (
-    <div className={`flex ${isApp ? 'justify-start' : 'justify-end'}`}>
-      <div className={`max-w-[80%] rounded-lg p-4 ${
+    <div className={`flex ${isApp ? 'justify-start' : 'justify-end'} items-start gap-2`}>
+      {isApp && (
+        <img src="/logo.png" alt="Get It Done!" className="w-8 h-8 rounded-full mt-1 flex-shrink-0" />
+      )}
+      <div className={`max-w-[80%] rounded-2xl p-4 ${
         isApp 
-          ? 'bg-indigo-100 text-gray-900' 
-          : 'bg-indigo-600 text-white'
+          ? user.motivationStyle === 'cheeky'
+            ? 'bg-gradient-to-r from-orange-50 to-yellow-50 border-l-4 border-orange-400 text-gray-900'
+            : user.isAutistic
+            ? 'bg-white border-2 border-[#3B4A6B] text-gray-900'
+            : 'bg-gradient-to-r from-indigo-50 to-blue-50 border-l-4 border-[#3B4A6B] text-gray-900'
+          : 'bg-[#3B4A6B] text-white'
+      } ${
+        isApp ? 'rounded-tl-none' : 'rounded-tr-none'
       }`}>
-        <p className="text-sm">{message.text}</p>
-        <span className={`text-xs mt-1 block ${
+        <p className="text-sm leading-relaxed">{message.text}</p>
+        <span className={`text-xs mt-2 block ${
           isApp ? 'text-gray-500' : 'text-indigo-200'
         }`}>
           {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

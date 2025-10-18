@@ -184,13 +184,45 @@ export default function EnhancedOnboarding({ onComplete }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-indigo-50/30 to-slate-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8">
-        {/* Progress Bar */}
+        {/* Enhanced Progress Bar */}
         <div className="mb-8">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-gray-600">Step {step} of {TOTAL_STEPS}</span>
-            <span className="text-sm font-medium text-[#3B4A6B]">{Math.round(progress)}%</span>
+          <div className="flex justify-between items-center mb-3">
+            <div>
+              <span className="text-sm font-medium text-gray-600">Step {step} of {TOTAL_STEPS}</span>
+              <p className="text-xs text-gray-500 mt-0.5">
+                {step === 1 && "Let's get started"}
+                {step === 2 && "Tell us about yourself"}
+                {step === 3 && "Select your roles"}
+                {step === 4 && "Choose your primary focus"}
+                {step === 5 && "Student details"}
+                {step === 6 && "What interests you?"}
+                {step === 7 && "Choose your motivation style"}
+                {step === 8 && "Gaming preferences"}
+                {step === 9 && "Parent details"}
+                {step === 10 && "Professional details"}
+                {step === 11 && "Calendar integration"}
+                {step === 12 && "Notification preferences"}
+              </p>
+            </div>
+            <div className="text-right">
+              <span className="text-sm font-medium text-[#3B4A6B]">{Math.round(progress)}%</span>
+              <p className="text-xs text-gray-500 mt-0.5">Complete</p>
+            </div>
           </div>
-          <Progress value={progress} className="h-2" />
+          <div className="relative">
+            <Progress value={progress} className="h-3" />
+            {/* Milestone markers */}
+            <div className="absolute top-0 left-0 right-0 h-3 flex justify-between px-1">
+              {[...Array(TOTAL_STEPS)].map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-1 h-full rounded-full transition-all ${
+                    i < step ? 'bg-white' : 'bg-transparent'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Step Content */}
@@ -298,6 +330,11 @@ export default function EnhancedOnboarding({ onComplete }) {
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">What describes you?</h2>
                 <p className="text-gray-600">Select all that apply</p>
+                <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <span className="font-semibold">💡 Why we're asking:</span> We'll tailor your motivational messages and task categories to match your life stages. You can switch between contexts anytime!
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-3">
@@ -517,6 +554,11 @@ export default function EnhancedOnboarding({ onComplete }) {
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">How do you like to be motivated?</h2>
                 <p className="text-gray-600">Choose the style that resonates with you</p>
+                <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <span className="font-semibold">💡 Why we're asking:</span> Our AI generates 1000+ unique messages in your preferred style. You'll never see the same message twice for 6+ months!
+                  </p>
+                </div>
               </div>
 
               <RadioGroup value={formData.motivationStyle} onValueChange={(value) => updateFormData('motivationStyle', value)}>
