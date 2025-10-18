@@ -12,6 +12,8 @@ import {
 import { getMotivationalMessage, getAchievementName } from '../lib/messageLibrary'
 import EmptyState from './EmptyState'
 import ProductTour from './ProductTour'
+import ProgressIndicator from './ProgressIndicator'
+import OnboardingChecklist from './OnboardingChecklist'
 
 export default function AdaptiveDashboard() {
   const navigate = useNavigate()
@@ -263,6 +265,14 @@ export default function AdaptiveDashboard() {
           
           {/* Main Content - Left Column */}
           <div className="lg:col-span-2 space-y-6">
+            
+            {/* Progress Indicator */}
+            <ProgressIndicator user={user} tasks={tasks} />
+            
+            {/* Onboarding Checklist */}
+            {!localStorage.getItem('checklist_dismissed') && (
+              <OnboardingChecklist user={user} tasks={tasks} />
+            )}
             
             {/* Motivational Message Card */}
             <Card className="border-2 border-[#3B4A6B] bg-gradient-to-br from-indigo-50/30 to-slate-50">

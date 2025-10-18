@@ -15,7 +15,7 @@ import InteractivePreview from './InteractivePreview'
 
 // Core onboarding: 4 essential steps
 // Progressive onboarding: Additional personalization shown during first use
-const CORE_STEPS = 4
+const CORE_STEPS = 5
 const TOTAL_STEPS = 12
 
 export default function ImprovedOnboarding({ onComplete }) {
@@ -44,6 +44,9 @@ export default function ImprovedOnboarding({ onComplete }) {
     gamingPreferences: [],
     calendarApp: 'google',
     notificationFrequency: 'standard',
+    
+    // Experience level
+    experienceLevel: '', // 'beginner', 'intermediate', 'advanced'
     
     // Onboarding state
     coreOnboardingComplete: false,
@@ -214,6 +217,8 @@ export default function ImprovedOnboarding({ onComplete }) {
       case 4:
         return formData.primaryRole
       case 5:
+        return formData.experienceLevel
+      case 6:
         if (formData.roles.includes('student')) {
           return formData.educationLevel
         }
@@ -258,7 +263,8 @@ export default function ImprovedOnboarding({ onComplete }) {
                 {step === 2 && "Tell us about yourself"}
                 {step === 3 && "Select your roles"}
                 {step === 4 && "Choose your primary focus"}
-                {step === 5 && "Student details"}
+                {step === 5 && "How tech-savvy are you?"}
+                {step === 6 && "Student details"}
                 {step === 6 && "What interests you?"}
                 {step === 7 && "Choose your motivation style"}
                 {step === 8 && "Gaming preferences"}
@@ -498,8 +504,108 @@ export default function ImprovedOnboarding({ onComplete }) {
             </div>
           )}
 
-          {/* Progressive onboarding steps 5-12 would go here */}
-          {/* For now, we'll complete core onboarding at step 4 */}
+          {/* Step 5: Experience Level */}
+          {step === 5 && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">How tech-savvy are you?</h2>
+                <p className="text-gray-600">This helps us tailor the complexity of features and tutorials</p>
+              </div>
+
+              {/* Tooltip */}
+              <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">💡</span>
+                  <div>
+                    <p className="text-sm font-medium text-blue-900">Why we're asking:</p>
+                    <p className="text-sm text-blue-800 mt-1">
+                      Beginners get more guidance and simpler explanations. Advanced users get powerful features upfront. 
+                      You can always change this in Settings.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <RadioGroup value={formData.experienceLevel} onValueChange={(value) => updateFormData('experienceLevel', value)}>
+                <div className="space-y-3">
+                  <div
+                    className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                      formData.experienceLevel === 'beginner'
+                        ? 'border-[#3B4A6B] bg-[#3B4A6B]/10'
+                        : 'border-gray-200 hover:border-[#3B4A6B]'
+                    }`}
+                    onClick={() => updateFormData('experienceLevel', 'beginner')}
+                  >
+                    <div className="flex items-center gap-4">
+                      <RadioGroupItem value="beginner" id="beginner" />
+                      <div className="flex-1">
+                        <Label htmlFor="beginner" className="cursor-pointer font-semibold text-base">Beginner</Label>
+                        <p className="text-sm text-gray-600 mt-1">
+                          I prefer simple interfaces and step-by-step guidance
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                      formData.experienceLevel === 'intermediate'
+                        ? 'border-[#3B4A6B] bg-[#3B4A6B]/10'
+                        : 'border-gray-200 hover:border-[#3B4A6B]'
+                    }`}
+                    onClick={() => updateFormData('experienceLevel', 'intermediate')}
+                  >
+                    <div className="flex items-center gap-4">
+                      <RadioGroupItem value="intermediate" id="intermediate" />
+                      <div className="flex-1">
+                        <Label htmlFor="intermediate" className="cursor-pointer font-semibold text-base">Intermediate</Label>
+                        <p className="text-sm text-gray-600 mt-1">
+                          I'm comfortable with most apps and can figure things out
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                      formData.experienceLevel === 'advanced'
+                        ? 'border-[#3B4A6B] bg-[#3B4A6B]/10'
+                        : 'border-gray-200 hover:border-[#3B4A6B]'
+                    }`}
+                    onClick={() => updateFormData('experienceLevel', 'advanced')}
+                  >
+                    <div className="flex items-center gap-4">
+                      <RadioGroupItem value="advanced" id="advanced" />
+                      <div className="flex-1">
+                        <Label htmlFor="advanced" className="cursor-pointer font-semibold text-base">Advanced</Label>
+                        <p className="text-sm text-gray-600 mt-1">
+                          I want all the features and shortcuts right away
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </RadioGroup>
+
+              {/* Core onboarding complete message */}
+              {onboardingPhase === 'core' && (
+                <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg mt-6">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-green-900">You're all set!</p>
+                      <p className="text-sm text-green-800 mt-1">
+                        That's it! You can start using Get It Done! right now. We'll show you around when you get to your dashboard.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Progressive onboarding steps 6-12 would go here */}
+          {/* For now, we'll complete core onboarding at step 5 */}
 
         </div>
 
