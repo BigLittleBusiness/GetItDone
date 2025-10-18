@@ -1,0 +1,134 @@
+flowchart TD
+    Start([Start Onboarding]) --> Step1{Step 1: User Type}
+    
+    Step1 -->|Individual| Step2[Step 2: Personal Info<br/>Name, Email, Password]
+    Step1 -->|Team| TeamFlow[Team Onboarding Flow<br/>Different Steps 3-12]
+    
+    Step2 --> Step3[Step 3: Role Selection<br/>Multi-select]
+    
+    Step3 --> RoleCheck{Roles Selected?}
+    
+    RoleCheck -->|Student Only| StudentPath[Student Path]
+    RoleCheck -->|Professional Only| ProfessionalPath[Professional Path]
+    RoleCheck -->|Parent Only| ParentPath[Parent Path]
+    RoleCheck -->|Multiple Roles| MultiRolePath[Multi-Role Path]
+    
+    %% Student Path
+    StudentPath --> Step4S[Step 4: Primary Role = Student]
+    Step4S --> Step5S[Step 5: Education Level<br/>Primary/High School/University]
+    Step5S --> Step6S[Step 6: Interests + Autism?]
+    Step6S --> AutismCheckS{Autistic?}
+    
+    AutismCheckS -->|Yes| Step7SA[Step 7: Autism Mode Confirmed<br/>Auto-set motivation]
+    AutismCheckS -->|No| Step7S[Step 7: Motivation Style<br/>Positive or Cheeky]
+    
+    Step7SA --> GamingCheckS{Gaming Interest?}
+    Step7S --> GamingCheckS
+    
+    GamingCheckS -->|Yes| Step8S[Step 8: Gaming Preferences<br/>Points, Achievements, etc.]
+    GamingCheckS -->|No| SkipToCalendarS[Skip to Step 11]
+    
+    Step8S --> SkipToCalendarS
+    SkipToCalendarS --> Step11S[Step 11: Calendar Integration]
+    Step11S --> Step12S[Step 12: Notifications]
+    Step12S --> Complete([Complete - Go to Dashboard])
+    
+    %% Professional Path
+    ProfessionalPath --> Step4P[Step 4: Primary Role = Professional]
+    Step4P --> SkipStep5P[Skip Step 5<br/>No student details]
+    SkipStep5P --> Step6P[Step 6: Interests + Autism?]
+    Step6P --> AutismCheckP{Autistic?}
+    
+    AutismCheckP -->|Yes| Step7PA[Step 7: Autism Mode Confirmed]
+    AutismCheckP -->|No| Step7P[Step 7: Motivation Style]
+    
+    Step7PA --> GamingCheckP{Gaming Interest?}
+    Step7P --> GamingCheckP
+    
+    GamingCheckP -->|Yes| Step8P[Step 8: Gaming Preferences]
+    GamingCheckP -->|No| SkipToStep10P[Skip to Step 10]
+    
+    Step8P --> SkipToStep10P
+    SkipToStep10P --> Step10P[Step 10: Industry<br/>Real Estate, Sales, Other]
+    Step10P --> Step11P[Step 11: Calendar Integration]
+    Step11P --> Step12P[Step 12: Notifications]
+    Step12P --> Complete
+    
+    %% Parent Path
+    ParentPath --> Step4Pa[Step 4: Primary Role = Parent]
+    Step4Pa --> SkipStep5Pa[Skip Step 5<br/>No student details]
+    SkipStep5Pa --> Step6Pa[Step 6: Interests + Autism?]
+    Step6Pa --> AutismCheckPa{Autistic?}
+    
+    AutismCheckPa -->|Yes| Step7PaA[Step 7: Autism Mode Confirmed]
+    AutismCheckPa -->|No| Step7Pa[Step 7: Motivation Style]
+    
+    Step7PaA --> GamingCheckPa{Gaming Interest?}
+    Step7Pa --> GamingCheckPa
+    
+    GamingCheckPa -->|Yes| Step8Pa[Step 8: Gaming Preferences]
+    GamingCheckPa -->|No| SkipToStep9Pa[Skip to Step 9]
+    
+    Step8Pa --> SkipToStep9Pa
+    SkipToStep9Pa --> Step9Pa[Step 9: Parent Details<br/>Child age, Co-parenting]
+    Step9Pa --> SkipToStep11Pa[Skip Step 10<br/>No professional details]
+    SkipToStep11Pa --> Step11Pa[Step 11: Calendar Integration]
+    Step11Pa --> Step12Pa[Step 12: Notifications]
+    Step12Pa --> Complete
+    
+    %% Multi-Role Path
+    MultiRolePath --> Step4M[Step 4: Choose Primary Role<br/>From selected roles]
+    Step4M --> RoleDetailsCheck{Which roles<br/>were selected?}
+    
+    RoleDetailsCheck -->|Includes Student| Step5M[Step 5: Education Level]
+    RoleDetailsCheck -->|No Student| SkipStep5M[Skip Step 5]
+    
+    Step5M --> Step6M[Step 6: Interests + Autism?]
+    SkipStep5M --> Step6M
+    
+    Step6M --> AutismCheckM{Autistic?}
+    
+    AutismCheckM -->|Yes| Step7MA[Step 7: Autism Mode Confirmed]
+    AutismCheckM -->|No| Step7M[Step 7: Motivation Style]
+    
+    Step7MA --> GamingCheckM{Gaming Interest?}
+    Step7M --> GamingCheckM
+    
+    GamingCheckM -->|Yes| Step8M[Step 8: Gaming Preferences]
+    GamingCheckM -->|No| ParentRoleCheck{Includes<br/>Parent role?}
+    
+    Step8M --> ParentRoleCheck
+    
+    ParentRoleCheck -->|Yes| Step9M[Step 9: Parent Details]
+    ParentRoleCheck -->|No| ProfRoleCheck{Includes<br/>Professional role?}
+    
+    Step9M --> ProfRoleCheck
+    
+    ProfRoleCheck -->|Yes| Step10M[Step 10: Industry]
+    ProfRoleCheck -->|No| Step11M[Step 11: Calendar Integration]
+    
+    Step10M --> Step11M
+    Step11M --> Step12M[Step 12: Notifications]
+    Step12M --> Complete
+    
+    %% Team Flow
+    TeamFlow --> TeamStep3[Step 3: Team Details<br/>Company, Size, Industry]
+    TeamStep3 --> TeamStep4[Step 4: Add Team Members<br/>Email invites]
+    TeamStep4 --> TeamStep5[Steps 5-10:<br/>Team Configuration]
+    TeamStep5 --> TeamStep11[Step 11: Shared Calendar]
+    TeamStep11 --> TeamStep12[Step 12: Team Notifications]
+    TeamStep12 --> TeamComplete([Complete - Team Dashboard])
+    
+    %% Styling
+    classDef decisionStyle fill:#FFE5B4,stroke:#FF8C00,stroke-width:2px
+    classDef stepStyle fill:#E6F3FF,stroke:#3B4A6B,stroke-width:2px
+    classDef skipStyle fill:#FFE6E6,stroke:#FF6B6B,stroke-width:2px,stroke-dasharray: 5 5
+    classDef pathStyle fill:#D4F1D4,stroke:#10B981,stroke-width:2px
+    classDef completeStyle fill:#C7F9CC,stroke:#10B981,stroke-width:3px
+    
+    class Step1,RoleCheck,AutismCheckS,GamingCheckS,AutismCheckP,GamingCheckP,AutismCheckPa,GamingCheckPa,AutismCheckM,GamingCheckM,ParentRoleCheck,ProfRoleCheck,RoleDetailsCheck decisionStyle
+    class Step2,Step3,Step4S,Step5S,Step6S,Step7S,Step7SA,Step8S,Step11S,Step12S,Step4P,Step6P,Step7P,Step7PA,Step8P,Step10P,Step11P,Step12P,Step4Pa,Step6Pa,Step7Pa,Step7PaA,Step8Pa,Step9Pa,Step11Pa,Step12Pa,Step4M,Step5M,Step6M,Step7M,Step7MA,Step8M,Step9M,Step10M,Step11M,Step12M stepStyle
+    class SkipStep5P,SkipToStep10P,SkipStep5Pa,SkipToStep9Pa,SkipToStep11Pa,SkipStep5M,SkipToCalendarS skipStyle
+    class StudentPath,ProfessionalPath,ParentPath,MultiRolePath pathStyle
+    class Complete,TeamComplete completeStyle
+

@@ -4,7 +4,7 @@ import './App.css'
 
 // Import pages/components
 import LandingPage from './components/LandingPage'
-import Onboarding from './components/EnhancedOnboarding'
+import Onboarding from './components/ImprovedOnboarding'
 import Dashboard from './components/AdaptiveDashboard'
 import TaskEntry from './components/TaskEntry'
 import Settings from './components/Settings'
