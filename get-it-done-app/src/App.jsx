@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import './App.css'
+import { authAPI } from './services/api'
 
 // Import pages/components
 import LandingPage from './components/LandingPage'
@@ -16,22 +17,36 @@ function App() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check for existing user session in localStorage
-    const storedUser = localStorage.getItem('gitUser')
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
+    // Check for existing user session and validate with backend
+    const checkAuth = async () => {
+      const storedUser = localStorage.getItem('user')
+      const accessToken = localStorage.getItem('accessToken')
+      
+      if (storedUser && accessToken) {
+        try {
+          // Validate token by fetching current user
+          const userData = await authAPI.getProfile()
+          setUser(userData)
+        } catch (error) {
+          // Token invalid, clear storage
+          authAPI.logout()
+          setUser(null)
+        }
+      }
+      setIsLoading(false)
     }
-    setIsLoading(false)
+    
+    checkAuth()
   }, [])
 
   const handleUserUpdate = (userData) => {
     setUser(userData)
-    localStorage.setItem('gitUser', JSON.stringify(userData))
+    localStorage.setItem('user', JSON.stringify(userData))
   }
 
   const handleLogout = () => {
+    authAPI.logout()
     setUser(null)
-    localStorage.removeItem('gitUser')
   }
 
   if (isLoading) {

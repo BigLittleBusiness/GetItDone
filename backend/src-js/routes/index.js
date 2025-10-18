@@ -3,6 +3,7 @@ const { authenticate } = require('../middleware/auth');
 const authController = require('../controllers/authController');
 const taskController = require('../controllers/taskController');
 const statsController = require('../controllers/statsController');
+const calendarController = require('../controllers/calendarController');
 
 const router = Router();
 
@@ -29,6 +30,15 @@ router.get('/stats', authenticate, statsController.getStats);
 router.get('/stats/streak', authenticate, statsController.getStreak);
 router.get('/achievements', authenticate, statsController.getAchievements);
 router.post('/achievements/check', authenticate, statsController.checkAchievements);
+
+// Calendar routes
+router.get('/calendar/google/auth', authenticate, calendarController.getGoogleAuthUrl);
+router.get('/calendar/google/callback', calendarController.googleCallback);
+router.get('/calendar/outlook/auth', authenticate, calendarController.getOutlookAuthUrl);
+router.get('/calendar/outlook/callback', calendarController.outlookCallback);
+router.get('/calendar/connections', authenticate, calendarController.getConnections);
+router.delete('/calendar/:connectionId', authenticate, calendarController.disconnect);
+router.post('/calendar/:connectionId/sync', authenticate, calendarController.syncToCalendar);
 
 module.exports = router;
 

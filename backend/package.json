@@ -17,6 +17,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.18.2",
   "dependencies": {
+    "@microsoft/microsoft-graph-client": "^3.0.7",
     "@prisma/client": "^6.17.1",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
@@ -24,7 +25,9 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.1.0",
     "express-validator": "^7.2.1",
+    "googleapis": "^164.0.0",
     "helmet": "^8.1.0",
+    "isomorphic-fetch": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1"
   },
