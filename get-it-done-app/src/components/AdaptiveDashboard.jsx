@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { tasksAPI, statsAPI } from '../services/api'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -15,42 +16,64 @@ import ProductTour from './ProductTour'
 import ProgressIndicator from './ProgressIndicator'
 import OnboardingChecklist from './OnboardingChecklist'
 
-export default function AdaptiveDashboard() {
+export default function AdaptiveDashboard({ user: initialUser, onUserUpdate }) {
   const navigate = useNavigate()
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(initialUser)
   const [currentMessage, setCurrentMessage] = useState('')
   const [tasks, setTasks] = useState([])
+  const [stats, setStats] = useState(null)
+  const [streak, setStreak] = useState(null)
   const [showContextMenu, setShowContextMenu] = useState(false)
   const [showTour, setShowTour] = useState(false)
   const [showEmptyState, setShowEmptyState] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    // Load user data
-    const userData = JSON.parse(localStorage.getItem('gitUser') || '{}')
-    setUser(userData)
+    loadDashboardData()
+  }, [user?.currentContext])
 
-    // Load tasks
-    const userTasks = JSON.parse(localStorage.getItem('gitTasks') || '[]')
-    setTasks(userTasks)
+  const loadDashboardData = async () => {
+    setIsLoading(true)
+    setError('')
+    
+    try {
+      const currentContext = user?.currentContext || user?.primaryRole || 'student'
+      
+      const [tasksData, statsData, streakData] = await Promise.all([
+        tasksAPI.getAll(currentContext),
+        statsAPI.getStats(),
+        statsAPI.getStreak()
+      ])
+      
+      setTasks(tasksData.tasks || [])
+      setStats(statsData.stats)
+      setStreak(streakData.streak)
 
-    // Show empty state if no tasks and first time user
-    if (userTasks.length === 0 && userData.coreOnboardingComplete && !localStorage.getItem('tourCompleted')) {
-      setShowEmptyState(true)
+      // Show empty state if no tasks and first time user
+      if (tasksData.tasks.length === 0 && user?.coreOnboardingComplete && !user?.tourComplete) {
+        setShowEmptyState(true)
+      }
+
+      // Show product tour if returning user with tasks but no tour
+      if (tasksData.tasks.length > 0 && !user?.tourComplete) {
+        setShowTour(true)
+      }
+
+      // Generate motivational message
+      if (user?.id) {
+        const message = getMotivationalMessage(user, {
+          timeOfDay: new Date().getHours() < 12 ? 'morning' : 'afternoon'
+        })
+        setCurrentMessage(message)
+      }
+    } catch (error) {
+      console.error('Failed to load dashboard:', error)
+      setError('Failed to load dashboard data. Please try again.')
+    } finally {
+      setIsLoading(false)
     }
-
-    // Show product tour after empty state or if returning user with no tour
-    if (userTasks.length > 0 && !localStorage.getItem('tourCompleted')) {
-      setShowTour(true)
-    }
-
-    // Generate motivational message
-    if (userData.id) {
-      const message = getMotivationalMessage(userData, {
-        timeOfDay: new Date().getHours() < 12 ? 'morning' : 'afternoon'
-      })
-      setCurrentMessage(message)
-    }
-  }, [])
+  }
 
   const handleMessageFeedback = (isPositive) => {
     // Track message feedback

@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { tasksAPI, statsAPI } from '../services/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
@@ -151,23 +152,56 @@ export default function TaskEntry({ user }) {
     setMessages(prev => [...prev, appMessage])
   }
 
-  const saveTask = (task) => {
-    // In real app, this would save to database and sync with calendar
-    const tasks = JSON.parse(localStorage.getItem(`tasks_${user.id}`) || '[]')
-    const newTask = {
-      id: Date.now().toString(),
-      ...task,
-      userId: user.id,
-      completed: false,
-      createdAt: new Date().toISOString()
+  const saveTask = async (task) => {
+    try {
+      const taskData = {
+        title: task.name,
+        description: task.time || '',
+        context: user.currentContext || user.primaryRole || 'student',
+        category: task.category || 'general',
+        priority: 'medium',
+        dueDate: parseDueDate(task.time),
+        estimatedDuration: 30,
+      }
+      
+      const response = await tasksAPI.create(taskData)
+      console.log('Task saved:', response.task)
+      
+      // Check for new achievements
+      const { newAchievements } = await statsAPI.checkAchievements()
+      if (newAchievements && newAchievements.length > 0) {
+        console.log('New achievements unlocked:', newAchievements)
+      }
+      
+      // Trigger celebration animation
+      setShowCelebration(true)
+      setTimeout(() => setShowCelebration(false), 3000)
+      
+    } catch (error) {
+      console.error('Failed to save task:', error)
+      addAppMessage('Oops! Failed to save the task. Please try again.')
     }
-    tasks.push(newTask)
-    localStorage.setItem(`tasks_${user.id}`, JSON.stringify(tasks))
-    console.log('Task saved:', newTask)
+  }
+  
+  const parseDueDate = (timeString) => {
+    if (!timeString) return null
     
-    // Trigger celebration animation
-    setShowCelebration(true)
-    setTimeout(() => setShowCelebration(false), 3000)
+    const now = new Date()
+    const lower = timeString.toLowerCase()
+    
+    if (lower.includes('today') || lower.includes('now')) {
+      return now.toISOString()
+    } else if (lower.includes('tomorrow')) {
+      const tomorrow = new Date(now)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      return tomorrow.toISOString()
+    } else if (lower.includes('week')) {
+      const nextWeek = new Date(now)
+      nextWeek.setDate(nextWeek.getDate() + 7)
+      return nextWeek.toISOString()
+    }
+    
+    return null
   }
 
   const handleKeyPress = (e) => {

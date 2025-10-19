@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { authAPI } from '../services/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -24,6 +25,8 @@ export default function ImprovedOnboarding({ onComplete }) {
   const [showPreview, setShowPreview] = useState(false)
   const [step, setStep] = useState(1)
   const [onboardingPhase, setOnboardingPhase] = useState('core') // 'core' or 'progressive'
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
   
   const [formData, setFormData] = useState({
     userType: 'individual',
@@ -144,39 +147,58 @@ export default function ImprovedOnboarding({ onComplete }) {
     }
   }
 
-  const completeOnboarding = (skipProgressive = false) => {
-    const userData = {
-      ...formData,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      tasks: [],
-      messageHistory: [],
-      stats: {
-        tasksCompleted: 0,
-        currentStreak: 0,
-        longestStreak: 0,
-        totalPoints: 0,
-        selfCareCount: 0
-      },
-      achievements: [],
-      calendarConnected: false,
-      coreOnboardingComplete: true,
-      progressiveOnboardingComplete: !skipProgressive
+  const completeOnboarding = async (skipProgressive = false) => {
+    setIsSubmitting(true)
+    setError('')
+    
+    try {
+      // Prepare registration data
+      const registrationData = {
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+        roles: formData.roles,
+        primaryRole: formData.primaryRole,
+        experienceLevel: formData.experienceLevel,
+        motivationStyle: formData.isAutistic ? 'autism' : formData.motivationStyle,
+        isAutistic: formData.isAutistic,
+        educationLevel: formData.educationLevel,
+        childAge: formData.childAge,
+        isCoParenting: formData.isCoParenting,
+        industry: formData.industry,
+        interests: formData.interests,
+        gamingPreferences: formData.gamingPreferences,
+        calendarApp: formData.calendarApp,
+        notificationFreq: formData.notificationFrequency,
+        onboardingComplete: true,
+        tourComplete: false,
+      }
+      
+      // Call API to register user
+      const response = await authAPI.register(registrationData)
+      
+      // Clear saved progress
+      localStorage.removeItem('onboarding_progress')
+      
+      // Pass user data to parent (App.jsx)
+      const userData = {
+        ...response.user,
+        currentContext: response.user.primaryRole,
+        coreOnboardingComplete: true,
+        progressiveOnboardingComplete: !skipProgressive
+      }
+      
+      onComplete(userData)
+      navigate('/dashboard')
+      
+    } catch (error) {
+      console.error('Registration failed:', error)
+      setError(
+        error.response?.data?.error || 
+        'Registration failed. Please try again.'
+      )
+      setIsSubmitting(false)
     }
-    
-    // Set motivation style to autism-friendly if user is autistic
-    if (userData.isAutistic) {
-      userData.motivationStyle = 'autism'
-    }
-    
-    // Set current context to primary role
-    userData.currentContext = userData.primaryRole
-    
-    // Clear saved progress
-    localStorage.removeItem('onboarding_progress')
-    
-    onComplete(userData)
-    navigate('/dashboard')
   }
 
   const updateFormData = (key, value) => {
@@ -609,6 +631,22 @@ export default function ImprovedOnboarding({ onComplete }) {
 
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className="mt-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            <div className="flex items-start gap-3">
+              <span className="text-xl">⚠️</span>
+              <div>
+                <p className="font-medium">Registration Failed</p>
+                <p className="text-sm mt-1">{error}</p>
+                {error.includes('email') && (
+                  <p className="text-sm mt-2">Try using a different email address or <a href="#" className="underline" onClick={() => navigate('/login')}>sign in instead</a>.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Navigation Buttons */}
         <div className="flex items-center justify-between mt-8 pt-6 border-t">
           <div className="flex gap-2">
@@ -648,11 +686,20 @@ export default function ImprovedOnboarding({ onComplete }) {
             
             <Button
               onClick={handleNext}
-              disabled={!canProceed()}
+              disabled={!canProceed() || isSubmitting}
               className="bg-[#3B4A6B] hover:bg-[#2A3650] flex items-center gap-2"
             >
-              {step === CORE_STEPS && onboardingPhase === 'core' ? 'Start Using Get It Done!' : 'Next'}
-              <ArrowRight className="w-4 h-4" />
+              {isSubmitting ? (
+                <>
+                  <span className="animate-spin">⏳</span>
+                  Creating account...
+                </>
+              ) : (
+                <>
+                  {step === CORE_STEPS && onboardingPhase === 'core' ? 'Start Using Get It Done!' : 'Next'}
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
             </Button>
           </div>
         </div>

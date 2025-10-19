@@ -1,9 +1,35 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { authAPI } from '../services/api'
 import { Button } from '@/components/ui/button'
-import { CheckCircle, Zap, Users, Brain, Trophy, Share2 } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { CheckCircle, Zap, Users, Brain, Trophy, Share2, LogIn, X } from 'lucide-react'
 
-export default function LandingPage() {
+export default function LandingPage({ onLogin }) {
   const navigate = useNavigate()
+  const [showLogin, setShowLogin] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleLogin = async (e) => {
+    e.preventDefault()
+    setError('')
+    setIsLoading(true)
+    
+    try {
+      const { user } = await authAPI.login(email, password)
+      onLogin(user)
+      navigate('/dashboard')
+    } catch (error) {
+      console.error('Login failed:', error)
+      setError(error.response?.data?.error || 'Invalid email or password')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-indigo-50/30 to-slate-50">
@@ -36,10 +62,93 @@ export default function LandingPage() {
               size="lg" 
               variant="outline"
               className="text-lg px-8 py-6 border-2 border-[#3B4A6B] text-[#3B4A6B] hover:bg-[#3B4A6B]/10 transition-all"
+              onClick={() => setShowLogin(true)}
             >
-              Learn More
+              <LogIn className="w-5 h-5 mr-2" />
+              Sign In
             </Button>
           </div>
+
+          {/* Login Modal */}
+          {showLogin && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 relative">
+                <button
+                  onClick={() => setShowLogin(false)}
+                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back!</h2>
+                <p className="text-gray-600 mb-6">Sign in to continue your productivity journey</p>
+                
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+                    <p className="text-sm">{error}</p>
+                  </div>
+                )}
+                
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="your@email.com"
+                      className="mt-1"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Enter your password"
+                      className="mt-1"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="flex gap-3 pt-4">
+                    <Button 
+                      type="submit" 
+                      disabled={isLoading}
+                      className="flex-1 bg-[#3B4A6B] hover:bg-[#2D3A56]"
+                    >
+                      {isLoading ? 'Signing in...' : 'Sign In'}
+                    </Button>
+                    <Button 
+                      type="button" 
+                      onClick={() => setShowLogin(false)}
+                      variant="outline"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+
+                <p className="text-center text-sm text-gray-600 mt-6">
+                  Don't have an account?{' '}
+                  <button
+                    onClick={() => {
+                      setShowLogin(false)
+                      navigate('/onboarding')
+                    }}
+                    className="text-[#3B4A6B] font-semibold hover:underline"
+                  >
+                    Sign up free
+                  </button>
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Features Grid */}
