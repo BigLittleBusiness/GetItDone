@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import './App.css'
 import { authAPI } from './services/api'
+import ErrorBoundary from './components/ErrorBoundary'
 
 // Import pages/components
 import LandingPage from './components/LandingPage'
@@ -61,7 +62,8 @@ function App() {
   }
 
   return (
-    <Router>
+    <ErrorBoundary>
+      <Router>
       <Routes>
         <Route 
           path="/" 
@@ -93,6 +95,7 @@ function App() {
         />
       </Routes>
     </Router>
+    </ErrorBoundary>
   )
 }
 

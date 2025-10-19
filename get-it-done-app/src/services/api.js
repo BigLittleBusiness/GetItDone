@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { normalizeUser } from '../utils/userUtils';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
@@ -67,9 +68,11 @@ export const authAPI = {
   register: async (userData) => {
     const response = await api.post('/auth/register', userData);
     if (response.data.accessToken) {
+      const normalizedUser = normalizeUser(response.data.user);
       localStorage.setItem('accessToken', response.data.accessToken);
       localStorage.setItem('refreshToken', response.data.refreshToken);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      localStorage.setItem('user', JSON.stringify(normalizedUser));
+      return { ...response.data, user: normalizedUser };
     }
     return response.data;
   },
@@ -77,9 +80,11 @@ export const authAPI = {
   login: async (email, password) => {
     const response = await api.post('/auth/login', { email, password });
     if (response.data.accessToken) {
+      const normalizedUser = normalizeUser(response.data.user);
       localStorage.setItem('accessToken', response.data.accessToken);
       localStorage.setItem('refreshToken', response.data.refreshToken);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      localStorage.setItem('user', JSON.stringify(normalizedUser));
+      return { ...response.data, user: normalizedUser };
     }
     return response.data;
   },
@@ -92,8 +97,9 @@ export const authAPI = {
 
   getProfile: async () => {
     const response = await api.get('/auth/me');
-    localStorage.setItem('user', JSON.stringify(response.data));
-    return response.data;
+    const normalizedUser = normalizeUser(response.data);
+    localStorage.setItem('user', JSON.stringify(normalizedUser));
+    return normalizedUser;
   },
 
   updateProfile: async (updates) => {
