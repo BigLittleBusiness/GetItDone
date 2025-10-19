@@ -65,7 +65,7 @@ function App() {
       <Routes>
         <Route 
           path="/" 
-          element={user ? <Navigate to="/dashboard" /> : <LandingPage />} 
+          element={user ? <Navigate to="/dashboard" /> : <LandingPage onLogin={handleUserUpdate} />} 
         />
         <Route 
           path="/onboarding" 
@@ -73,7 +73,7 @@ function App() {
         />
         <Route 
           path="/dashboard" 
-          element={user ? <Dashboard user={user} onLogout={handleLogout} /> : <Navigate to="/" />} 
+          element={user ? <Dashboard user={user} onUserUpdate={handleUserUpdate} onLogout={handleLogout} /> : <Navigate to="/" />} 
         />
         <Route 
           path="/tasks" 
