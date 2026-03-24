@@ -75,3 +75,6 @@
 - [x] Add Parents & Carers link to top navigation
 - [x] Soften hero subheading (remove combative "fighting" language)
 - [x] Rewrite Shame-Free Zone card to use positive reinforcement framing
+- [x] Rename "Dopamine on Demand" section heading to warmer alternative
+- [x] Add "For Parents & Carers" to mobile hamburger menu
+- [x] Full-page tone audit: rewrite any remaining negative or clinical copy

@@ -12,8 +12,8 @@ const roles = [
     icon: GraduationCap,
     color: 'from-yellow-400 to-orange-500',
     bgAccent: 'bg-yellow-500/20',
-    struggle: "I have a paper due in two weeks, so I'll do nothing for 13 days and panic for 24 hours.",
-    solution: "Breakdowns for complex projects, visual deadlines, and 'Cheeky' motivation to break paralysis.",
+    struggle: "I have a paper due in two weeks. I know exactly what to do — I just need help getting started.",
+    solution: "Breakdowns for complex projects, visual deadlines, and 'Cheeky' motivation to get moving.",
     features: ['Assignment Breakdown', 'Visual Deadlines', 'Study Mode']
   },
   {
@@ -22,7 +22,7 @@ const roles = [
     icon: Baby,
     color: 'from-pink-400 to-rose-500',
     bgAccent: 'bg-pink-500/20',
-    struggle: "I remembered the kids' dentist appointment but forgot to eat lunch or pay the electricity bill.",
+    struggle: "I'm great at keeping track of everyone else. I just need a little help keeping track of myself too.",
     solution: "Voice-capture for rapid tasks ('Remind me to buy milk'), shared family calendars, and gentle reinforcement.",
     features: ['Voice Capture', 'Family Calendar', 'Self-Care Reminders']
   },
@@ -32,8 +32,8 @@ const roles = [
     icon: Briefcase,
     color: 'from-blue-400 to-cyan-500',
     bgAccent: 'bg-blue-500/20',
-    struggle: "I'm excellent at my job but I'm terrified they'll find out I haven't answered an email in three days.",
-    solution: "Context switching to hide 'home' tasks during work hours, meeting prep checklists, and literal communication modes.",
+    struggle: "I'm good at my job. I just need a system that works with how I actually think, not against it.",
+    solution: "Context switching to separate 'home' tasks from work hours, meeting prep checklists, and literal communication modes.",
     features: ['Context Switching', 'Meeting Prep', 'Email Triage']
   }
 ] as const;
@@ -104,7 +104,7 @@ export default function RoleExplorer() {
                 <div className={`absolute top-0 left-0 w-1 h-full bg-gradient-to-b ${currentRole.color}`} />
                 <div className="mb-4 flex items-center gap-2 text-indigo-200 text-sm uppercase tracking-wider font-semibold">
                   <BrainCircuit size={16} />
-                  The Struggle
+                  The Reality
                 </div>
                 <p className="text-xl md:text-2xl font-serif leading-relaxed italic opacity-90">
                   "{currentRole.struggle}"

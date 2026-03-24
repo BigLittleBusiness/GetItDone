@@ -52,9 +52,35 @@ export default function Home() {
             )}
           </div>
 
-          <button className="md:hidden p-2 text-white">
-            <Menu size={24} />
-          </button>
+          {/* Mobile menu — shown on small screens */}
+          <div className="md:hidden flex items-center gap-3">
+            {isAuthenticated ? (
+              <button
+                onClick={() => setLocation('/dashboard')}
+                className="text-sm bg-white text-[#3B4A6B] px-4 py-2 rounded-full font-semibold"
+              >
+                Go to App
+              </button>
+            ) : (
+              <button
+                onClick={() => setIsFeedbackOpen(true)}
+                className="text-sm bg-white text-[#3B4A6B] px-4 py-2 rounded-full font-semibold"
+              >
+                Join Waitlist
+              </button>
+            )}
+            <details className="relative group">
+              <summary className="list-none p-2 text-white cursor-pointer">
+                <Menu size={24} />
+              </summary>
+              <div className="absolute right-0 top-full mt-2 w-56 bg-[#2A354F] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50">
+                <a href="#features" className="block px-5 py-3 text-sm text-indigo-100 hover:bg-white/5 hover:text-white transition-colors">Features</a>
+                <a href="#mission" className="block px-5 py-3 text-sm text-indigo-100 hover:bg-white/5 hover:text-white transition-colors">Our Mission</a>
+                <a href="#pricing" className="block px-5 py-3 text-sm text-indigo-100 hover:bg-white/5 hover:text-white transition-colors">Pricing</a>
+                <a href="#parents" className="block px-5 py-3 text-sm text-indigo-100 hover:bg-white/5 hover:text-white transition-colors border-t border-white/5">For Parents &amp; Carers</a>
+              </div>
+            </details>
+          </div>
         </div>
       </nav>
 
@@ -137,7 +163,7 @@ export default function Home() {
                   </div>
                   <div>
                     <strong className="block text-white">Voice-First Entry</strong>
-                    <span className="text-indigo-200">Dump your mental load by speaking. No typing required.</span>
+                    <span className="text-indigo-200">Capture your thoughts by speaking. No typing required.</span>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
@@ -146,7 +172,7 @@ export default function Home() {
                   </div>
                   <div>
                     <strong className="block text-white">Smart Breakdown</strong>
-                    <span className="text-indigo-200">AI breaks overwhelming projects into tiny, non-threatening steps.</span>
+                    <span className="text-indigo-200">AI breaks any project into clear, manageable steps — so the next action is always obvious.</span>
                   </div>
                 </li>
               </ul>
@@ -158,9 +184,9 @@ export default function Home() {
       {/* Dopamine Section */}
       <section className="py-24 px-6 bg-[#2A354F]">
         <div className="max-w-7xl mx-auto text-center mb-16">
-          <h2 className="text-4xl font-serif mb-6">Dopamine on Demand</h2>
+          <h2 className="text-4xl font-serif mb-6">Progress That Feels Good</h2>
           <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
-            We use gamification not to addict you, but to provide the chemical spark your brain needs to get started.
+            Small wins add up. We build in moments of recognition so getting things done feels rewarding, not like a chore.
           </p>
         </div>
 
@@ -171,7 +197,7 @@ export default function Home() {
             </div>
             <h3 className="text-xl font-serif mb-3">Visual Streaks</h3>
             <p className="text-indigo-200">
-              See your consistency build up. Don't break the chain.
+              Watch your consistency grow, one day at a time.
             </p>
           </div>
 
@@ -247,7 +273,7 @@ export default function Home() {
                 <div>
                   <h3 className="font-serif text-lg mb-1">No pressure, no penalties</h3>
                   <p className="text-indigo-200 text-sm leading-relaxed">
-                    Missing a day resets gently. There is no streak-shame, no red warnings — just an easy path back to momentum.
+                    Consistency is celebrated, not enforced. There are no warnings — just encouragement to keep going.
                   </p>
                 </div>
               </div>
