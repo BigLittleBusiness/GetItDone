@@ -119,7 +119,7 @@ export default function AdminDashboard() {
         <div className="grid md:grid-cols-2 gap-8 mb-8">
           {/* Pain Points Chart */}
           <div className="bg-black/20 p-8 rounded-3xl border border-white/5">
-            <h3 className="text-xl font-serif mb-6">Biggest "Wall of Awful"</h3>
+            <h3 className="text-xl font-serif mb-6">Biggest Starting Barrier</h3>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={processData('pain-point')}>

@@ -67,3 +67,6 @@
 - [x] AI task breakdown: Expand button on tasks calls LLM to generate 3-5 micro-steps
 - [x] Streak reminder notifications: daily nudge if no task completed by a set time
 - [x] Mobile floating Quick Add button with voice input on all pages
+
+## Copy & UX Improvements
+- [x] Replace "Wall of Awful" with positive, empowering language throughout the app

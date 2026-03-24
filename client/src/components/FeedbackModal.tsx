@@ -16,7 +16,7 @@ const questions = {
     ]
   },
   'pain-point': {
-    question: "Which of these is your biggest 'Wall of Awful' right now?",
+    question: "Where does getting started feel hardest for you right now?",
     options: [
       { id: 'starting', label: "Starting: I can't physically move to do it." },
       { id: 'planning', label: "Planning: Too many tasks, don't know where to start." },

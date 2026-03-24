@@ -98,7 +98,7 @@ export default function Home() {
         <RoleExplorer />
       </section>
 
-      {/* The "Wall of Awful" Section */}
+      {/* The Getting Started Section */}
       <section className="py-24 px-6 bg-[#323F5D] relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-16 items-center">
@@ -125,9 +125,9 @@ export default function Home() {
             </div>
             
             <div className="order-1 md:order-2">
-              <h2 className="text-4xl font-serif mb-6">Lower the "Wall of Awful"</h2>
+              <h2 className="text-4xl font-serif mb-6">Build Your Bridge to Getting Started</h2>
               <p className="text-lg text-indigo-100 leading-relaxed mb-8">
-                For a neurodivergent brain, a simple task can feel like climbing a mountain. We remove the friction.
+                For a neurodivergent brain, the first step is often the hardest. We make that step so small it almost takes care of itself.
               </p>
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
