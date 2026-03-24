@@ -34,6 +34,7 @@ export default function Home() {
             <a href="#features" className="hover:text-white transition-colors">Features</a>
             <a href="#mission" className="hover:text-white transition-colors">Our Mission</a>
             <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+            <a href="#parents" className="hover:text-white transition-colors">For Parents &amp; Carers</a>
             {isAuthenticated ? (
               <button
                 onClick={() => setLocation('/dashboard')}
@@ -74,7 +75,7 @@ export default function Home() {
           </h1>
           
           <p className="text-xl text-indigo-100 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:400ms]">
-            Stop fighting your brain. Start working with it. A smart, empathetic task manager designed for ADHD, Autism, and the way you actually think.
+            Your brain works differently. So does this app. A smart, empathetic task manager designed for ADHD, Autism, and the way you actually think.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up [animation-delay:600ms]">
@@ -188,9 +189,9 @@ export default function Home() {
             <div className="w-14 h-14 rounded-2xl bg-green-500/20 flex items-center justify-center text-green-400 mb-6">
               <ShieldCheck size={28} />
             </div>
-            <h3 className="text-xl font-serif mb-3">Shame-Free Zone</h3>
+            <h3 className="text-xl font-serif mb-3">A Fresh Start, Always</h3>
             <p className="text-indigo-200">
-              Missed a day? No red text. No guilt trips. Just a fresh start.
+              Every day begins with a clean slate. Progress is celebrated, and picking back up is always easy.
             </p>
           </div>
         </div>
