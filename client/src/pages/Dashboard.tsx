@@ -37,8 +37,11 @@ import {
   Target,
   ChevronRight,
   Wand2,
+  Mic,
+  MicOff,
 } from "lucide-react";
 import { getLoginUrl } from "@/const";
+import { useVoiceInput } from "@/hooks/useVoiceInput";
 
 type Role = "student" | "parent" | "professional";
 type Mode = "cheeky" | "positive" | "literal";
@@ -134,6 +137,11 @@ export default function Dashboard() {
   const [xpFlash, setXpFlash] = useState<number | null>(null);
   const [expandingTaskId, setExpandingTaskId] = useState<number | null>(null);
   const [expandedTaskIds, setExpandedTaskIds] = useState<Set<number>>(new Set());
+
+  // Voice input for task title
+  const voice = useVoiceInput({
+    onTranscript: (text) => setNewTitle((prev) => (prev ? `${prev} ${text}` : text)),
+  });
 
   // New task form state
   const [newTitle, setNewTitle] = useState("");
@@ -642,14 +650,59 @@ export default function Dashboard() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <Input
-                placeholder="What needs to get done?"
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
-                className="text-base"
-                autoFocus
-              />
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Input
+                    placeholder={
+                      voice.isRecording
+                        ? "Listening…"
+                        : voice.isProcessing
+                        ? "Transcribing…"
+                        : "What needs to get done?"
+                    }
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
+                    disabled={voice.isProcessing}
+                    className={`text-base ${voice.isRecording ? "border-primary ring-1 ring-primary/30" : ""}`}
+                    autoFocus
+                  />
+                  {voice.isRecording && (
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-0.5">
+                      {[0, 1, 2].map((i) => (
+                        <span
+                          key={i}
+                          className="w-0.5 h-3 bg-primary rounded-full animate-pulse"
+                          style={{ animationDelay: `${i * 150}ms` }}
+                        />
+                      ))}
+                    </span>
+                  )}
+                </div>
+                {voice.isSupported && (
+                  <button
+                    type="button"
+                    onClick={() => voice.toggle()}
+                    disabled={voice.isProcessing}
+                    title={voice.isRecording ? "Stop recording" : "Dictate task title"}
+                    className={`p-2 rounded-xl border transition-all shrink-0 ${
+                      voice.isRecording
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : voice.isProcessing
+                        ? "bg-muted text-muted-foreground border-border cursor-not-allowed"
+                        : "border-border text-muted-foreground hover:text-primary hover:border-primary/40 bg-transparent"
+                    }`}
+                  >
+                    {voice.isProcessing ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : voice.isRecording ? (
+                      <MicOff size={16} />
+                    ) : (
+                      <Mic size={16} />
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
             <div>
               <Textarea

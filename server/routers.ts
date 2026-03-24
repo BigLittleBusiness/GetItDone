@@ -3,8 +3,11 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { TRPCError } from "@trpc/server";
 import { invokeLLM } from "./_core/llm";
 import { runStreakReminderJob } from "./streakReminder";
+import { transcribeAudio } from "./_core/voiceTranscription";
+import { storagePut } from "./storage";
 import {
   createSurveyResponse,
   createTask,
@@ -277,6 +280,34 @@ export const appRouter = router({
       await runStreakReminderJob();
       return { success: true };
     }),
+  }),
+
+  voice: router({
+    transcribe: protectedProcedure
+      .input(z.object({
+        audioBase64: z.string(),
+        mimeType: z.string().default("audio/webm"),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Decode base64 audio and upload to S3
+        const audioBuffer = Buffer.from(input.audioBase64, "base64");
+        const ext = input.mimeType.includes("webm") ? "webm"
+          : input.mimeType.includes("mp4") || input.mimeType.includes("m4a") ? "m4a"
+          : input.mimeType.includes("ogg") ? "ogg"
+          : input.mimeType.includes("wav") ? "wav"
+          : "webm";
+        const fileKey = `voice/${ctx.user.id}/${Date.now()}.${ext}`;
+        const { url: audioUrl } = await storagePut(fileKey, audioBuffer, input.mimeType);
+
+        // Transcribe via Whisper
+        const result = await transcribeAudio({ audioUrl, language: "en", prompt: "Transcribe the user's task or note" });
+
+        if ("error" in result) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: result.error });
+        }
+
+        return { text: result.text.trim() };
+      }),
   }),
 
   survey: router({

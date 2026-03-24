@@ -3,76 +3,30 @@
  *
  * Features:
  * - Single-field task title input (minimal friction)
- * - Voice capture via the Web Speech API (SpeechRecognition)
- * - Falls back gracefully on browsers that don't support voice
+ * - Voice capture via MediaRecorder + Whisper (cross-browser: Chrome, Firefox, Safari)
+ * - Falls back gracefully on browsers that don't support MediaRecorder
  * - Submits via trpc.tasks.create and shows a toast confirmation
  */
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import { Plus, Mic, MicOff, X, Loader2, Zap } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Plus, Mic, MicOff, Loader2, X, Zap } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useVoiceInput } from "@/hooks/useVoiceInput";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-// Extend window for SpeechRecognition (not in all TS lib versions)
-declare global {
-  interface Window {
-    SpeechRecognition?: new () => SpeechRecognition;
-    webkitSpeechRecognition?: new () => SpeechRecognition;
-  }
-}
-
-interface SpeechRecognition extends EventTarget {
-  lang: string;
-  continuous: boolean;
-  interimResults: boolean;
-  start(): void;
-  stop(): void;
-  onresult: ((event: SpeechRecognitionEvent) => void) | null;
-  onerror: ((event: Event) => void) | null;
-  onend: (() => void) | null;
-}
-
-interface SpeechRecognitionEvent extends Event {
-  results: SpeechRecognitionResultList;
-}
-
-interface SpeechRecognitionResultList {
-  readonly length: number;
-  item(index: number): SpeechRecognitionResult;
-  [index: number]: SpeechRecognitionResult;
-}
-
-interface SpeechRecognitionResult {
-  readonly isFinal: boolean;
-  readonly length: number;
-  item(index: number): SpeechRecognitionAlternative;
-  [index: number]: SpeechRecognitionAlternative;
-}
-
-interface SpeechRecognitionAlternative {
-  readonly transcript: string;
-  readonly confidence: number;
-}
-
-function getSpeechRecognition(): (new () => SpeechRecognition) | null {
-  if (typeof window === "undefined") return null;
-  return window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null;
-}
 
 export function QuickAdd() {
   const { isAuthenticated } = useAuth();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
-  const [listening, setListening] = useState(false);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const utils = trpc.useUtils();
 
-  const SpeechRecognitionClass = getSpeechRecognition();
-  const voiceSupported = !!SpeechRecognitionClass;
+  const voice = useVoiceInput({
+    onTranscript: (text) => setTitle((prev) => (prev ? `${prev} ${text}` : text)),
+  });
 
   const createTask = trpc.tasks.create.useMutation({
     onSuccess: () => {
@@ -86,51 +40,19 @@ export function QuickAdd() {
 
   // Focus input when panel opens
   useEffect(() => {
-    if (open) {
-      setTimeout(() => inputRef.current?.focus(), 80);
-    }
+    if (open) setTimeout(() => inputRef.current?.focus(), 80);
   }, [open]);
 
-  // Cleanup recognition on unmount
+  // Stop recording if panel closes
   useEffect(() => {
-    return () => {
-      recognitionRef.current?.stop();
-    };
-  }, []);
+    if (!open && voice.isRecording) voice.stopRecording();
+  }, [open, voice]);
 
-  const startListening = useCallback(() => {
-    if (!SpeechRecognitionClass) return;
-    const recognition = new SpeechRecognitionClass();
-    recognition.lang = "en-US";
-    recognition.continuous = false;
-    recognition.interimResults = true;
-
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      let transcript = "";
-      for (let i = 0; i < event.results.length; i++) {
-        transcript += event.results[i][0].transcript;
-      }
-      setTitle(transcript);
-    };
-
-    recognition.onerror = () => {
-      setListening(false);
-      toast.error("Voice input failed — please type instead");
-    };
-
-    recognition.onend = () => {
-      setListening(false);
-    };
-
-    recognitionRef.current = recognition;
-    recognition.start();
-    setListening(true);
-  }, [SpeechRecognitionClass]);
-
-  const stopListening = useCallback(() => {
-    recognitionRef.current?.stop();
-    setListening(false);
-  }, []);
+  const handleClose = () => {
+    if (voice.isRecording) voice.stopRecording();
+    setOpen(false);
+    setTitle("");
+  };
 
   const handleSubmit = () => {
     const trimmed = title.trim();
@@ -145,27 +67,19 @@ export function QuickAdd() {
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") handleSubmit();
-    if (e.key === "Escape") {
-      setOpen(false);
-      setTitle("");
-    }
+    if (e.key === "Escape") handleClose();
   };
 
   // Only render for authenticated users
   if (!isAuthenticated) return null;
 
+  const micBusy = voice.isRecording || voice.isProcessing;
+
   return (
     <>
       {/* Backdrop */}
       {open && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => {
-            setOpen(false);
-            setTitle("");
-            stopListening();
-          }}
-        />
+        <div className="fixed inset-0 z-40" onClick={handleClose} />
       )}
 
       {/* Floating panel */}
@@ -182,11 +96,7 @@ export function QuickAdd() {
                 <span className="text-sm font-semibold text-foreground">Quick Add</span>
               </div>
               <button
-                onClick={() => {
-                  setOpen(false);
-                  setTitle("");
-                  stopListening();
-                }}
+                onClick={handleClose}
                 className="p-1 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
               >
                 <X size={14} />
@@ -201,10 +111,17 @@ export function QuickAdd() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={listening ? "Listening…" : "What needs to get done?"}
-                  className={`pr-2 text-sm ${listening ? "border-primary ring-1 ring-primary/30" : ""}`}
+                  placeholder={
+                    voice.isRecording
+                      ? "Listening…"
+                      : voice.isProcessing
+                      ? "Transcribing…"
+                      : "What needs to get done?"
+                  }
+                  disabled={voice.isProcessing}
+                  className={`pr-2 text-sm ${micBusy ? "border-primary ring-1 ring-primary/30" : ""}`}
                 />
-                {listening && (
+                {voice.isRecording && (
                   <span className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-0.5">
                     {[0, 1, 2].map((i) => (
                       <span
@@ -218,17 +135,26 @@ export function QuickAdd() {
               </div>
 
               {/* Voice button */}
-              {voiceSupported && (
+              {voice.isSupported && (
                 <button
-                  onClick={listening ? stopListening : startListening}
-                  title={listening ? "Stop recording" : "Voice input"}
+                  onClick={() => voice.toggle()}
+                  disabled={voice.isProcessing}
+                  title={voice.isRecording ? "Stop recording" : "Voice input"}
                   className={`p-2 rounded-xl border transition-all shrink-0 ${
-                    listening
+                    voice.isRecording
                       ? "bg-primary text-primary-foreground border-primary"
+                      : voice.isProcessing
+                      ? "bg-muted text-muted-foreground border-border cursor-not-allowed"
                       : "border-border text-muted-foreground hover:text-primary hover:border-primary/40 bg-transparent"
                   }`}
                 >
-                  {listening ? <MicOff size={16} /> : <Mic size={16} />}
+                  {voice.isProcessing ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : voice.isRecording ? (
+                    <MicOff size={16} />
+                  ) : (
+                    <Mic size={16} />
+                  )}
                 </button>
               )}
             </div>
@@ -236,7 +162,7 @@ export function QuickAdd() {
             {/* Submit */}
             <Button
               onClick={handleSubmit}
-              disabled={!title.trim() || createTask.isPending}
+              disabled={!title.trim() || createTask.isPending || voice.isProcessing}
               className="w-full mt-3 gap-2"
               size="sm"
             >

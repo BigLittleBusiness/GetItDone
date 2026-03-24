@@ -78,3 +78,7 @@
 - [x] Rename "Dopamine on Demand" section heading to warmer alternative
 - [x] Add "For Parents & Carers" to mobile hamburger menu
 - [x] Full-page tone audit: rewrite any remaining negative or clinical copy
+- [x] Add Whisper-based server-side voice transcription procedure
+- [x] Build shared useVoiceInput hook (MediaRecorder + Whisper fallback)
+- [x] Upgrade QuickAdd to use Whisper for full cross-browser voice input
+- [x] Add microphone button to Dashboard task entry form
