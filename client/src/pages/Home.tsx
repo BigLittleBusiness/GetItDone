@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import RoleExplorer from '@/components/RoleExplorer';
 import FeedbackModal from '@/components/FeedbackModal';
 import { useAuth } from '@/_core/hooks/useAuth';
-import { ArrowRight, Brain, Menu, Mic, Trophy, ShieldCheck, Sparkles, Zap, Layout } from 'lucide-react';
+import { ArrowRight, Brain, Menu, Mic, Trophy, ShieldCheck, Sparkles, Zap, Layout, Heart, BookOpen, Users } from 'lucide-react';
 import { useLocation } from 'wouter';
 
 export default function Home() {
@@ -192,6 +192,78 @@ export default function Home() {
             <p className="text-indigo-200">
               Missed a day? No red text. No guilt trips. Just a fresh start.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* For Parents & Carers Section */}
+      <section id="parents" className="py-24 px-6 bg-[#323F5D] relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 pointer-events-none" />
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+
+            {/* Text side */}
+            <div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/15 text-purple-300 text-sm font-medium mb-6">
+                <Heart size={14} />
+                For Parents &amp; Carers
+              </div>
+              <h2 className="text-4xl font-serif mb-6 leading-tight">
+                Supporting someone you care about
+              </h2>
+              <p className="text-lg text-indigo-100 leading-relaxed mb-8">
+                You know the person in your life is capable. Sometimes they just need the right tools to get going — and a little less friction between thinking and doing.
+              </p>
+              <p className="text-lg text-indigo-100 leading-relaxed mb-10">
+                Get It Done! is designed to work with how neurodivergent brains actually operate, not against them. That means fewer reminders that feel like nagging, and more moments that feel like wins.
+              </p>
+              <button
+                onClick={() => setIsFeedbackOpen(true)}
+                className="inline-flex items-center gap-2 bg-white text-[#3B4A6B] px-7 py-3.5 rounded-full font-semibold hover:bg-indigo-50 transition-colors"
+              >
+                Join the Waitlist <ArrowRight size={18} />
+              </button>
+            </div>
+
+            {/* Cards side */}
+            <div className="space-y-4">
+              <div className="glass-card p-6 rounded-2xl flex items-start gap-4">
+                <div className="w-11 h-11 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-300 shrink-0">
+                  <BookOpen size={22} />
+                </div>
+                <div>
+                  <h3 className="font-serif text-lg mb-1">Designed for how they think</h3>
+                  <p className="text-indigo-200 text-sm leading-relaxed">
+                    Tasks are broken into small, concrete steps — so the next action is always obvious, not overwhelming.
+                  </p>
+                </div>
+              </div>
+
+              <div className="glass-card p-6 rounded-2xl flex items-start gap-4">
+                <div className="w-11 h-11 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-300 shrink-0">
+                  <ShieldCheck size={22} />
+                </div>
+                <div>
+                  <h3 className="font-serif text-lg mb-1">No pressure, no penalties</h3>
+                  <p className="text-indigo-200 text-sm leading-relaxed">
+                    Missing a day resets gently. There is no streak-shame, no red warnings — just an easy path back to momentum.
+                  </p>
+                </div>
+              </div>
+
+              <div className="glass-card p-6 rounded-2xl flex items-start gap-4">
+                <div className="w-11 h-11 rounded-xl bg-green-500/20 flex items-center justify-center text-green-300 shrink-0">
+                  <Users size={22} />
+                </div>
+                <div>
+                  <h3 className="font-serif text-lg mb-1">Built with the community</h3>
+                  <p className="text-indigo-200 text-sm leading-relaxed">
+                    We work directly with neurodivergent people and their families to make sure the app reflects real experiences, not assumptions.
+                  </p>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>

@@ -70,3 +70,5 @@
 
 ## Copy & UX Improvements
 - [x] Replace "Wall of Awful" with positive, empowering language throughout the app
+- [x] Rewrite survey pain-point answer labels to be empowering and non-dramatic
+- [x] Add a For Parents & Carers section to the landing page

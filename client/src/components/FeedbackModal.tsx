@@ -18,19 +18,19 @@ const questions = {
   'pain-point': {
     question: "Where does getting started feel hardest for you right now?",
     options: [
-      { id: 'starting', label: "Starting: I can't physically move to do it." },
-      { id: 'planning', label: "Planning: Too many tasks, don't know where to start." },
-      { id: 'remembering', label: "Remembering: If I don't see it, it doesn't exist." },
-      { id: 'shame', label: "Shame: I avoid looking because I feel bad." }
+      { id: 'starting', label: "Getting started — I know what to do, but struggle to begin." },
+      { id: 'planning', label: "Planning — I have a lot on, and it's hard to know what to tackle first." },
+      { id: 'remembering', label: "Remembering — out of sight really does mean out of mind for me." },
+      { id: 'shame', label: "Avoidance — I sometimes put off checking my list because it feels overwhelming." }
     ]
   },
   'feature-fit': {
     question: "If this app could only do ONE thing for you, what should it be?",
     options: [
-      { id: 'body-double', label: "Body Double: Talk me through the first step." },
-      { id: 'shield', label: "Shield: Hide everything except one task." },
-      { id: 'cheerleader', label: "Cheerleader: Celebrate tiny wins." },
-      { id: 'secretary', label: "Secretary: Capture voice notes so I don't type." }
+      { id: 'body-double', label: "Guide me through the first step." },
+      { id: 'shield', label: "Show me just one thing at a time." },
+      { id: 'cheerleader', label: "Celebrate my progress, no matter how small." },
+      { id: 'secretary', label: "Let me speak my tasks instead of typing them." }
     ]
   }
 };
