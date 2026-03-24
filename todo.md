@@ -62,3 +62,8 @@
 - [ ] Mobile-optimised layout improvements
 - [ ] Dark mode toggle
 - [ ] Push notifications for streak reminders
+
+## New Features (In Progress)
+- [x] AI task breakdown: Expand button on tasks calls LLM to generate 3-5 micro-steps
+- [x] Streak reminder notifications: daily nudge if no task completed by a set time
+- [x] Mobile floating Quick Add button with voice input on all pages

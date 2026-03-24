@@ -35,6 +35,8 @@ import {
   Loader2,
   Sparkles,
   Target,
+  ChevronRight,
+  Wand2,
 } from "lucide-react";
 import { getLoginUrl } from "@/const";
 
@@ -130,6 +132,8 @@ export default function Dashboard() {
   const [showSettings, setShowSettings] = useState(false);
   const [filter, setFilter] = useState<"all" | "todo" | "done">("all");
   const [xpFlash, setXpFlash] = useState<number | null>(null);
+  const [expandingTaskId, setExpandingTaskId] = useState<number | null>(null);
+  const [expandedTaskIds, setExpandedTaskIds] = useState<Set<number>>(new Set());
 
   // New task form state
   const [newTitle, setNewTitle] = useState("");
@@ -215,6 +219,20 @@ export default function Dashboard() {
     onError: (_, __, ctx) => {
       if (ctx?.prev) utils.tasks.list.setData({ roleContext: activeRole }, ctx.prev);
       toast.error("Failed to delete task");
+    },
+  });
+
+  const expandTask = trpc.tasks.expand.useMutation({
+    onMutate: ({ taskId }) => setExpandingTaskId(taskId),
+    onSuccess: (data, variables) => {
+      utils.tasks.list.invalidate();
+      setExpandingTaskId(null);
+      setExpandedTaskIds((prev) => new Set(Array.from(prev).concat(variables.taskId)));
+      toast.success(`Broken into ${data.steps.length} steps!`);
+    },
+    onError: () => {
+      setExpandingTaskId(null);
+      toast.error("Couldn't generate steps. Try again.");
     },
   });
 
@@ -543,6 +561,25 @@ export default function Dashboard() {
 
                         {/* Actions */}
                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                          {!isDone && (
+                            <button
+                              onClick={() => expandTask.mutate({
+                                taskId: task.id,
+                                title: task.title,
+                                notes: task.notes ?? undefined,
+                                role: task.roleContext as "student" | "parent" | "professional" | "all",
+                              })}
+                              disabled={expandingTaskId === task.id}
+                              title="AI: Break into steps"
+                              className="p-1.5 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                            >
+                              {expandingTaskId === task.id ? (
+                                <Loader2 size={14} className="animate-spin" />
+                              ) : (
+                                <Wand2 size={14} />
+                              )}
+                            </button>
+                          )}
                           <button
                             onClick={() => deleteTask.mutate({ id: task.id })}
                             className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
@@ -551,6 +588,40 @@ export default function Dashboard() {
                           </button>
                         </div>
                       </div>
+
+                      {/* AI-generated micro-steps */}
+                      {task.steps && task.steps.length > 0 && (
+                        <div className="mt-3 ml-8">
+                          <button
+                            onClick={() => setExpandedTaskIds((prev) => {
+                              const arr = Array.from(prev);
+                              if (prev.has(task.id)) {
+                                return new Set(arr.filter(id => id !== task.id));
+                              }
+                              return new Set(arr.concat(task.id));
+                            })}
+                            className="flex items-center gap-1 text-xs text-primary font-medium mb-2 hover:opacity-80 transition-opacity"
+                          >
+                            <ChevronRight
+                              size={12}
+                              className={`transition-transform ${expandedTaskIds.has(task.id) ? "rotate-90" : ""}`}
+                            />
+                            {task.steps.filter(s => s.done).length}/{task.steps.length} steps
+                          </button>
+                          {expandedTaskIds.has(task.id) && (
+                            <div className="space-y-1.5 border-l-2 border-primary/20 pl-3">
+                              {task.steps.map((step, si) => (
+                                <div key={step.id} className="flex items-start gap-2 text-sm">
+                                  <span className="text-muted-foreground shrink-0 mt-0.5 font-mono text-xs">{si + 1}.</span>
+                                  <span className={`text-foreground leading-snug ${step.done ? "line-through text-muted-foreground" : ""}`}>
+                                    {step.text}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}

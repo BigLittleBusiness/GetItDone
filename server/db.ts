@@ -147,6 +147,26 @@ export async function unlockAchievement(userId: number, slug: string) {
   return true;
 }
 
+// ─── Streak Helpers ───────────────────────────────────────────────────────────
+
+/**
+ * Returns users who have a streak > 0 but have NOT completed any task today.
+ * Used by the daily streak-reminder job.
+ */
+export async function getUsersAtRiskOfLosingStreak() {
+  const db = await getDb();
+  if (!db) return [];
+  const today = new Date().toISOString().split("T")[0];
+  // All users with an active streak whose last active date is NOT today
+  const result = await db
+    .select()
+    .from(users)
+    .where(and(eq(users.onboardingComplete, true)));
+  return result.filter(
+    (u) => (u.currentStreak ?? 0) > 0 && u.lastActiveDate !== today
+  );
+}
+
 // ─── Survey Responses ──────────────────────────────────────────────────────────
 
 export async function createSurveyResponse(response: InsertSurveyResponse) {

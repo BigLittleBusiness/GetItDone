@@ -3,6 +3,8 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { invokeLLM } from "./_core/llm";
+import { runStreakReminderJob } from "./streakReminder";
 import {
   createSurveyResponse,
   createTask,
@@ -205,6 +207,58 @@ export const appRouter = router({
         await deleteTask(input.id, ctx.user.id);
         return { success: true };
       }),
+
+    expand: protectedProcedure
+      .input(z.object({
+        taskId: z.number(),
+        title: z.string(),
+        notes: z.string().optional(),
+        role: z.enum(["student", "parent", "professional", "all"]).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const roleContext = input.role && input.role !== "all" ? input.role : "general";
+        const prompt = [
+          `You are a compassionate ADHD/neurodivergent productivity coach.`,
+          `Break down the following task into exactly 3 to 5 concrete, tiny, immediately actionable micro-steps.`,
+          `Each step should be a single physical action (e.g. "Open Gmail", "Click Reply", "Type one sentence").`,
+          `No vague steps like "think about it" or "plan". No motivational fluff.`,
+          `Context: the user is a ${roleContext}.`,
+          `Task: "${input.title}"${input.notes ? `. Notes: ${input.notes}` : ""}.`,
+          `Respond ONLY with a JSON object: { "steps": ["step 1", "step 2", ...] }`,
+        ].join(" ");
+
+        const response = await invokeLLM({
+          messages: [
+            { role: "system", content: "You are a helpful assistant that outputs only valid JSON." },
+            { role: "user", content: prompt },
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "task_steps",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  steps: { type: "array", items: { type: "string" } },
+                },
+                required: ["steps"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+
+        const content = response.choices?.[0]?.message?.content ?? "{}";
+        const parsed = JSON.parse(typeof content === "string" ? content : JSON.stringify(content));
+        const steps: { id: string; text: string; done: boolean }[] = (parsed.steps ?? []).slice(0, 5).map(
+          (text: string, i: number) => ({ id: `step-${Date.now()}-${i}`, text, done: false })
+        );
+
+        // Persist steps to the task
+        await updateTask(input.taskId, ctx.user.id, { steps });
+        return { steps };
+      }),
   }),
 
   achievements: router({
@@ -213,6 +267,16 @@ export const appRouter = router({
       return unlocked.map(a => ({ ...a, ...ACHIEVEMENT_CATALOGUE[a.slug] }));
     }),
     catalogue: publicProcedure.query(() => ACHIEVEMENT_CATALOGUE),
+  }),
+
+  notifications: router({
+    triggerStreakReminder: protectedProcedure.mutation(async ({ ctx }) => {
+      if (ctx.user.role !== "admin") {
+        throw new Error("Admin only");
+      }
+      await runStreakReminderJob();
+      return { success: true };
+    }),
   }),
 
   survey: router({

@@ -8,6 +8,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
+import { QuickAdd } from "./components/QuickAdd";
 function Router() {
   return (
     <Switch>
@@ -30,6 +31,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
+          <QuickAdd />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
