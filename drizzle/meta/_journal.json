@@ -15,6 +15,13 @@
       "when": 1770369326606,
       "tag": "0001_bent_doctor_strange",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1774340315629,
+      "tag": "0002_careful_rattler",
+      "breakpoints": true
     }
   ]
 }

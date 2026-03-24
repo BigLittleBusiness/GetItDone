@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import RoleExplorer from '@/components/RoleExplorer';
 import FeedbackModal from '@/components/FeedbackModal';
+import { useAuth } from '@/_core/hooks/useAuth';
 import { ArrowRight, Brain, Menu, Mic, Trophy, ShieldCheck, Sparkles, Zap, Layout } from 'lucide-react';
+import { useLocation } from 'wouter';
 
 export default function Home() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const { user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
   
   // Trigger feedback modal after 45 seconds
   useEffect(() => {
@@ -30,12 +34,21 @@ export default function Home() {
             <a href="#features" className="hover:text-white transition-colors">Features</a>
             <a href="#mission" className="hover:text-white transition-colors">Our Mission</a>
             <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
-            <button 
-              onClick={() => setIsFeedbackOpen(true)}
-              className="bg-white text-[#3B4A6B] px-5 py-2.5 rounded-full hover:bg-indigo-50 transition-colors font-semibold"
-            >
-              Join Waitlist
-            </button>
+            {isAuthenticated ? (
+              <button
+                onClick={() => setLocation('/dashboard')}
+                className="bg-white text-[#3B4A6B] px-5 py-2.5 rounded-full hover:bg-indigo-50 transition-colors font-semibold"
+              >
+                Go to App →
+              </button>
+            ) : (
+              <button 
+                onClick={() => setIsFeedbackOpen(true)}
+                className="bg-white text-[#3B4A6B] px-5 py-2.5 rounded-full hover:bg-indigo-50 transition-colors font-semibold"
+              >
+                Join Waitlist
+              </button>
+            )}
           </div>
 
           <button className="md:hidden p-2 text-white">

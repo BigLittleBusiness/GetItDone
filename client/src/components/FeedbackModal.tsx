@@ -58,9 +58,9 @@ export default function FeedbackModal({ isOpen, onClose }: { isOpen: boolean; on
 
     try {
       await submitSurvey.mutateAsync({
-        roleValidation: answers['role-validation'],
-        painPoint: answers['pain-point'],
-        featureFit: answers['feature-fit'],
+        roleValidation: answers['role-validation'] as 'spot-on' | 'mostly' | 'no' | undefined,
+        painPoint: answers['pain-point'] as 'starting' | 'planning' | 'remembering' | 'shame' | undefined,
+        featureFit: answers['feature-fit'] as 'body-double' | 'shield' | 'cheerleader' | 'secretary' | undefined,
         email: email || undefined,
       });
 

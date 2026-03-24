@@ -33,7 +33,7 @@ export default function AdminDashboard() {
   const processData = (key: string) => {
     const counts: Record<string, number> = {};
     data.forEach(item => {
-      const value = item[key];
+      const value = (item as Record<string, string | null>)[key];
       if (value) {
         counts[value] = (counts[value] || 0) + 1;
       }
