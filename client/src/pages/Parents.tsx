@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "wouter";
-
 import { useAuth } from "@/_core/hooks/useAuth";
 import FeedbackModal from "@/components/FeedbackModal";
+import MarketingNav from "@/components/MarketingNav";
 import {
   Brain,
   ArrowRight,
-  Menu,
   Heart,
   ShieldCheck,
   Sparkles,
@@ -109,68 +108,7 @@ export default function Parents() {
       </Helmet>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#3B4A6B]/80 backdrop-blur-lg border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-              <Brain className="text-white" size={24} />
-            </div>
-            <span className="font-serif text-xl font-semibold tracking-tight">Get It Done!</span>
-          </a>
-
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-indigo-100">
-            <a href="/#features" className="hover:text-white transition-colors">Features</a>
-            <a href="/mission" className="hover:text-white transition-colors">Our Mission</a>
-            <a href="/pricing" className="hover:text-white transition-colors">Pricing</a>
-            <a href="/parents" className="text-white border-b border-white/40 pb-0.5">For Parents &amp; Carers</a>
-            {isAuthenticated ? (
-              <button
-                onClick={() => setLocation("/dashboard")}
-                className="bg-white text-[#3B4A6B] px-5 py-2.5 rounded-full hover:bg-indigo-50 transition-colors font-semibold"
-              >
-                Go to App →
-              </button>
-            ) : (
-              <button
-                onClick={() => setIsFeedbackOpen(true)}
-                className="bg-white text-[#3B4A6B] px-5 py-2.5 rounded-full hover:bg-indigo-50 transition-colors font-semibold"
-              >
-                Join Waitlist
-              </button>
-            )}
-          </div>
-
-          {/* Mobile menu */}
-          <div className="md:hidden flex items-center gap-3">
-            {isAuthenticated ? (
-              <button
-                onClick={() => setLocation("/dashboard")}
-                className="text-sm bg-white text-[#3B4A6B] px-4 py-2 rounded-full font-semibold"
-              >
-                Go to App
-              </button>
-            ) : (
-              <button
-                onClick={() => setIsFeedbackOpen(true)}
-                className="text-sm bg-white text-[#3B4A6B] px-4 py-2 rounded-full font-semibold"
-              >
-                Join Waitlist
-              </button>
-            )}
-            <details className="relative group">
-              <summary className="list-none p-2 text-white cursor-pointer">
-                <Menu size={24} />
-              </summary>
-              <div className="absolute right-0 top-full mt-2 w-56 bg-[#2A354F] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50">
-                <a href="/#features" className="block px-5 py-3 text-sm text-indigo-100 hover:bg-white/5 hover:text-white transition-colors">Features</a>
-                <a href="/mission" className="block px-5 py-3 text-sm text-indigo-100 hover:bg-white/5 hover:text-white transition-colors">Our Mission</a>
-                <a href="/pricing" className="block px-5 py-3 text-sm text-indigo-100 hover:bg-white/5 hover:text-white transition-colors">Pricing</a>
-                <a href="/parents" className="block px-5 py-3 text-sm text-white bg-white/5 border-t border-white/5">For Parents &amp; Carers</a>
-              </div>
-            </details>
-          </div>
-        </div>
-      </nav>
+      <MarketingNav onJoinWaitlist={() => setIsFeedbackOpen(true)} />
 
       {/* ── Hero ──────────────────────────────────────────────────────────────── */}
       <section className="pt-40 pb-20 px-6 relative overflow-hidden">
