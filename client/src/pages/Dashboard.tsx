@@ -14,6 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 import {
   Brain,
@@ -179,7 +181,8 @@ export default function Dashboard() {
   const [showAddTask, setShowAddTask] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [showSettings, setShowSettings] = useState(false);
-  const [filter, setFilter] = useState<"all" | "todo" | "done">("all");
+  const [filter, setFilter] = useState<"all" | "todo" | "done" | "week">("all");
+  const [dueDatePopoverTaskId, setDueDatePopoverTaskId] = useState<number | null>(null);
   const [xpFlash, setXpFlash] = useState<number | null>(null);
   const [expandingTaskId, setExpandingTaskId] = useState<number | null>(null);
   const [expandedTaskIds, setExpandedTaskIds] = useState<Set<number>>(new Set());
@@ -319,6 +322,26 @@ export default function Dashboard() {
     onSettled: () => utils.tasks.list.invalidate(),
   });
 
+  const updateDueDate = trpc.tasks.update.useMutation({
+    onMutate: async ({ id, dueDate }) => {
+      await utils.tasks.list.cancel();
+      const prev = utils.tasks.list.getData({ roleContext: activeRole });
+      utils.tasks.list.setData({ roleContext: activeRole }, (old) =>
+        old?.map((t) => t.id === id ? { ...t, dueDate: dueDate ?? null } : t)
+      );
+      return { prev };
+    },
+    onSuccess: () => {
+      utils.tasks.list.invalidate();
+      setDueDatePopoverTaskId(null);
+      toast.success("Due date updated");
+    },
+    onError: (_, __, ctx) => {
+      if (ctx?.prev) utils.tasks.list.setData({ roleContext: activeRole }, ctx.prev);
+      toast.error("Failed to update due date");
+    },
+  });
+
   const updateSettings = trpc.user.updateSettings.useMutation({
     onSuccess: () => {
       utils.user.getProfile.invalidate();
@@ -395,11 +418,42 @@ export default function Dashboard() {
   const roleConfig = ROLE_CONFIG[activeRole];
   const RoleIcon = roleConfig.icon;
 
-  const filteredTasks = (tasks as Task[]).filter((t) => {
-    if (filter === "todo") return t.status !== "done";
-    if (filter === "done") return t.status === "done";
-    return true;
-  });
+  // ─── Urgency sort weight ────────────────────────────────────────────────────
+  // Overdue=0, Today=1, Tomorrow=2, This week=3, Future/no date=4, Done=5
+  function urgencyWeight(task: Task): number {
+    if (task.status === "done") return 5;
+    const status = getDueDateStatus(task.dueDate);
+    if (status === "overdue") return 0;
+    if (status === "today") return 1;
+    if (status === "tomorrow") return 2;
+    if (task.dueDate) {
+      const fmt = (d: Date) =>
+        new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+      const weekEnd = fmt(new Date(Date.now() + 7 * 86_400_000));
+      if (task.dueDate <= weekEnd) return 3;
+      return 4;
+    }
+    return 4;
+  }
+
+  // ─── "Due this week" boundary ────────────────────────────────────────────────
+  function isDueThisWeek(task: Task): boolean {
+    if (!task.dueDate || task.status === "done") return false;
+    const fmt = (d: Date) =>
+      new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+    const today = fmt(new Date());
+    const weekEnd = fmt(new Date(Date.now() + 7 * 86_400_000));
+    return task.dueDate >= today && task.dueDate <= weekEnd;
+  }
+
+  const filteredTasks = (tasks as Task[])
+    .filter((t) => {
+      if (filter === "todo") return t.status !== "done";
+      if (filter === "done") return t.status === "done";
+      if (filter === "week") return isDueThisWeek(t);
+      return true;
+    })
+    .sort((a, b) => urgencyWeight(a) - urgencyWeight(b));
 
   const todoCount = (tasks as Task[]).filter((t) => t.status !== "done").length;
   const doneCount = (tasks as Task[]).filter((t) => t.status === "done").length;
@@ -566,18 +620,23 @@ export default function Dashboard() {
             </div>
 
             {/* Filter tabs */}
-            <div className="flex gap-2">
-              {(["all", "todo", "done"] as const).map((f) => (
+            <div className="flex gap-2 flex-wrap">
+              {([
+                { id: "all", label: "All" },
+                { id: "todo", label: "To Do" },
+                { id: "week", label: "This Week" },
+                { id: "done", label: "Done" },
+              ] as const).map((f) => (
                 <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all capitalize ${
-                    filter === f
+                  key={f.id}
+                  onClick={() => setFilter(f.id)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                    filter === f.id
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {f}
+                  {f.label}
                 </button>
               ))}
             </div>
@@ -595,7 +654,7 @@ export default function Dashboard() {
                     ? "No completed tasks yet. Go get something done!"
                     : MODE_MESSAGES[personalityMode].empty}
                 </p>
-                {filter !== "done" && (
+                  {filter !== "done" && filter !== "week" && (
                   <Button onClick={() => setShowAddTask(true)} variant="outline" className="mt-4 gap-2">
                     <Plus size={14} /> Add your first task
                   </Button>
@@ -669,6 +728,58 @@ export default function Dashboard() {
                             </span>
                           </div>
                         </div>
+
+                        {/* Inline due-date popover */}
+                        {!isDone && (
+                          <Popover
+                            open={dueDatePopoverTaskId === task.id}
+                            onOpenChange={(open) =>
+                              setDueDatePopoverTaskId(open ? task.id : null)
+                            }
+                          >
+                            <PopoverTrigger asChild>
+                              <button
+                                title="Change due date"
+                                className="mt-0.5 shrink-0 p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors opacity-0 group-hover:opacity-100"
+                              >
+                                <CalendarClock size={15} />
+                              </button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="end">
+                              <div className="p-2 border-b border-border flex items-center justify-between">
+                                <span className="text-xs font-medium text-muted-foreground px-1">Set due date</span>
+                                {task.dueDate && (
+                                  <button
+                                    onClick={() =>
+                                      updateDueDate.mutate({ id: task.id, dueDate: "" })
+                                    }
+                                    className="text-xs text-destructive hover:underline px-1"
+                                  >
+                                    Clear
+                                  </button>
+                                )}
+                              </div>
+                              <Calendar
+                                mode="single"
+                                selected={
+                                  task.dueDate
+                                    ? new Date(task.dueDate + "T12:00:00")
+                                    : undefined
+                                }
+                                onSelect={(date) => {
+                                  if (!date) return;
+                                  const iso = new Intl.DateTimeFormat("en-CA", {
+                                    year: "numeric",
+                                    month: "2-digit",
+                                    day: "2-digit",
+                                  }).format(date);
+                                  updateDueDate.mutate({ id: task.id, dueDate: iso });
+                                }}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        )}
 
                         {/* Actions */}
                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">

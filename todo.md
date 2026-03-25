@@ -94,3 +94,6 @@
 - [ ] Build due-date reminder job (timezone-aware, fires at user's reminder time)
 - [ ] Add due-date reminder time preference to Settings page
 - [x] Add 'Due Today' / 'Due Tomorrow' / 'Overdue' visual chips to task cards in the dashboard
+- [x] Sort tasks by urgency — overdue and due-today float to top of list
+- [x] Inline due-date editing with calendar popover on task cards
+- [x] 'Due This Week' filter tab showing tasks due within the next 7 days
