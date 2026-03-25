@@ -105,3 +105,4 @@
 - [x] Extract marketing nav bar into a shared MarketingNav component
 - [x] Implement smooth scroll for anchor links on the homepage with fixed-nav offset
 - [x] Add floating back-to-top button to all marketing pages
+- [x] Extract marketing footer into a shared MarketingFooter component
