@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import RoleExplorer from '@/components/RoleExplorer';
 import FeedbackModal from '@/components/FeedbackModal';
 import MarketingNav from '@/components/MarketingNav';
+import BackToTop from '@/components/BackToTop';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { ArrowRight, Brain, Mic, Trophy, ShieldCheck, Sparkles, Zap, Layout, Heart, BookOpen, Users } from 'lucide-react';
 import { useLocation } from 'wouter';
@@ -318,6 +319,7 @@ export default function Home() {
       </section>
 
       <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
+      <BackToTop />
 
       {/* Footer */}
       <footer className="bg-[#1E2639] py-12 px-6 border-t border-white/5">

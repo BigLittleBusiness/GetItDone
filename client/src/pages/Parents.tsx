@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import FeedbackModal from "@/components/FeedbackModal";
 import MarketingNav from "@/components/MarketingNav";
+import BackToTop from "@/components/BackToTop";
 import {
   Brain,
   ArrowRight,
@@ -457,8 +458,6 @@ export default function Parents() {
         </div>
       </section>
 
-      <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
-
       {/* Footer */}
       <footer className="bg-[#1E2639] py-12 px-6 border-t border-white/5">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
@@ -476,6 +475,9 @@ export default function Parents() {
           </div>
         </div>
       </footer>
+
+      <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
+      <BackToTop />
     </div>
   );
 }
