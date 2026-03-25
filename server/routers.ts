@@ -6,6 +6,7 @@ import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { invokeLLM } from "./_core/llm";
 import { runStreakReminderJob } from "./streakReminder";
+import { runDueDateReminderJob } from "./dueDateReminder";
 import { transcribeAudio } from "./_core/voiceTranscription";
 import { storagePut } from "./storage";
 import {
@@ -299,6 +300,13 @@ export const appRouter = router({
         throw new Error("Admin only");
       }
       await runStreakReminderJob();
+      return { success: true };
+    }),
+    triggerDueDateReminder: protectedProcedure.mutation(async ({ ctx }) => {
+      if (ctx.user.role !== "admin") {
+        throw new Error("Admin only");
+      }
+      await runDueDateReminderJob();
       return { success: true };
     }),
   }),

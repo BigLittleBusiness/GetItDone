@@ -229,6 +229,29 @@ export default function Settings() {
           </CardContent>
         </Card>
 
+        {/* Due-Date Reminders */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Bell size={16} className="text-primary" />
+              <div>
+                <CardTitle className="text-base">Due-Date Reminders</CardTitle>
+                <CardDescription className="text-sm mt-0.5">
+                  When you have tasks due today, you'll get a reminder at the same time as your daily streak nudge.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-start gap-2 p-2.5 rounded-md bg-muted/50">
+              <Globe size={13} className="text-muted-foreground mt-0.5 shrink-0" />
+              <p className="text-xs text-muted-foreground">
+                Due-date alerts fire at <strong>{formatTime(reminderTime)}</strong> in your local time — the same slot as your streak reminder above. Adjust the time above to change both.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Appearance */}
         <Card>
           <CardHeader className="pb-3">

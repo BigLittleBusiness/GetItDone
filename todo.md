@@ -89,3 +89,7 @@
 - [x] Add personalised daily streak reminder time picker to Settings page
 - [x] Add timezone field to user profile (auto-detect from browser, persist to DB)
 - [x] Update streak reminder job to fire at correct local time using user's timezone
+- [ ] Add dueDate column to tasks table (schema + DB migration)
+- [ ] Add due date picker to the Add Task dialog in Dashboard
+- [ ] Build due-date reminder job (timezone-aware, fires at user's reminder time)
+- [ ] Add due-date reminder time preference to Settings page

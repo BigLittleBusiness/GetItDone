@@ -171,6 +171,65 @@ export async function getUsersAtRiskOfLosingStreak(reminderTimeSlot?: string) {
   );
 }
 
+// ─── Due-Date Helpers ────────────────────────────────────────────────────────
+
+/**
+ * Returns all users who have tasks due today (in their local timezone)
+ * that are not yet completed, along with those tasks.
+ * Used by the due-date reminder job.
+ */
+export async function getUsersWithTasksDueToday() {
+  const db = await getDb();
+  if (!db) return [];
+
+  // Fetch all users who have completed onboarding
+  const allUsers = await db
+    .select()
+    .from(users)
+    .where(eq(users.onboardingComplete, true));
+
+  const results: Array<{
+    user: typeof allUsers[0];
+    dueTasks: { id: number; title: string; dueDate: string }[];
+  }> = [];
+
+  for (const user of allUsers) {
+    const userTimezone = (user as typeof user & { timezone?: string }).timezone ?? "UTC";
+    // Get today's date in the user's local timezone
+    const todayLocal = new Intl.DateTimeFormat("en-CA", {
+      timeZone: userTimezone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date()); // en-CA gives YYYY-MM-DD format
+
+    const userTasks = await db
+      .select()
+      .from(tasks)
+      .where(and(eq(tasks.userId, user.id)));
+
+    const dueTasks = userTasks.filter(
+      (t) =>
+        t.dueDate === todayLocal &&
+        t.status !== "done" &&
+        t.status !== "archived"
+    );
+
+    if (dueTasks.length > 0) {
+      results.push({
+        user,
+        dueTasks: dueTasks.map((t) => ({
+          id: t.id,
+          title: t.title,
+          dueDate: t.dueDate ?? todayLocal,
+        })),
+      });
+    }
+  }
+
+  return results;
+}
+
 // ─── Survey Responses ──────────────────────────────────────────────────────────
 
 export async function createSurveyResponse(response: InsertSurveyResponse) {

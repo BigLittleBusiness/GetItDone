@@ -8,6 +8,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { scheduleStreakReminder } from "../streakReminder";
+import { scheduleDueDateReminder } from "../dueDateReminder";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -62,6 +63,8 @@ async function startServer() {
     console.log(`Server running on http://localhost:${port}/`);
     // Start the daily streak-reminder job
     scheduleStreakReminder();
+    // Start the due-date reminder job
+    scheduleDueDateReminder();
   });
 }
 
