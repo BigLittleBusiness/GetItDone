@@ -1,0 +1,9 @@
+{
+  "query": "\nALTER TABLE users\n  ADD COLUMN `onboardingComplete` boolean NOT NULL DEFAULT false,\n  ADD COLUMN `activeRole` varchar(32) NOT NULL DEFAULT 'professional',\n  ADD COLUMN `personalityMode` varchar(32) NOT NULL DEFAULT 'positive',\n  ADD COLUMN `xp` int NOT NULL DEFAULT 0,\n  ADD COLUMN `level` int NOT NULL DEFAULT 1,\n  ADD COLUMN `currentStreak` int NOT NULL DEFAULT 0,\n  ADD COLUMN `longestStreak` int NOT NULL DEFAULT 0,\n  ADD COLUMN `lastActiveDate` varchar(16) NULL;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user ssbex3qTpoaXVqM.8e073d5188c5 --database maeA52JBNKsvSZamfPFaVJ --execute \nALTER TABLE users\n  ADD COLUMN `onboardingComplete` boolean NOT NULL DEFAULT false,\n  ADD COLUMN `activeRole` varchar(32) NOT NULL DEFAULT 'professional',\n  ADD COLUMN `personalityMode` varchar(32) NOT NULL DEFAULT 'positive',\n  ADD COLUMN `xp` int NOT NULL DEFAULT 0,\n  ADD COLUMN `level` int NOT NULL DEFAULT 1,\n  ADD COLUMN `currentStreak` int NOT NULL DEFAULT 0,\n  ADD COLUMN `longestStreak` int NOT NULL DEFAULT 0,\n  ADD COLUMN `lastActiveDate` varchar(16) NULL;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2581
+}

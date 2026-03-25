@@ -82,3 +82,5 @@
 - [x] Build shared useVoiceInput hook (MediaRecorder + Whisper fallback)
 - [x] Upgrade QuickAdd to use Whisper for full cross-browser voice input
 - [x] Add microphone button to Dashboard task entry form
+- [x] Step-level checkbox completion in AI task breakdown (persist checked steps via tasks.update)
+- [x] Voice input mic button for the Notes field in the Add Task dialog

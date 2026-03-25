@@ -211,6 +211,25 @@ export const appRouter = router({
         return { success: true };
       }),
 
+    toggleStep: protectedProcedure
+      .input(z.object({
+        taskId: z.number(),
+        stepId: z.string(),
+        done: z.boolean(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Fetch current task to get existing steps
+        const allTasks = await getAllTasksForUser(ctx.user.id);
+        const task = allTasks.find(t => t.id === input.taskId);
+        if (!task) throw new TRPCError({ code: "NOT_FOUND", message: "Task not found" });
+        const currentSteps = (task.steps ?? []) as { id: string; text: string; done: boolean }[];
+        const updatedSteps = currentSteps.map(s =>
+          s.id === input.stepId ? { ...s, done: input.done } : s
+        );
+        await updateTask(input.taskId, ctx.user.id, { steps: updatedSteps });
+        return { success: true, steps: updatedSteps };
+      }),
+
     expand: protectedProcedure
       .input(z.object({
         taskId: z.number(),

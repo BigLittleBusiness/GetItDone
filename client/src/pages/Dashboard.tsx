@@ -143,6 +143,10 @@ export default function Dashboard() {
     onTranscript: (text) => setNewTitle((prev) => (prev ? `${prev} ${text}` : text)),
   });
 
+  const voiceNotes = useVoiceInput({
+    onTranscript: (text) => setNewNotes((prev) => (prev ? `${prev} ${text}` : text)),
+  });
+
   // New task form state
   const [newTitle, setNewTitle] = useState("");
   const [newNotes, setNewNotes] = useState("");
@@ -242,6 +246,31 @@ export default function Dashboard() {
       setExpandingTaskId(null);
       toast.error("Couldn't generate steps. Try again.");
     },
+  });
+
+  const toggleStep = trpc.tasks.toggleStep.useMutation({
+    onMutate: async ({ taskId, stepId, done }) => {
+      await utils.tasks.list.cancel();
+      const prev = utils.tasks.list.getData({ roleContext: activeRole });
+      utils.tasks.list.setData({ roleContext: activeRole }, (old) =>
+        old?.map((t) =>
+          t.id === taskId
+            ? {
+                ...t,
+                steps: (t.steps ?? []).map((s: { id: string; text: string; done: boolean }) =>
+                  s.id === stepId ? { ...s, done } : s
+                ),
+              }
+            : t
+        )
+      );
+      return { prev };
+    },
+    onError: (_, __, ctx) => {
+      if (ctx?.prev) utils.tasks.list.setData({ roleContext: activeRole }, ctx.prev);
+      toast.error("Couldn't update step");
+    },
+    onSettled: () => utils.tasks.list.invalidate(),
   });
 
   const updateSettings = trpc.user.updateSettings.useMutation({
@@ -614,17 +643,37 @@ export default function Dashboard() {
                               size={12}
                               className={`transition-transform ${expandedTaskIds.has(task.id) ? "rotate-90" : ""}`}
                             />
-                            {task.steps.filter(s => s.done).length}/{task.steps.length} steps
+                            {task.steps.filter(s => s.done).length}/{task.steps.length} steps done
                           </button>
                           {expandedTaskIds.has(task.id) && (
                             <div className="space-y-1.5 border-l-2 border-primary/20 pl-3">
-                              {task.steps.map((step, si) => (
-                                <div key={step.id} className="flex items-start gap-2 text-sm">
-                                  <span className="text-muted-foreground shrink-0 mt-0.5 font-mono text-xs">{si + 1}.</span>
-                                  <span className={`text-foreground leading-snug ${step.done ? "line-through text-muted-foreground" : ""}`}>
+                              {task.steps.map((step) => (
+                                <button
+                                  key={step.id}
+                                  onClick={() => toggleStep.mutate({
+                                    taskId: task.id,
+                                    stepId: step.id,
+                                    done: !step.done,
+                                  })}
+                                  className="flex items-start gap-2 text-sm w-full text-left group/step hover:bg-primary/5 rounded-md px-1 py-0.5 transition-colors"
+                                >
+                                  <span className={`shrink-0 mt-0.5 w-4 h-4 rounded border flex items-center justify-center transition-colors ${
+                                    step.done
+                                      ? "bg-primary border-primary text-primary-foreground"
+                                      : "border-border group-hover/step:border-primary/50"
+                                  }`}>
+                                    {step.done && (
+                                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                                        <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                      </svg>
+                                    )}
+                                  </span>
+                                  <span className={`leading-snug ${
+                                    step.done ? "line-through text-muted-foreground" : "text-foreground"
+                                  }`}>
                                     {step.text}
                                   </span>
-                                </div>
+                                </button>
                               ))}
                             </div>
                           )}
@@ -705,13 +754,45 @@ export default function Dashboard() {
               </div>
             </div>
             <div>
-              <Textarea
-                placeholder="Notes (optional)"
-                value={newNotes}
-                onChange={(e) => setNewNotes(e.target.value)}
-                rows={2}
-                className="resize-none"
-              />
+              <div className="relative">
+                <Textarea
+                  placeholder={
+                    voiceNotes.isRecording
+                      ? "Listening…"
+                      : voiceNotes.isProcessing
+                      ? "Transcribing…"
+                      : "Notes (optional)"
+                  }
+                  value={newNotes}
+                  onChange={(e) => setNewNotes(e.target.value)}
+                  rows={2}
+                  disabled={voiceNotes.isProcessing}
+                  className={`resize-none pr-8 ${voiceNotes.isRecording ? "border-primary ring-1 ring-primary/30" : ""}`}
+                />
+                {voiceNotes.isSupported && (
+                  <button
+                    type="button"
+                    onClick={() => voiceNotes.toggle()}
+                    disabled={voiceNotes.isProcessing}
+                    title={voiceNotes.isRecording ? "Stop recording" : "Dictate notes"}
+                    className={`absolute right-2 top-2 p-1 rounded-md transition-colors ${
+                      voiceNotes.isRecording
+                        ? "text-primary"
+                        : voiceNotes.isProcessing
+                        ? "text-muted-foreground cursor-not-allowed"
+                        : "text-muted-foreground hover:text-primary"
+                    }`}
+                  >
+                    {voiceNotes.isProcessing ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : voiceNotes.isRecording ? (
+                      <MicOff size={14} />
+                    ) : (
+                      <Mic size={14} />
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
