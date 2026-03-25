@@ -101,3 +101,4 @@
 - [x] Create Pricing page at /pricing with free tier and upcoming paid tier
 - [x] Fix guilt-inducing copy in Mission page Parents & Carers section — replace "never drop the ball again" line
 - [x] Create 'For Parents & Carers' page at /parents
+- [x] Add Open Graph and Twitter Card meta tags to all four marketing pages

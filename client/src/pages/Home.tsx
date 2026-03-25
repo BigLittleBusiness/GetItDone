@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import RoleExplorer from '@/components/RoleExplorer';
 import FeedbackModal from '@/components/FeedbackModal';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { ArrowRight, Brain, Menu, Mic, Trophy, ShieldCheck, Sparkles, Zap, Layout, Heart, BookOpen, Users } from 'lucide-react';
 import { useLocation } from 'wouter';
+
+const OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
+const SITE_URL = 'https://getitdone-maea52jb.manus.space';
 
 export default function Home() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
@@ -20,6 +24,25 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#3B4A6B] text-white overflow-x-hidden selection:bg-indigo-500/30">
+      <Helmet>
+        <title>Get It Done! — The Productivity OS for Neurodivergent Minds</title>
+        <meta name="description" content="A smart, empathetic task manager designed for ADHD, Autism, and the way you actually think. Voice capture, AI task breakdown, streaks, and more." />
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={SITE_URL} />
+        <meta property="og:title" content="Get It Done! — The Productivity OS for Neurodivergent Minds" />
+        <meta property="og:description" content="A smart, empathetic task manager designed for ADHD, Autism, and the way you actually think. Voice capture, AI task breakdown, streaks, and more." />
+        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="Get It Done!" />
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={SITE_URL} />
+        <meta name="twitter:title" content="Get It Done! — The Productivity OS for Neurodivergent Minds" />
+        <meta name="twitter:description" content="A smart, empathetic task manager designed for ADHD, Autism, and the way you actually think. Voice capture, AI task breakdown, streaks, and more." />
+        <meta name="twitter:image" content={OG_IMAGE} />
+      </Helmet>
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#3B4A6B]/80 backdrop-blur-lg border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">

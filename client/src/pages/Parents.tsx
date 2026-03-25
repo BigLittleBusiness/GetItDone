@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useLocation } from "wouter";
+
 import { useAuth } from "@/_core/hooks/useAuth";
 import FeedbackModal from "@/components/FeedbackModal";
 import {
@@ -20,6 +22,9 @@ import {
   ChevronUp,
   CheckCircle2,
 } from "lucide-react";
+
+const OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
+const SITE_URL = 'https://getitdone-maea52jb.manus.space';
 
 // ── Common Questions ──────────────────────────────────────────────────────────
 
@@ -83,6 +88,25 @@ export default function Parents() {
 
   return (
     <div className="min-h-screen bg-[#3B4A6B] text-white overflow-x-hidden selection:bg-indigo-500/30">
+      <Helmet>
+        <title>For Parents &amp; Carers — Get It Done!</title>
+        <meta name="description" content="Supporting a neurodivergent child, partner, or family member? Get It Done! works with their brain, not against it — so you can worry a little less and celebrate a little more." />
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${SITE_URL}/parents`} />
+        <meta property="og:title" content="For Parents &amp; Carers — Get It Done!" />
+        <meta property="og:description" content="Supporting a neurodivergent child, partner, or family member? Get It Done! works with their brain, not against it — so you can worry a little less and celebrate a little more." />
+        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="Get It Done!" />
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={`${SITE_URL}/parents`} />
+        <meta name="twitter:title" content="For Parents &amp; Carers — Get It Done!" />
+        <meta name="twitter:description" content="Supporting a neurodivergent child, partner, or family member? Get It Done! works with their brain, not against it — so you can worry a little less and celebrate a little more." />
+        <meta name="twitter:image" content={OG_IMAGE} />
+      </Helmet>
 
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#3B4A6B]/80 backdrop-blur-lg border-b border-white/5">
