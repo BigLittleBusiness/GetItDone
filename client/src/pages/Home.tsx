@@ -4,6 +4,7 @@ import RoleExplorer from '@/components/RoleExplorer';
 import FeedbackModal from '@/components/FeedbackModal';
 import MarketingNav from '@/components/MarketingNav';
 import BackToTop from '@/components/BackToTop';
+import CookieConsent from '@/components/CookieConsent';
 import MarketingFooter from '@/components/MarketingFooter';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { ArrowRight, Brain, Mic, Trophy, ShieldCheck, Sparkles, Zap, Layout, Heart, BookOpen, Users } from 'lucide-react';
@@ -321,6 +322,7 @@ export default function Home() {
 
       <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
       <BackToTop />
+      <CookieConsent />
 
       <MarketingFooter />
     </div>

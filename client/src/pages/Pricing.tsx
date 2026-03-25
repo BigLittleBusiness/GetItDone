@@ -5,6 +5,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import FeedbackModal from "@/components/FeedbackModal";
 import MarketingNav from "@/components/MarketingNav";
 import BackToTop from "@/components/BackToTop";
+import CookieConsent from "@/components/CookieConsent";
 import MarketingFooter from "@/components/MarketingFooter";
 
 import {
@@ -399,6 +400,7 @@ export default function Pricing() {
 
       <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
       <BackToTop />
+      <CookieConsent />
     </div>
   );
 }
