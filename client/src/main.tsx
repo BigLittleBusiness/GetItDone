@@ -7,6 +7,7 @@ import { HelmetProvider } from "react-helmet-async";
 import superjson from "superjson";
 import App from "./App";
 import { getLoginUrl } from "./const";
+import { ReadingThemeProvider } from "./contexts/ReadingThemeContext";
 import "./index.css";
 
 const queryClient = new QueryClient();
@@ -55,10 +56,12 @@ const trpcClient = trpc.createClient({
 
 createRoot(document.getElementById("root")!).render(
   <HelmetProvider>
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>
-    </trpc.Provider>
+    <ReadingThemeProvider>
+      <trpc.Provider client={trpcClient} queryClient={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </trpc.Provider>
+    </ReadingThemeProvider>
   </HelmetProvider>
 );

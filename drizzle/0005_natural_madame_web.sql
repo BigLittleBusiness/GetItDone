@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `readingTheme` enum('default','cream','sage','sky','dusk','sand') DEFAULT 'default' NOT NULL;

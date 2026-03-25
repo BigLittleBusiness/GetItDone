@@ -113,6 +113,103 @@
   --sidebar-ring: oklch(0.488 0.243 264.376);
 }
 
+/* ─── Reading Themes (accessibility background colour overrides) ─────────────
+   Applied as a data attribute on the root <html> element: data-reading-theme="cream"
+   Each theme overrides only the background/foreground/card/sidebar tokens so that
+   all other design tokens (primary, destructive, etc.) remain unchanged.
+   Text colours are chosen to maintain WCAG AA contrast (≥4.5:1) on each background.
+─────────────────────────────────────────────────────────────────────────────── */
+
+/* Cream — warm off-white, reduces glare vs pure white */
+[data-reading-theme="cream"] {
+  --background: oklch(0.98 0.018 80);
+  --foreground: oklch(0.2 0.02 65);
+  --card: oklch(0.97 0.016 80);
+  --card-foreground: oklch(0.2 0.02 65);
+  --popover: oklch(0.97 0.016 80);
+  --popover-foreground: oklch(0.2 0.02 65);
+  --muted: oklch(0.93 0.014 80);
+  --muted-foreground: oklch(0.45 0.02 65);
+  --sidebar: oklch(0.96 0.016 80);
+  --sidebar-foreground: oklch(0.2 0.02 65);
+  --sidebar-accent: oklch(0.92 0.014 80);
+  --sidebar-accent-foreground: oklch(0.2 0.02 65);
+  --border: oklch(0.88 0.012 80);
+  --input: oklch(0.88 0.012 80);
+}
+
+/* Sage — pale green, most commonly cited helpful colour for dyslexia */
+[data-reading-theme="sage"] {
+  --background: oklch(0.96 0.025 145);
+  --foreground: oklch(0.18 0.03 145);
+  --card: oklch(0.95 0.022 145);
+  --card-foreground: oklch(0.18 0.03 145);
+  --popover: oklch(0.95 0.022 145);
+  --popover-foreground: oklch(0.18 0.03 145);
+  --muted: oklch(0.91 0.02 145);
+  --muted-foreground: oklch(0.42 0.025 145);
+  --sidebar: oklch(0.94 0.022 145);
+  --sidebar-foreground: oklch(0.18 0.03 145);
+  --sidebar-accent: oklch(0.9 0.02 145);
+  --sidebar-accent-foreground: oklch(0.18 0.03 145);
+  --border: oklch(0.86 0.018 145);
+  --input: oklch(0.86 0.018 145);
+}
+
+/* Sky — pale blue, second most cited helpful colour */
+[data-reading-theme="sky"] {
+  --background: oklch(0.96 0.022 230);
+  --foreground: oklch(0.18 0.03 230);
+  --card: oklch(0.95 0.02 230);
+  --card-foreground: oklch(0.18 0.03 230);
+  --popover: oklch(0.95 0.02 230);
+  --popover-foreground: oklch(0.18 0.03 230);
+  --muted: oklch(0.91 0.018 230);
+  --muted-foreground: oklch(0.42 0.022 230);
+  --sidebar: oklch(0.94 0.02 230);
+  --sidebar-foreground: oklch(0.18 0.03 230);
+  --sidebar-accent: oklch(0.9 0.018 230);
+  --sidebar-accent-foreground: oklch(0.18 0.03 230);
+  --border: oklch(0.86 0.016 230);
+  --input: oklch(0.86 0.016 230);
+}
+
+/* Dusk — soft lavender */
+[data-reading-theme="dusk"] {
+  --background: oklch(0.96 0.022 290);
+  --foreground: oklch(0.18 0.03 290);
+  --card: oklch(0.95 0.02 290);
+  --card-foreground: oklch(0.18 0.03 290);
+  --popover: oklch(0.95 0.02 290);
+  --popover-foreground: oklch(0.18 0.03 290);
+  --muted: oklch(0.91 0.018 290);
+  --muted-foreground: oklch(0.42 0.022 290);
+  --sidebar: oklch(0.94 0.02 290);
+  --sidebar-foreground: oklch(0.18 0.03 290);
+  --sidebar-accent: oklch(0.9 0.018 290);
+  --sidebar-accent-foreground: oklch(0.18 0.03 290);
+  --border: oklch(0.86 0.016 290);
+  --input: oklch(0.86 0.016 290);
+}
+
+/* Sand — warm yellow, cited in Irlen Institute research */
+[data-reading-theme="sand"] {
+  --background: oklch(0.97 0.04 95);
+  --foreground: oklch(0.18 0.03 65);
+  --card: oklch(0.96 0.036 95);
+  --card-foreground: oklch(0.18 0.03 65);
+  --popover: oklch(0.96 0.036 95);
+  --popover-foreground: oklch(0.18 0.03 65);
+  --muted: oklch(0.92 0.032 95);
+  --muted-foreground: oklch(0.42 0.025 65);
+  --sidebar: oklch(0.95 0.036 95);
+  --sidebar-foreground: oklch(0.18 0.03 65);
+  --sidebar-accent: oklch(0.91 0.032 95);
+  --sidebar-accent-foreground: oklch(0.18 0.03 65);
+  --border: oklch(0.87 0.028 95);
+  --input: oklch(0.87 0.028 95);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

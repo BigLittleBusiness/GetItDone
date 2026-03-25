@@ -108,3 +108,7 @@
 - [x] Extract marketing footer into a shared MarketingFooter component
 - [x] Add robots.txt and sitemap.xml to client/public for search engine indexing
 - [x] Implement cookie consent banner on all marketing pages
+- [x] Add readingTheme column to users schema and migrate DB
+- [x] Add updateReadingTheme tRPC procedure
+- [x] Build Reading Theme CSS variables and apply globally in DashboardLayout
+- [x] Add Reading Theme selector UI to Settings page

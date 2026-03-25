@@ -95,6 +95,7 @@ export const appRouter = router({
         personalityMode: z.enum(["cheeky", "positive", "literal"]).optional(),
         reminderTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).optional(), // HH:MM 24h
         timezone: z.string().min(1).max(64).optional(), // IANA timezone string
+        readingTheme: z.enum(["default", "cream", "sage", "sky", "dusk", "sand"]).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         await updateUserProfile(ctx.user.id, input);
