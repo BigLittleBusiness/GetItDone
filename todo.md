@@ -85,3 +85,4 @@
 - [x] Step-level checkbox completion in AI task breakdown (persist checked steps via tasks.update)
 - [x] Voice input mic button for the Notes field in the Add Task dialog
 - [x] Create /settings page with role and personality mode dropdowns
+- [x] Add dark mode toggle to Settings page with persistent theme preference

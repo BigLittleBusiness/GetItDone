@@ -4,10 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, LogOut, Settings2, Sparkles, User } from "lucide-react";
+import { ArrowLeft, LogOut, Moon, Settings2, Sparkles, Sun, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type Role = "student" | "parent" | "professional";
 type PersonalityMode = "cheeky" | "positive" | "literal";
@@ -62,6 +63,9 @@ export default function Settings() {
   const { data: profile, isLoading } = trpc.user.getProfile.useQuery(undefined, {
     enabled: !!authUser,
   });
+
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
 
   const [activeRole, setActiveRole] = useState<Role>("professional");
   const [personalityMode, setPersonalityMode] = useState<PersonalityMode>("positive");
@@ -162,6 +166,52 @@ export default function Settings() {
                 </div>
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Appearance */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              {isDark ? <Moon size={16} className="text-primary" /> : <Sun size={16} className="text-primary" />}
+              <div>
+                <CardTitle className="text-base">Appearance</CardTitle>
+                <CardDescription className="text-sm mt-0.5">
+                  Choose between light and dark mode. Your preference is saved automatically.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Sun size={16} className="text-muted-foreground" />
+                <span className="text-sm font-medium text-foreground">Light</span>
+              </div>
+              {/* Toggle switch */}
+              <button
+                onClick={toggleTheme}
+                role="switch"
+                aria-checked={isDark}
+                aria-label="Toggle dark mode"
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                  isDark ? "bg-primary" : "bg-muted-foreground/30"
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+                    isDark ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-foreground">Dark</span>
+                <Moon size={16} className="text-muted-foreground" />
+              </div>
+            </div>
+            <p className="mt-3 text-xs text-muted-foreground text-center">
+              Currently using <strong>{isDark ? "dark" : "light"}</strong> mode
+            </p>
           </CardContent>
         </Card>
 
