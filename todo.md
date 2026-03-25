@@ -98,3 +98,4 @@
 - [x] Inline due-date editing with calendar popover on task cards
 - [x] 'Due This Week' filter tab showing tasks due within the next 7 days
 - [x] Create Mission page for the marketing website
+- [x] Create Pricing page at /pricing with free tier and upcoming paid tier
