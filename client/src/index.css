@@ -117,6 +117,13 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    /* Smooth scroll for all anchor links */
+    scroll-behavior: smooth;
+    /* Offset for the 80px fixed navigation bar so section headings
+       are not hidden behind it when scrolled to via an anchor link */
+    scroll-padding-top: 5rem;
+  }
   body {
     @apply bg-background text-foreground;
   }

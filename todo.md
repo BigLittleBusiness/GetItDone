@@ -103,3 +103,4 @@
 - [x] Create 'For Parents & Carers' page at /parents
 - [x] Add Open Graph and Twitter Card meta tags to all four marketing pages
 - [x] Extract marketing nav bar into a shared MarketingNav component
+- [x] Implement smooth scroll for anchor links on the homepage with fixed-nav offset

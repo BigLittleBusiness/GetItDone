@@ -10,6 +10,12 @@ import { useLocation } from 'wouter';
 const OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
 const SITE_URL = 'https://getitdone-maea52jb.manus.space';
 
+/** Smoothly scrolls to an element by id, accounting for the 80px fixed nav. */
+function scrollToSection(id: string) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 export default function Home() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const { user, isAuthenticated } = useAuth();
@@ -21,6 +27,27 @@ export default function Home() {
       setIsFeedbackOpen(true);
     }, 45000);
     return () => clearTimeout(timer);
+  }, []);
+
+  // Handle in-page anchor clicks from the nav (e.g. /#features) so they
+  // scroll smoothly instead of triggering a full page reload.
+  useEffect(() => {
+    function handleAnchorClick(e: MouseEvent) {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest('a[href]') as HTMLAnchorElement | null;
+      if (!anchor) return;
+      const href = anchor.getAttribute('href') ?? '';
+      // Only intercept same-page hash links like "#features" or "/#features"
+      const hashMatch = href.match(/^\/?#(.+)$/);
+      if (!hashMatch) return;
+      const id = hashMatch[1];
+      const section = document.getElementById(id);
+      if (!section) return;
+      e.preventDefault();
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    document.addEventListener('click', handleAnchorClick);
+    return () => document.removeEventListener('click', handleAnchorClick);
   }, []);
 
   return (
@@ -75,7 +102,10 @@ export default function Home() {
               Get Early Access
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="w-full sm:w-auto px-8 py-4 rounded-full font-medium text-white border border-white/20 hover:bg-white/5 transition-colors">
+            <button
+              onClick={() => scrollToSection('features')}
+              className="w-full sm:w-auto px-8 py-4 rounded-full font-medium text-white border border-white/20 hover:bg-white/5 transition-colors"
+            >
               Watch the Demo
             </button>
           </div>
