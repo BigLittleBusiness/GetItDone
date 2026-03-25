@@ -39,6 +39,8 @@ import {
   Wand2,
   Mic,
   MicOff,
+  CalendarClock,
+  AlertCircle,
 } from "lucide-react";
 import { getLoginUrl } from "@/const";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
@@ -107,6 +109,50 @@ const PRIORITY_CONFIG: Record<Priority, { label: string; color: string; dot: str
   high: { label: "High", color: "text-rose-600 bg-rose-50 border-rose-200", dot: "bg-rose-500" },
   medium: { label: "Medium", color: "text-amber-600 bg-amber-50 border-amber-200", dot: "bg-amber-500" },
   low: { label: "Low", color: "text-green-600 bg-green-50 border-green-200", dot: "bg-green-500" },
+};
+
+// ─── Due-date chip helper ────────────────────────────────────────────────────
+type DueDateStatus = "overdue" | "today" | "tomorrow" | null;
+
+function getDueDateStatus(dueDate: string | null | undefined): DueDateStatus {
+  if (!dueDate) return null;
+  // Get today and tomorrow in the user's local timezone as YYYY-MM-DD
+  const fmt = (d: Date) =>
+    new Intl.DateTimeFormat("en-CA", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(d);
+  const today = fmt(new Date());
+  const tomorrow = fmt(new Date(Date.now() + 86_400_000));
+  if (dueDate < today) return "overdue";
+  if (dueDate === today) return "today";
+  if (dueDate === tomorrow) return "tomorrow";
+  return null;
+}
+
+const DUE_CHIP: Record<
+  Exclude<DueDateStatus, null>,
+  { label: string; className: string; icon: React.ElementType }
+> = {
+  overdue: {
+    label: "Overdue",
+    className:
+      "inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800",
+    icon: AlertCircle,
+  },
+  today: {
+    label: "Due Today",
+    className:
+      "inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800",
+    icon: CalendarClock,
+  },
+  tomorrow: {
+    label: "Due Tomorrow",
+    className:
+      "inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800",
+    icon: CalendarClock,
+  },
 };
 
 const ENERGY_CONFIG: Record<EnergyRequired, { label: string; icon: string }> = {
@@ -598,11 +644,26 @@ export default function Dashboard() {
                             <span className="text-xs text-muted-foreground">
                               {energyCfg.icon} {energyCfg.label}
                             </span>
-                            {task.dueDate && (
-                              <span className="text-xs text-muted-foreground">
-                                📅 {task.dueDate}
-                              </span>
-                            )}
+                            {task.dueDate && (() => {
+                              const status = getDueDateStatus(task.dueDate);
+                              if (status && !isDone) {
+                                const chip = DUE_CHIP[status];
+                                const ChipIcon = chip.icon;
+                                return (
+                                  <span className={chip.className}>
+                                    <ChipIcon size={11} />
+                                    {chip.label}
+                                  </span>
+                                );
+                              }
+                              // For future dates or completed tasks, show plain date
+                              return (
+                                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <CalendarClock size={11} />
+                                  {task.dueDate}
+                                </span>
+                              );
+                            })()}
                             <span className="text-xs text-amber-600 font-medium ml-auto">
                               +{task.xpReward} XP
                             </span>

@@ -93,3 +93,4 @@
 - [ ] Add due date picker to the Add Task dialog in Dashboard
 - [ ] Build due-date reminder job (timezone-aware, fires at user's reminder time)
 - [ ] Add due-date reminder time preference to Settings page
+- [x] Add 'Due Today' / 'Due Tomorrow' / 'Overdue' visual chips to task cards in the dashboard
