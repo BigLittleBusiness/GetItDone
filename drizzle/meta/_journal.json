@@ -29,6 +29,13 @@
       "when": 1774413927478,
       "tag": "0003_green_cargill",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1774414491123,
+      "tag": "0004_bright_punisher",
+      "breakpoints": true
     }
   ]
 }

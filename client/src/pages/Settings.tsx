@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, Bell, LogOut, Moon, Settings2, Sparkles, Sun, User } from "lucide-react";
+import { ArrowLeft, Bell, Globe, LogOut, Moon, Settings2, Sparkles, Sun, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
@@ -217,9 +217,15 @@ export default function Settings() {
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-xs text-muted-foreground">
-              You'll receive a reminder at <strong>{formatTime(reminderTime)}</strong> in your local timezone if your streak is at risk.
-            </p>
+            <div className="flex items-start gap-2 p-2.5 rounded-md bg-muted/50">
+              <Globe size={13} className="text-muted-foreground mt-0.5 shrink-0" />
+              <div className="text-xs text-muted-foreground space-y-0.5">
+                <p>Reminder will fire at <strong>{formatTime(reminderTime)}</strong> in your local time.</p>
+                <p className="text-muted-foreground/70">
+                  Detected timezone: <span className="font-mono">{(profile as typeof profile & { timezone?: string })?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone}</span>
+                </p>
+              </div>
+            </div>
           </CardContent>
         </Card>
 

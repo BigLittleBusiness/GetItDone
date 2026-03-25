@@ -306,6 +306,18 @@ export default function Dashboard() {
     updateSettings.mutate({ activeRole: role });
   };
 
+  // Auto-detect and silently save timezone when profile first loads
+  // Only updates if the stored timezone is still the default "UTC"
+  useEffect(() => {
+    if (!profile) return;
+    const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const stored = (profile as typeof profile & { timezone?: string }).timezone ?? "UTC";
+    if (detected && detected !== stored) {
+      updateSettings.mutate({ timezone: detected });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.id]); // Run once when profile first loads (profile.id stable)
+
   // Auth guard
   if (authLoading || profileLoading) {
     return (

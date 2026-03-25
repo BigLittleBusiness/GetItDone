@@ -31,6 +31,8 @@ export const users = mysqlTable("users", {
   lastActiveDate: varchar("lastActiveDate", { length: 10 }), // YYYY-MM-DD
   // Streak reminder: user's preferred local time as HH:MM (24h), e.g. "14:00"
   reminderTime: varchar("reminderTime", { length: 5 }).default("14:00").notNull(),
+  // IANA timezone string, e.g. "Australia/Sydney", auto-detected from browser
+  timezone: varchar("timezone", { length: 64 }).default("UTC").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),

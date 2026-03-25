@@ -87,3 +87,5 @@
 - [x] Create /settings page with role and personality mode dropdowns
 - [x] Add dark mode toggle to Settings page with persistent theme preference
 - [x] Add personalised daily streak reminder time picker to Settings page
+- [x] Add timezone field to user profile (auto-detect from browser, persist to DB)
+- [x] Update streak reminder job to fire at correct local time using user's timezone
