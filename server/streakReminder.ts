@@ -1,54 +1,66 @@
 /**
  * Streak Reminder Job
  *
- * Runs once per day (scheduled via setInterval at server startup).
- * Finds all users who have an active streak but have not completed any task
- * today, then sends the owner a consolidated notification so they can monitor
- * retention health. In a production multi-tenant system you would swap
- * notifyOwner for a per-user push / email channel; for now the Manus
- * built-in notification API targets the project owner.
+ * Runs every 30 minutes. For each run it checks which users have a reminderTime
+ * that matches the current UTC half-hour slot AND have an active streak but
+ * haven't completed a task today. Those users are batched into a single owner
+ * notification.
+ *
+ * NOTE: reminderTime is stored as HH:MM in the user's *local* timezone.
+ * Because we don't store each user's timezone offset, we treat reminderTime
+ * as UTC for now (a common simplification for v1). A future improvement would
+ * be to store a tzOffset on the user profile and convert accordingly.
  */
 
 import { notifyOwner } from "./_core/notification";
 import { getUsersAtRiskOfLosingStreak } from "./db";
 
-const REMINDER_HOUR_UTC = 14; // 2 PM UTC — adjust to your audience's timezone
+/** Round a Date down to the nearest 30-minute boundary and return "HH:MM". */
+function currentHalfHourSlot(now: Date = new Date()): string {
+  const h = now.getUTCHours();
+  const m = now.getUTCMinutes() < 30 ? 0 : 30;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
 
-function msUntilNextRun(): number {
+/** Milliseconds until the next 30-minute boundary (:00 or :30). */
+function msUntilNextHalfHour(): number {
   const now = new Date();
   const next = new Date(now);
-  next.setUTCHours(REMINDER_HOUR_UTC, 0, 0, 0);
-  if (next <= now) next.setUTCDate(next.getUTCDate() + 1);
+  const mins = now.getUTCMinutes();
+  const nextMins = mins < 30 ? 30 : 60;
+  next.setUTCMinutes(nextMins, 0, 0);
   return next.getTime() - now.getTime();
 }
 
 export async function runStreakReminderJob(): Promise<void> {
   try {
-    const atRisk = await getUsersAtRiskOfLosingStreak();
+    const slot = currentHalfHourSlot();
+    const atRisk = await getUsersAtRiskOfLosingStreak(slot);
+
     if (atRisk.length === 0) {
-      console.log("[StreakReminder] No users at risk today — all streaks safe.");
+      console.log(`[StreakReminder] ${slot} UTC — no users at risk for this slot.`);
       return;
     }
 
     const userLines = atRisk
       .map(
         (u) =>
-          `• ${u.name ?? u.email ?? `User #${u.id}`} — 🔥 ${u.currentStreak}-day streak at risk`
+          `• ${u.name ?? u.email ?? `User #${u.id}`} — 🔥 ${u.currentStreak}-day streak at risk (reminder set for ${u.reminderTime ?? slot})`
       )
       .join("\n");
 
-    const title = `⚠️ ${atRisk.length} streak${atRisk.length === 1 ? "" : "s"} at risk today`;
+    const title = `⚠️ ${atRisk.length} streak${atRisk.length === 1 ? "" : "s"} at risk — ${slot} UTC slot`;
     const content = [
       `${atRisk.length} user${atRisk.length === 1 ? " has" : "s have"} an active streak but haven't completed a task yet today.\n`,
       userLines,
-      `\nConsider sending them a nudge or checking in-app engagement metrics.`,
+      `\nConsider checking in-app engagement metrics.`,
     ].join("\n");
 
     const sent = await notifyOwner({ title, content });
     if (sent) {
-      console.log(`[StreakReminder] Owner notified about ${atRisk.length} at-risk user(s).`);
+      console.log(`[StreakReminder] Owner notified about ${atRisk.length} at-risk user(s) for slot ${slot}.`);
     } else {
-      console.warn("[StreakReminder] Notification service unavailable; will retry tomorrow.");
+      console.warn("[StreakReminder] Notification service unavailable; will retry at next slot.");
     }
   } catch (err) {
     console.error("[StreakReminder] Job failed:", err);
@@ -56,19 +68,19 @@ export async function runStreakReminderJob(): Promise<void> {
 }
 
 /**
- * Schedules the streak reminder to fire once per day at REMINDER_HOUR_UTC.
- * Call this once from server startup (server/_core/index.ts or similar).
+ * Schedules the streak reminder to fire at every 30-minute boundary.
+ * Call this once from server startup.
  */
 export function scheduleStreakReminder(): void {
   const scheduleNext = () => {
-    const delay = msUntilNextRun();
+    const delay = msUntilNextHalfHour();
     const nextRun = new Date(Date.now() + delay);
     console.log(
       `[StreakReminder] Next run scheduled for ${nextRun.toUTCString()} (in ${Math.round(delay / 60000)} min)`
     );
     setTimeout(async () => {
       await runStreakReminderJob();
-      scheduleNext(); // reschedule for the next day
+      scheduleNext();
     }, delay);
   };
   scheduleNext();

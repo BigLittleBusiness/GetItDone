@@ -22,6 +22,13 @@
       "when": 1774340315629,
       "tag": "0002_careful_rattler",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1774413927478,
+      "tag": "0003_green_cargill",
+      "breakpoints": true
     }
   ]
 }

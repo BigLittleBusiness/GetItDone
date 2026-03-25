@@ -86,3 +86,4 @@
 - [x] Voice input mic button for the Notes field in the Add Task dialog
 - [x] Create /settings page with role and personality mode dropdowns
 - [x] Add dark mode toggle to Settings page with persistent theme preference
+- [x] Add personalised daily streak reminder time picker to Settings page

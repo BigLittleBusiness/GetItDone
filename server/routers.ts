@@ -92,6 +92,7 @@ export const appRouter = router({
       .input(z.object({
         activeRole: z.enum(["student", "parent", "professional"]).optional(),
         personalityMode: z.enum(["cheeky", "positive", "literal"]).optional(),
+        reminderTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).optional(), // HH:MM 24h
       }))
       .mutation(async ({ ctx, input }) => {
         await updateUserProfile(ctx.user.id, input);

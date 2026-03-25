@@ -153,7 +153,7 @@ export async function unlockAchievement(userId: number, slug: string) {
  * Returns users who have a streak > 0 but have NOT completed any task today.
  * Used by the daily streak-reminder job.
  */
-export async function getUsersAtRiskOfLosingStreak() {
+export async function getUsersAtRiskOfLosingStreak(reminderTimeSlot?: string) {
   const db = await getDb();
   if (!db) return [];
   const today = new Date().toISOString().split("T")[0];
@@ -163,7 +163,11 @@ export async function getUsersAtRiskOfLosingStreak() {
     .from(users)
     .where(and(eq(users.onboardingComplete, true)));
   return result.filter(
-    (u) => (u.currentStreak ?? 0) > 0 && u.lastActiveDate !== today
+    (u) =>
+      (u.currentStreak ?? 0) > 0 &&
+      u.lastActiveDate !== today &&
+      // If a slot is provided, only include users whose reminderTime matches
+      (reminderTimeSlot == null || (u as typeof u & { reminderTime?: string }).reminderTime === reminderTimeSlot)
   );
 }
 

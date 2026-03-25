@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, LogOut, Moon, Settings2, Sparkles, Sun, User } from "lucide-react";
+import { ArrowLeft, Bell, LogOut, Moon, Settings2, Sparkles, Sun, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
@@ -69,6 +69,7 @@ export default function Settings() {
 
   const [activeRole, setActiveRole] = useState<Role>("professional");
   const [personalityMode, setPersonalityMode] = useState<PersonalityMode>("positive");
+  const [reminderTime, setReminderTime] = useState<string>("14:00");
   const [isDirty, setIsDirty] = useState(false);
 
   // Sync local state when profile loads
@@ -76,6 +77,7 @@ export default function Settings() {
     if (profile) {
       setActiveRole((profile.activeRole as Role) ?? "professional");
       setPersonalityMode((profile.personalityMode as PersonalityMode) ?? "positive");
+      setReminderTime((profile as typeof profile & { reminderTime?: string }).reminderTime ?? "14:00");
       setIsDirty(false);
     }
   }, [profile]);
@@ -101,8 +103,25 @@ export default function Settings() {
   };
 
   const handleSave = () => {
-    updateSettings.mutate({ activeRole, personalityMode });
+    updateSettings.mutate({ activeRole, personalityMode, reminderTime });
   };
+
+  // Format HH:MM to a readable label like "2:00 PM"
+  const formatTime = (t: string) => {
+    const [h, m] = t.split(":").map(Number);
+    const ampm = h >= 12 ? "PM" : "AM";
+    const hour = h % 12 || 12;
+    return `${hour}:${String(m).padStart(2, "0")} ${ampm}`;
+  };
+
+  // Generate half-hour options for the select
+  const timeOptions: { value: string; label: string }[] = [];
+  for (let h = 0; h < 24; h++) {
+    for (const m of [0, 30]) {
+      const value = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+      timeOptions.push({ value, label: formatTime(value) });
+    }
+  }
 
   if (!authUser) {
     return (
@@ -166,6 +185,41 @@ export default function Settings() {
                 </div>
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Streak Reminder */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Bell size={16} className="text-primary" />
+              <div>
+                <CardTitle className="text-base">Daily Streak Reminder</CardTitle>
+                <CardDescription className="text-sm mt-0.5">
+                  Choose what time you'd like a nudge if you haven't completed a task yet that day.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Select
+              value={reminderTime}
+              onValueChange={(v) => { setReminderTime(v); setIsDirty(true); }}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="max-h-60">
+                {timeOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              You'll receive a reminder at <strong>{formatTime(reminderTime)}</strong> in your local timezone if your streak is at risk.
+            </p>
           </CardContent>
         </Card>
 

@@ -29,6 +29,8 @@ export const users = mysqlTable("users", {
   currentStreak: int("currentStreak").default(0).notNull(),
   longestStreak: int("longestStreak").default(0).notNull(),
   lastActiveDate: varchar("lastActiveDate", { length: 10 }), // YYYY-MM-DD
+  // Streak reminder: user's preferred local time as HH:MM (24h), e.g. "14:00"
+  reminderTime: varchar("reminderTime", { length: 5 }).default("14:00").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),

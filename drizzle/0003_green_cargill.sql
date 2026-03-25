@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `reminderTime` varchar(5) DEFAULT '14:00' NOT NULL;
