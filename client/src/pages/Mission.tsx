@@ -285,7 +285,7 @@ export default function Mission() {
               {
                 emoji: "👨‍👩‍👧",
                 role: "Parents & Carers",
-                body: "Holding the mental load of a household while managing your own executive function. Voice-capture tasks before they vanish, and never drop the ball again.",
+                body: "Holding the mental load of a household while managing your own executive function is a lot. Voice-capture tasks the moment they come to mind, so nothing gets lost in the beautiful chaos of family life.",
               },
               {
                 emoji: "💼",
