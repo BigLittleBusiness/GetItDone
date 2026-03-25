@@ -100,3 +100,4 @@
 - [x] Create Mission page for the marketing website
 - [x] Create Pricing page at /pricing with free tier and upcoming paid tier
 - [x] Fix guilt-inducing copy in Mission page Parents & Carers section — replace "never drop the ball again" line
+- [x] Create 'For Parents & Carers' page at /parents

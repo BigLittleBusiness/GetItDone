@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import Mission from "./pages/Mission";
 import Pricing from "./pages/Pricing";
+import Parents from "./pages/Parents";
 import { QuickAdd } from "./components/QuickAdd";
 function Router() {
   return (
@@ -21,6 +22,7 @@ function Router() {
       <Route path={"/settings"} component={Settings} />
       <Route path={"/mission"} component={Mission} />
       <Route path={"/pricing"} component={Pricing} />
+      <Route path={"/parents"} component={Parents} />
       <Route path={"/admin"} component={AdminDashboard} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}

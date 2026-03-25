@@ -145,7 +145,7 @@ export default function Pricing() {
             <a href="/#features" className="hover:text-white transition-colors">Features</a>
             <a href="/mission" className="hover:text-white transition-colors">Our Mission</a>
             <a href="/pricing" className="text-white border-b border-white/40 pb-0.5">Pricing</a>
-            <a href="/#parents" className="hover:text-white transition-colors">For Parents &amp; Carers</a>
+            <a href="/parents" className="hover:text-white transition-colors">For Parents &amp; Carers</a>
             {isAuthenticated ? (
               <button
                 onClick={() => setLocation("/dashboard")}
@@ -188,7 +188,7 @@ export default function Pricing() {
                 <a href="/#features" className="block px-5 py-3 text-sm text-indigo-100 hover:bg-white/5 hover:text-white transition-colors">Features</a>
                 <a href="/mission" className="block px-5 py-3 text-sm text-indigo-100 hover:bg-white/5 hover:text-white transition-colors">Our Mission</a>
                 <a href="/pricing" className="block px-5 py-3 text-sm text-white bg-white/5">Pricing</a>
-                <a href="/#parents" className="block px-5 py-3 text-sm text-indigo-100 hover:bg-white/5 hover:text-white transition-colors border-t border-white/5">For Parents &amp; Carers</a>
+                <a href="/parents" className="block px-5 py-3 text-sm text-indigo-100 hover:bg-white/5 hover:text-white transition-colors border-t border-white/5">For Parents &amp; Carers</a>
               </div>
             </details>
           </div>
