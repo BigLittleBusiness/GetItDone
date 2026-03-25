@@ -392,8 +392,9 @@ export default function Dashboard() {
               </div>
             )}
             <button
-              onClick={() => setShowSettings(true)}
+              onClick={() => setLocation("/settings")}
               className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground"
+              title="Settings"
             >
               <Settings size={18} />
             </button>
