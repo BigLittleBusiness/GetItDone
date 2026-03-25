@@ -106,3 +106,4 @@
 - [x] Implement smooth scroll for anchor links on the homepage with fixed-nav offset
 - [x] Add floating back-to-top button to all marketing pages
 - [x] Extract marketing footer into a shared MarketingFooter component
+- [x] Add robots.txt and sitemap.xml to client/public for search engine indexing

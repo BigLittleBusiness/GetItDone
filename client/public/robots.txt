@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Marketing pages
+Allow: /
+Allow: /mission
+Allow: /pricing
+Allow: /parents
+
+# Block app-only routes from indexing
+Disallow: /dashboard
+Disallow: /onboarding
+Disallow: /settings
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: https://getitdone-maea52jb.manus.space/sitemap.xml
