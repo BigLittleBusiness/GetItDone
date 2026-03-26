@@ -10,9 +10,16 @@ import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useReadingTheme, type ReadingTheme } from "@/contexts/ReadingThemeContext";
+import { useTextSize, type TextSize } from "@/contexts/TextSizeContext";
 
 type Role = "student" | "parent" | "professional";
 type PersonalityMode = "cheeky" | "positive" | "literal";
+
+const TEXT_SIZE_OPTIONS: { value: TextSize; label: string; description: string; previewClass: string }[] = [
+  { value: "small",  label: "Small",  description: "Compact text — fits more on screen at once.",         previewClass: "text-xs" },
+  { value: "medium", label: "Medium", description: "The default size — balanced for most users.",          previewClass: "text-sm" },
+  { value: "large",  label: "Large",  description: "Larger text — easier to read for longer sessions.",   previewClass: "text-base" },
+];
 
 const READING_THEMES: { value: ReadingTheme; label: string; description: string; bg: string; border: string }[] = [
   { value: "default", label: "Default", description: "The app's standard dark or light theme.", bg: "bg-slate-800", border: "border-slate-600" },
@@ -77,6 +84,7 @@ export default function Settings() {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
   const { readingTheme, setReadingTheme } = useReadingTheme();
+  const { textSize, setTextSize } = useTextSize();
 
   const [activeRole, setActiveRole] = useState<Role>("professional");
   const [personalityMode, setPersonalityMode] = useState<PersonalityMode>("positive");
@@ -93,6 +101,11 @@ export default function Settings() {
       const serverTheme = (profile as typeof profile & { readingTheme?: ReadingTheme }).readingTheme;
       if (serverTheme && serverTheme !== readingTheme) {
         setReadingTheme(serverTheme);
+      }
+      // Sync text size from server profile
+      const serverTextSize = (profile as typeof profile & { textSize?: TextSize }).textSize;
+      if (serverTextSize && serverTextSize !== textSize) {
+        setTextSize(serverTextSize);
       }
       setIsDirty(false);
     }
@@ -119,7 +132,7 @@ export default function Settings() {
   };
 
   const handleSave = () => {
-    updateSettings.mutate({ activeRole, personalityMode, reminderTime, readingTheme });
+    updateSettings.mutate({ activeRole, personalityMode, reminderTime, readingTheme, textSize });
   };
 
   // Format HH:MM to a readable label like "2:00 PM"
@@ -310,6 +323,60 @@ export default function Settings() {
             </div>
             <p className="mt-3 text-xs text-muted-foreground text-center">
               Currently using <strong>{isDark ? "dark" : "light"}</strong> mode
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Text Size */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-base">🔡</span>
+              <div>
+                <CardTitle className="text-base">Text Size</CardTitle>
+                <CardDescription className="text-sm mt-0.5">
+                  Adjust the size of text across the app. Larger text can reduce eye strain during longer sessions.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-3 gap-3">
+              {TEXT_SIZE_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => { setTextSize(opt.value); setIsDirty(true); }}
+                  className={`
+                    relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-150
+                    focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary
+                    ${textSize === opt.value
+                      ? "border-primary ring-2 ring-primary/30 bg-primary/5 scale-[1.03]"
+                      : "border-border hover:border-primary/40 bg-card"
+                    }
+                  `}
+                  aria-pressed={textSize === opt.value}
+                  title={opt.description}
+                >
+                  {/* Preview text at the option's size */}
+                  <span className={`font-medium leading-none ${opt.previewClass}`}>Aa</span>
+                  <span className="text-xs font-medium">{opt.label}</span>
+                  {textSize === opt.value && (
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary" />
+                  )}
+                </button>
+              ))}
+            </div>
+            {(() => {
+              const selected = TEXT_SIZE_OPTIONS.find((o) => o.value === textSize);
+              return selected ? (
+                <p className="text-sm text-muted-foreground bg-muted/50 rounded-lg px-3 py-2">
+                  <strong>{selected.label}:</strong> {selected.description}
+                </p>
+              ) : null;
+            })()}
+            <p className="text-xs text-muted-foreground">
+              Changes apply instantly. Save to keep your preference across devices.
             </p>
           </CardContent>
         </Card>

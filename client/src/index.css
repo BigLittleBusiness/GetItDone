@@ -325,3 +325,19 @@
 .font-serif {
   font-family: "Fraunces", Georgia, serif;
 }
+
+/* ─── Text Size Accessibility ─────────────────────────────────────────────────
+   Applied via data-text-size attribute on <html>.
+   Medium is the default (no attribute set).
+   These scale the root font size so all rem-based sizes adjust proportionally.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+html[data-text-size="small"] {
+  font-size: 14px; /* ~87.5% of the 16px browser default */
+}
+
+/* Medium is the browser default (16px) — no override needed */
+
+html[data-text-size="large"] {
+  font-size: 18px; /* ~112.5% of the 16px browser default */
+}

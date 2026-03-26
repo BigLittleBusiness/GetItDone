@@ -31,6 +31,8 @@ export const users = mysqlTable("users", {
   lastActiveDate: varchar("lastActiveDate", { length: 10 }), // YYYY-MM-DD
   // Reading Theme: accessibility background colour preference
   readingTheme: mysqlEnum("readingTheme", ["default", "cream", "sage", "sky", "dusk", "sand"]).default("default").notNull(),
+  // Text Size: accessibility font-size preference
+  textSize: mysqlEnum("textSize", ["small", "medium", "large"]).default("medium").notNull(),
   // Streak reminder: user's preferred local time as HH:MM (24h), e.g. "14:00"
   reminderTime: varchar("reminderTime", { length: 5 }).default("14:00").notNull(),
   // IANA timezone string, e.g. "Australia/Sydney", auto-detected from browser

@@ -8,6 +8,7 @@ import superjson from "superjson";
 import App from "./App";
 import { getLoginUrl } from "./const";
 import { ReadingThemeProvider } from "./contexts/ReadingThemeContext";
+import { TextSizeProvider } from "./contexts/TextSizeContext";
 import "./index.css";
 
 const queryClient = new QueryClient();
@@ -57,11 +58,13 @@ const trpcClient = trpc.createClient({
 createRoot(document.getElementById("root")!).render(
   <HelmetProvider>
     <ReadingThemeProvider>
-      <trpc.Provider client={trpcClient} queryClient={queryClient}>
-        <QueryClientProvider client={queryClient}>
-          <App />
-        </QueryClientProvider>
-      </trpc.Provider>
+      <TextSizeProvider>
+        <trpc.Provider client={trpcClient} queryClient={queryClient}>
+          <QueryClientProvider client={queryClient}>
+            <App />
+          </QueryClientProvider>
+        </trpc.Provider>
+      </TextSizeProvider>
     </ReadingThemeProvider>
   </HelmetProvider>
 );

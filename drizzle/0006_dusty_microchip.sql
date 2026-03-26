@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `textSize` enum('small','medium','large') DEFAULT 'medium' NOT NULL;
