@@ -333,7 +333,7 @@ export default function Parents() {
                 </div>
               ))}
               <p className="text-xs text-indigo-400 text-center pt-2">
-                The person using the app chooses their own colour — it is their preference, not yours to decide.
+                They choose the colour that feels right for them — one more way you can help them do their best.
               </p>
             </div>
           </div>
