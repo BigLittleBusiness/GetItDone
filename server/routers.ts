@@ -72,12 +72,14 @@ export const appRouter = router({
       .input(z.object({
         activeRole: z.enum(["student", "parent", "professional"]),
         personalityMode: z.enum(["cheeky", "positive", "literal"]),
+        readingTheme: z.enum(["default", "cream", "sage", "sky", "dusk", "sand"]).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         await updateUserProfile(ctx.user.id, {
           onboardingComplete: true,
           activeRole: input.activeRole,
           personalityMode: input.personalityMode,
+          ...(input.readingTheme ? { readingTheme: input.readingTheme } : {}),
         });
         const unlocked = await unlockAchievement(ctx.user.id, "onboarding_complete");
         if (unlocked) {
