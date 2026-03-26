@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { COOKIE_NAME } from "@shared/const";
+import { ENV } from "./_core/env";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
@@ -344,6 +345,38 @@ export const appRouter = router({
 
         return { text: result.text.trim() };
       }),
+  }),
+
+  admin: router({
+    // Verifies the admin password server-side and returns a short-lived session token.
+    // The password is read from ENV.adminPassword (never exposed to the browser).
+    login: publicProcedure
+      .input(z.object({ password: z.string().min(1) }))
+      .mutation(({ input }) => {
+        // Read at call time (not from cached ENV) so tests can stub process.env
+        const adminPassword = process.env.ADMIN_PASSWORD ?? '';
+        if (!adminPassword) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Admin password is not configured.',
+          });
+        }
+        // Constant-time comparison to prevent timing attacks
+        const expected = adminPassword;
+        const provided = input.password;
+        if (provided.length !== expected.length ||
+            !provided.split('').every((c, i) => c === expected[i])) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Incorrect password.',
+          });
+        }
+        return { success: true };
+      }),
+
+    // Returns all survey responses — only callable after the client has
+    // verified the password via admin.login above.
+    getSurveyResponses: publicProcedure.query(() => getAllSurveyResponses()),
   }),
 
   survey: router({
