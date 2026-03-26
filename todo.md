@@ -126,3 +126,4 @@
 - [x] Fill in Privacy Policy and Terms of Service with legal entity details
 - [ ] Implement per-user email reminders via Resend (streak + due-date)
 - [x] Add recurring tasks with ADHD-first design (after-completion trigger, roll-forward, daily/weekly/monthly/specific days)
+- [x] Add Resend configuration panel to admin dashboard (API key, sender email, test-send button)

@@ -103,3 +103,14 @@ export const surveyResponses = mysqlTable("survey_responses", {
 
 export type SurveyResponse = typeof surveyResponses.$inferSelect;
 export type InsertSurveyResponse = typeof surveyResponses.$inferInsert;
+
+// ─── App Settings (admin-managed key/value store) ─────────────────────────────
+// Stores singleton configuration values such as Resend credentials.
+// Each row is a unique key; values are stored as text (encrypted at rest by the DB).
+export const appSettings = mysqlTable("app_settings", {
+  key: varchar("key", { length: 128 }).primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AppSetting = typeof appSettings.$inferSelect;

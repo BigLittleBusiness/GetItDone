@@ -2,6 +2,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   achievements,
+  appSettings,
   surveyResponses,
   tasks,
   users,
@@ -242,4 +243,21 @@ export async function getAllSurveyResponses() {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   return db.select().from(surveyResponses).orderBy(desc(surveyResponses.createdAt));
+}
+
+// ─── App Settings ──────────────────────────────────────────────────────────────
+export async function getSetting(key: string): Promise<string | null> {
+  const db = await getDb();
+  if (!db) return null;
+  const rows = await db.select().from(appSettings).where(eq(appSettings.key, key));
+  return rows[0]?.value ?? null;
+}
+
+export async function setSetting(key: string, value: string): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db
+    .insert(appSettings)
+    .values({ key, value })
+    .onDuplicateKeyUpdate({ set: { value } });
 }

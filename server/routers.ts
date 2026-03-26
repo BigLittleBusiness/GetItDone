@@ -22,6 +22,8 @@ import {
   getAllTasksForUser,
   getTasksByRole,
   getUserById,
+  getSetting,
+  setSetting,
   unlockAchievement,
   updateTask,
   updateUserProfile,
@@ -440,6 +442,84 @@ export const appRouter = router({
     // Returns all survey responses — only callable after the client has
     // verified the password via admin.login above.
     getSurveyResponses: publicProcedure.query(() => getAllSurveyResponses()),
+
+    // ── Resend Configuration ────────────────────────────────────────────────
+    // Returns the stored Resend credentials (API key is masked for display).
+    getResendConfig: publicProcedure.query(async () => {
+      const apiKey = await getSetting('resend_api_key');
+      const fromEmail = await getSetting('resend_from_email');
+      const fromName = await getSetting('resend_from_name');
+      return {
+        // Mask the key: show only the last 6 chars so the admin can confirm which key is stored
+        apiKeyMasked: apiKey ? `re_${'*'.repeat(Math.max(0, apiKey.length - 9))}${apiKey.slice(-6)}` : null,
+        apiKeyConfigured: !!apiKey,
+        fromEmail: fromEmail ?? '',
+        fromName: fromName ?? '',
+      };
+    }),
+
+    // Saves the Resend credentials to the app_settings table.
+    saveResendConfig: publicProcedure
+      .input(z.object({
+        apiKey: z.string().min(1, 'API key is required'),
+        fromEmail: z.string().email('Must be a valid email address'),
+        fromName: z.string().min(1, 'Sender name is required').max(64),
+      }))
+      .mutation(async ({ input }) => {
+        await setSetting('resend_api_key', input.apiKey);
+        await setSetting('resend_from_email', input.fromEmail);
+        await setSetting('resend_from_name', input.fromName);
+        return { success: true };
+      }),
+
+    // Sends a test email using the stored Resend credentials to verify they work.
+    testResendEmail: publicProcedure
+      .input(z.object({ toEmail: z.string().email() }))
+      .mutation(async ({ input }) => {
+        const apiKey = await getSetting('resend_api_key');
+        const fromEmail = await getSetting('resend_from_email');
+        const fromName = await getSetting('resend_from_name');
+
+        if (!apiKey || !fromEmail) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Resend credentials are not configured. Save your API key and sender email first.',
+          });
+        }
+
+        const res = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: fromName ? `${fromName} <${fromEmail}>` : fromEmail,
+            to: [input.toEmail],
+            subject: 'Get It Done! — Resend connection verified ✓',
+            html: [
+              '<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;">',
+              '<h2 style="color:#4f46e5;margin-bottom:8px;">Connection verified!</h2>',
+              '<p style="color:#374151;">Your Resend integration is working correctly.</p>',
+              '<p style="color:#6b7280;font-size:14px;">',
+              'This test email was sent from the Get It Done! admin dashboard.',
+              ' You can now activate email reminders for your users.',
+              '</p>',
+              '</div>',
+            ].join(''),
+          }),
+        });
+
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({})) as Record<string, unknown>;
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: `Resend API error: ${(body as { message?: string }).message ?? res.statusText}`,
+          });
+        }
+
+        return { success: true };
+      }),
   }),
 
   survey: router({
