@@ -68,7 +68,7 @@ export default function CookieConsent() {
             We use cookies to keep you signed in and understand how people find
             us. No advertising cookies, ever.{" "}
             <a
-              href="#"
+              href="/privacy"
               className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors"
             >
               Privacy Policy

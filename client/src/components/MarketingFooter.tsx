@@ -20,7 +20,7 @@ export default function MarketingFooter() {
 
         {/* Legal links */}
         <div className="flex gap-8 text-sm text-indigo-300">
-          <a href="#" className="hover:text-white transition-colors">
+          <a href="/privacy" className="hover:text-white transition-colors">
             Privacy Policy
           </a>
           <a href="#" className="hover:text-white transition-colors">

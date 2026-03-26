@@ -114,3 +114,4 @@
 - [x] Add Reading Theme selector UI to Settings page
 - [x] Add Reading Theme selection step to the end of the onboarding flow
 - [x] Feature Reading Theme on the For Parents & Carers page as a key selling point
+- [x] Create Privacy Policy page at /privacy and link from footer and cookie banner
