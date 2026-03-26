@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { trpc } from '@/lib/trpc';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Lock, RefreshCw, Download, LogOut, ShieldCheck } from 'lucide-react';
+import { Lock, RefreshCw, Download, LogOut, ShieldCheck, ShieldAlert } from 'lucide-react';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#0088FE', '#00C49F'];
 
@@ -9,6 +9,27 @@ export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
+  // lockedUntil holds the timestamp (ms) until which the IP is locked out.
+  const [lockedUntil, setLockedUntil] = useState<number | null>(null);
+  const [secondsLeft, setSecondsLeft] = useState(0);
+
+  // Countdown timer: ticks every second while locked out.
+  useEffect(() => {
+    if (lockedUntil === null) return;
+    const tick = () => {
+      const remaining = Math.ceil((lockedUntil - Date.now()) / 1000);
+      if (remaining <= 0) {
+        setLockedUntil(null);
+        setSecondsLeft(0);
+        setLoginError('');
+      } else {
+        setSecondsLeft(remaining);
+      }
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [lockedUntil]);
 
   // Server-side login: password is sent to the server and compared against
   // the ADMIN_PASSWORD environment variable — never exposed in the bundle.
@@ -17,9 +38,20 @@ export default function AdminDashboard() {
       setIsAuthenticated(true);
       setPassword('');
       setLoginError('');
+      setLockedUntil(null);
     },
     onError: (err) => {
-      setLoginError(err.message === 'Incorrect password.' ? 'Incorrect password — please try again.' : 'Login failed. Please try again.');
+      // Detect lockout: server returns TOO_MANY_REQUESTS with seconds in the message.
+      const tooMany = err.message.startsWith('Too many failed attempts');
+      if (tooMany) {
+        // Parse "Try again in X seconds." from the message.
+        const match = err.message.match(/(\d+)\s*second/);
+        const secs = match ? parseInt(match[1], 10) : 15 * 60;
+        setLockedUntil(Date.now() + secs * 1000);
+        setLoginError('');
+      } else {
+        setLoginError(err.message || 'Login failed. Please try again.');
+      }
     },
   });
 
@@ -35,10 +67,19 @@ export default function AdminDashboard() {
     timestamp: row.createdAt.toISOString(),
   }));
 
+  const isLocked = lockedUntil !== null && secondsLeft > 0;
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLocked) return;
     setLoginError('');
     loginMutation.mutate({ password });
+  };
+
+  const formatCountdown = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return m > 0 ? `${m}m ${s}s` : `${s}s`;
   };
 
   const processData = (key: string) => {
@@ -78,33 +119,48 @@ export default function AdminDashboard() {
       <div className="min-h-screen bg-[#3B4A6B] flex items-center justify-center p-4">
         <div className="bg-white/10 backdrop-blur-lg p-8 rounded-3xl border border-white/10 w-full max-w-md">
           <div className="flex justify-center mb-6">
-            <div className="w-16 h-16 bg-indigo-500/20 rounded-full flex items-center justify-center text-indigo-300">
-              <Lock size={32} />
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
+              isLocked ? 'bg-red-500/20 text-red-300' : 'bg-indigo-500/20 text-indigo-300'
+            }`}>
+              {isLocked ? <ShieldAlert size={32} /> : <Lock size={32} />}
             </div>
           </div>
           <h2 className="text-2xl font-serif text-white text-center mb-2">Admin Access</h2>
-          <p className="text-indigo-300 text-sm text-center mb-6">Password is verified server-side.</p>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setLoginError(''); }}
-              placeholder="Enter admin password"
-              className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-400"
-              disabled={loginMutation.isPending}
-              autoFocus
-            />
-            {loginError && (
-              <p className="text-red-300 text-sm text-center">{loginError}</p>
-            )}
-            <button
-              type="submit"
-              disabled={loginMutation.isPending || !password}
-              className="w-full bg-white text-[#3B4A6B] font-semibold py-3 rounded-xl hover:bg-indigo-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {loginMutation.isPending ? 'Verifying…' : <><ShieldCheck size={18} /> Login</>}
-            </button>
-          </form>
+
+          {isLocked ? (
+            <div className="text-center space-y-3">
+              <p className="text-red-300 text-sm">Too many failed attempts. This IP is locked out.</p>
+              <div className="bg-red-500/10 border border-red-400/20 rounded-xl px-4 py-3">
+                <p className="text-red-200 text-xs uppercase tracking-widest mb-1">Try again in</p>
+                <p className="text-red-100 text-3xl font-mono font-bold">{formatCountdown(secondsLeft)}</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <p className="text-indigo-300 text-sm text-center mb-6">Password is verified server-side.</p>
+              <form onSubmit={handleLogin} className="space-y-4">
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => { setPassword(e.target.value); setLoginError(''); }}
+                  placeholder="Enter admin password"
+                  className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-400"
+                  disabled={loginMutation.isPending}
+                  autoFocus
+                />
+                {loginError && (
+                  <p className="text-red-300 text-sm text-center">{loginError}</p>
+                )}
+                <button
+                  type="submit"
+                  disabled={loginMutation.isPending || !password}
+                  className="w-full bg-white text-[#3B4A6B] font-semibold py-3 rounded-xl hover:bg-indigo-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {loginMutation.isPending ? 'Verifying…' : <><ShieldCheck size={18} /> Login</>}
+                </button>
+              </form>
+            </>
+          )}
         </div>
       </div>
     );

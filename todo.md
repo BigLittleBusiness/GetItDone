@@ -121,3 +121,4 @@
 - [x] Wire up bottom CTA email form on homepage to save emails to the database
 - [x] Fire owner notification (Manus built-in) on every new waitlist signup
 - [x] Strengthen admin login: replace hardcoded password with server-side secret
+- [x] Rate-limit admin login: lock out IP after 5 incorrect attempts

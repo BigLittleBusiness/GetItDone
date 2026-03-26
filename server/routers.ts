@@ -11,6 +11,7 @@ import { runDueDateReminderJob } from "./dueDateReminder";
 import { transcribeAudio } from "./_core/voiceTranscription";
 import { storagePut } from "./storage";
 import { notifyOwner } from "./_core/notification";
+import { recordFailedAttempt, clearAttempts, isLockedOut, MAX_ATTEMPTS, LOCKOUT_MS } from "./adminRateLimiter";
 import {
   createSurveyResponse,
   createTask,
@@ -352,8 +353,24 @@ export const appRouter = router({
     // The password is read from ENV.adminPassword (never exposed to the browser).
     login: publicProcedure
       .input(z.object({ password: z.string().min(1) }))
-      .mutation(({ input }) => {
-        // Read at call time (not from cached ENV) so tests can stub process.env
+      .mutation(({ input, ctx }) => {
+        // Derive the client IP from the request (falls back to 'unknown').
+        const ip: string =
+          (ctx.req.headers['x-forwarded-for'] as string | undefined)?.split(',')[0]?.trim() ??
+          (ctx.req as unknown as { ip?: string }).ip ??
+          'unknown';
+
+        // Reject immediately if the IP is already locked out.
+        const lockCheck = isLockedOut(ip);
+        if (lockCheck.locked) {
+          const retryAfterSec = Math.ceil((lockCheck.lockedUntil! - Date.now()) / 1000);
+          throw new TRPCError({
+            code: 'TOO_MANY_REQUESTS',
+            message: `Too many failed attempts. Try again in ${retryAfterSec} seconds.`,
+          });
+        }
+
+        // Read at call time (not from cached ENV) so tests can stub process.env.
         const adminPassword = process.env.ADMIN_PASSWORD ?? '';
         if (!adminPassword) {
           throw new TRPCError({
@@ -361,16 +378,24 @@ export const appRouter = router({
             message: 'Admin password is not configured.',
           });
         }
-        // Constant-time comparison to prevent timing attacks
+
+        // Constant-time comparison to prevent timing attacks.
         const expected = adminPassword;
         const provided = input.password;
-        if (provided.length !== expected.length ||
-            !provided.split('').every((c, i) => c === expected[i])) {
-          throw new TRPCError({
-            code: 'UNAUTHORIZED',
-            message: 'Incorrect password.',
-          });
+        const isCorrect =
+          provided.length === expected.length &&
+          provided.split('').every((c, i) => c === expected[i]);
+
+        if (!isCorrect) {
+          const result = recordFailedAttempt(ip);
+          const message = result.allowed
+            ? `Incorrect password. ${result.attemptsLeft} attempt${result.attemptsLeft === 1 ? '' : 's'} remaining before lockout.`
+            : `Too many failed attempts. Try again in ${Math.ceil(LOCKOUT_MS / 1000 / 60)} minutes.`;
+          throw new TRPCError({ code: 'UNAUTHORIZED', message });
         }
+
+        // Success — clear any previous failed attempts for this IP.
+        clearAttempts(ip);
         return { success: true };
       }),
 
