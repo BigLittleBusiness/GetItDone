@@ -123,3 +123,4 @@
 - [x] Strengthen admin login: replace hardcoded password with server-side secret
 - [x] Rate-limit admin login: lock out IP after 5 incorrect attempts
 - [x] Add task editing: edit dialog for title, notes, priority, energy level, and due date
+- [x] Fill in Privacy Policy and Terms of Service with legal entity details

@@ -4,7 +4,6 @@
  * Plain-language privacy policy covering GDPR (EU), Australian Privacy Act 1988,
  * and general best-practice disclosure requirements.
  *
- * Fields marked [PLACEHOLDER] must be completed before public launch.
  */
 
 import { Helmet } from "react-helmet-async";
@@ -24,10 +23,9 @@ const sections = [
     title: "Who we are",
     content: `Get It Done! is a neurodivergent-friendly productivity application. The data controller responsible for your personal information is:
 
-[PLACEHOLDER: Legal entity name]
-[PLACEHOLDER: Registered address]
-[PLACEHOLDER: Country]
-Contact: [PLACEHOLDER: privacy@yourdomain.com]
+Big Little Business Pty Ltd
+Rothschild Street, Glen Huntly, Victoria, 3163, Australia
+Contact: admin@biglittlebusiness.com
 
 If you have any questions about this policy or how your data is handled, please contact us at the email address above.`,
   },
@@ -71,11 +69,11 @@ We do not use your data for advertising, profiling, or automated decision-making
     title: "Who we share your data with",
     content: `We do not sell your personal data. We share it only with the following categories of service providers, under strict data processing agreements:
 
-Hosting and infrastructure: Our application and database are hosted on cloud infrastructure. [PLACEHOLDER: Provider name, e.g. "Manus Cloud Platform"] processes data on our behalf.
+Hosting and infrastructure: Our application and database are hosted on cloud infrastructure. Manus Cloud Platform processes data on our behalf.
 
 Authentication: Sign-in is handled via Manus OAuth. Your authentication credentials are managed by Manus and are not accessible to us.
 
-Analytics: We use [PLACEHOLDER: Analytics provider, e.g. "a self-hosted analytics tool"] to collect anonymised usage data. No personally identifiable information is shared with this provider.
+Analytics: We use a self-hosted analytics tool to collect anonymised usage data. No personally identifiable information is shared with this provider.
 
 We do not share your data with any other third parties unless required to do so by law.`,
   },
@@ -109,7 +107,7 @@ Right to object or restrict processing: You can ask us to stop or limit how we u
 
 Right to withdraw consent: Where processing is based on consent (such as marketing emails), you can withdraw it at any time.
 
-To exercise any of these rights, please contact us at [PLACEHOLDER: privacy@yourdomain.com]. We will respond within 30 days. If you are located in the EU/EEA and are unsatisfied with our response, you have the right to lodge a complaint with your local supervisory authority.`,
+To exercise any of these rights, please contact us at admin@biglittlebusiness.com. We will respond within 30 days. If you are located in the EU/EEA and are unsatisfied with our response, you have the right to lodge a complaint with your local supervisory authority.`,
   },
   {
     id: "cookies",
@@ -133,7 +131,7 @@ We do not use advertising cookies, tracking pixels, or third-party cookies for a
     title: "Security",
     content: `We take reasonable technical and organisational measures to protect your data, including encrypted connections (HTTPS), secure session management, and access controls limiting who can view production data.
 
-No method of transmission over the internet is completely secure. If you believe your account has been compromised, please contact us immediately at [PLACEHOLDER: privacy@yourdomain.com].`,
+No method of transmission over the internet is completely secure. If you believe your account has been compromised, please contact us immediately at admin@biglittlebusiness.com.`,
   },
   {
     id: "children",
@@ -157,8 +155,8 @@ Continued use of the service after changes take effect constitutes acceptance of
     title: "Contact us",
     content: `If you have any questions, concerns, or requests regarding this privacy policy or your personal data, please contact us:
 
-Email: [PLACEHOLDER: privacy@yourdomain.com]
-[PLACEHOLDER: Postal address if required by your jurisdiction]
+Email: admin@biglittlebusiness.com
+Big Little Business Pty Ltd, Rothschild Street, Glen Huntly, Victoria, 3163, Australia
 
 We aim to respond to all privacy-related enquiries within 30 days.`,
   },
@@ -216,10 +214,10 @@ export default function Privacy() {
 
       {/* Notice banner */}
       <section className="px-6 pb-8">
-        <div className="max-w-3xl mx-auto bg-amber-500/10 border border-amber-400/20 rounded-2xl p-5 flex gap-4 items-start">
-          <FileText size={20} className="text-amber-300 shrink-0 mt-0.5" />
-          <p className="text-sm text-amber-100 leading-relaxed">
-            <strong className="text-amber-200">Before publishing:</strong> Fields marked [PLACEHOLDER] must be completed with your actual legal entity name, registered address, and contact email address. This policy is written in good faith based on the app's actual data practices, but it does not constitute legal advice. Consider having it reviewed by a qualified privacy lawyer before launch.
+        <div className="max-w-3xl mx-auto bg-indigo-500/10 border border-indigo-400/20 rounded-2xl p-5 flex gap-4 items-start">
+          <FileText size={20} className="text-indigo-300 shrink-0 mt-0.5" />
+          <p className="text-sm text-indigo-100 leading-relaxed">
+            This policy is written in good faith based on the app's actual data practices, but it does not constitute legal advice. Consider having it reviewed by a qualified privacy lawyer.
           </p>
         </div>
       </section>

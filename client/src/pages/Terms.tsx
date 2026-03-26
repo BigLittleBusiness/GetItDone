@@ -4,7 +4,6 @@
  * Plain-language terms covering acceptable use, intellectual property,
  * disclaimers, and governing law.
  *
- * Fields marked [PLACEHOLDER] must be completed before public launch.
  */
 
 import { Helmet } from "react-helmet-async";
@@ -34,7 +33,7 @@ If you are using the Service on behalf of an organisation, you represent and war
     title: "Description of the Service",
     content: `Get It Done! is a neurodivergent-friendly productivity application designed to help people with ADHD, autism, dyslexia, and related conditions manage tasks, build routines, and reduce cognitive load.
 
-The Service is operated by [PLACEHOLDER: Legal entity name], registered at [PLACEHOLDER: Registered address] ("we", "us", or "our").
+The Service is operated by Big Little Business Pty Ltd, registered at Rothschild Street, Glen Huntly, Victoria, 3163, Australia ("we", "us", or "our").
 
 We reserve the right to modify, suspend, or discontinue the Service (or any part of it) at any time with reasonable notice. We will not be liable to you or any third party for any modification, suspension, or discontinuation of the Service.`,
   },
@@ -83,11 +82,11 @@ We may delete Your Content if it violates these Terms, applicable law, or our co
     id: "intellectual-property",
     icon: Scale,
     title: "Intellectual property",
-    content: `The Service and its original content (excluding Your Content), features, and functionality are and will remain the exclusive property of [PLACEHOLDER: Legal entity name] and its licensors.
+    content: `The Service and its original content (excluding Your Content), features, and functionality are and will remain the exclusive property of Big Little Business Pty Ltd and its licensors.
 
 Our trademarks, service marks, logos, and trade names — including "Get It Done!" — may not be used in connection with any product or service without our prior written consent.
 
-The Service is protected by copyright, trademark, and other laws of [PLACEHOLDER: Country] and international conventions. Nothing in these Terms grants you any right to use our intellectual property for any purpose other than using the Service as intended.`,
+The Service is protected by copyright, trademark, and other laws of Australia and international conventions. Nothing in these Terms grants you any right to use our intellectual property for any purpose other than using the Service as intended.`,
   },
   {
     id: "disclaimers",
@@ -105,7 +104,7 @@ To the fullest extent permitted by applicable law, we shall not be liable for an
     id: "termination",
     icon: Ban,
     title: "Termination",
-    content: `You may stop using the Service and close your account at any time by contacting us at [PLACEHOLDER: support@yourdomain.com]. Upon account closure, we will delete your personal data in accordance with our Privacy Policy.
+    content: `You may stop using the Service and close your account at any time by contacting us at admin@biglittlebusiness.com. Upon account closure, we will delete your personal data in accordance with our Privacy Policy.
 
 We may terminate or suspend your access to the Service immediately, without prior notice or liability, if you breach these Terms or if we are required to do so by law.
 
@@ -125,9 +124,9 @@ We encourage you to review these Terms periodically to stay informed of any upda
     id: "governing-law",
     icon: Scale,
     title: "Governing law and disputes",
-    content: `These Terms shall be governed by and construed in accordance with the laws of [PLACEHOLDER: Country/State], without regard to its conflict of law provisions.
+    content: `These Terms shall be governed by and construed in accordance with the laws of Victoria, Australia, without regard to its conflict of law provisions.
 
-Any dispute arising out of or relating to these Terms or the Service shall first be attempted to be resolved through good-faith negotiation. If a resolution cannot be reached within 30 days, the dispute shall be submitted to binding arbitration or the courts of [PLACEHOLDER: Jurisdiction], as applicable under local law.
+Any dispute arising out of or relating to these Terms or the Service shall first be attempted to be resolved through good-faith negotiation. If a resolution cannot be reached within 30 days, the dispute shall be submitted to the courts of Victoria, Australia, as applicable under local law.
 
 If any provision of these Terms is found to be unenforceable, the remaining provisions will continue in full force and effect.`,
   },
@@ -137,8 +136,8 @@ If any provision of these Terms is found to be unenforceable, the remaining prov
     title: "Contact us",
     content: `If you have any questions about these Terms, please contact us:
 
-Email: [PLACEHOLDER: legal@yourdomain.com]
-Address: [PLACEHOLDER: Legal entity name], [PLACEHOLDER: Registered address]
+Email: admin@biglittlebusiness.com
+Address: Big Little Business Pty Ltd, Rothschild Street, Glen Huntly, Victoria, 3163, Australia
 
 We aim to respond to all enquiries within 5 business days.`,
   },
@@ -184,20 +183,14 @@ export default function Terms() {
         </div>
       </section>
 
-      {/* Placeholder notice */}
+      {/* Legal notice */}
       <section className="pb-8 px-6">
         <div className="max-w-3xl mx-auto">
-          <div className="bg-amber-500/15 border border-amber-400/30 rounded-2xl p-5 flex gap-4">
-            <AlertCircle className="text-amber-400 shrink-0 mt-0.5" size={20} />
-            <div>
-              <p className="font-semibold text-amber-300 mb-1">Action required before publishing</p>
-              <p className="text-sm text-amber-200/80">
-                Fields marked <span className="font-mono bg-amber-400/20 px-1 rounded">[PLACEHOLDER]</span> must
-                be completed with your legal entity name, registered address, jurisdiction, and contact
-                email addresses. Consider having the finalised document reviewed by a qualified legal
-                professional before public launch.
-              </p>
-            </div>
+          <div className="bg-indigo-500/10 border border-indigo-400/20 rounded-2xl p-5 flex gap-4">
+            <AlertCircle className="text-indigo-300 shrink-0 mt-0.5" size={20} />
+            <p className="text-sm text-indigo-100 leading-relaxed">
+              These Terms are written in good faith but do not constitute legal advice. Consider having them reviewed by a qualified legal professional.
+            </p>
           </div>
         </div>
       </section>
