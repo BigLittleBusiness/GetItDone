@@ -122,3 +122,4 @@
 - [x] Fire owner notification (Manus built-in) on every new waitlist signup
 - [x] Strengthen admin login: replace hardcoded password with server-side secret
 - [x] Rate-limit admin login: lock out IP after 5 incorrect attempts
+- [x] Add task editing: edit dialog for title, notes, priority, energy level, and due date

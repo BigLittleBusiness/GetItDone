@@ -322,6 +322,75 @@ export default function Dashboard() {
     onSettled: () => utils.tasks.list.invalidate(),
   });
 
+  // Edit task state
+  const [editTitle, setEditTitle] = useState("");
+  const [editNotes, setEditNotes] = useState("");
+  const [editPriority, setEditPriority] = useState<Priority>("medium");
+  const [editEnergy, setEditEnergy] = useState<EnergyRequired>("medium");
+  const [editDueDate, setEditDueDate] = useState("");
+
+  const openEditDialog = (task: Task) => {
+    setEditingTask(task);
+    setEditTitle(task.title);
+    setEditNotes(task.notes ?? "");
+    setEditPriority(task.priority);
+    setEditEnergy(task.energyRequired);
+    setEditDueDate(task.dueDate ?? "");
+  };
+
+  const closeEditDialog = () => {
+    setEditingTask(null);
+    setEditTitle("");
+    setEditNotes("");
+    setEditPriority("medium");
+    setEditEnergy("medium");
+    setEditDueDate("");
+  };
+
+  const editTask = trpc.tasks.update.useMutation({
+    onMutate: async (input) => {
+      await utils.tasks.list.cancel();
+      const prev = utils.tasks.list.getData({ roleContext: activeRole });
+      utils.tasks.list.setData({ roleContext: activeRole }, (old) =>
+        old?.map((t) =>
+          t.id === input.id
+            ? {
+                ...t,
+                title: input.title ?? t.title,
+                notes: input.notes ?? t.notes,
+                priority: (input.priority ?? t.priority) as Priority,
+                energyRequired: (input.energyRequired ?? t.energyRequired) as EnergyRequired,
+                dueDate: input.dueDate !== undefined ? (input.dueDate || null) : t.dueDate,
+                xpReward: input.priority === "high" ? 20 : input.priority === "medium" ? 10 : input.priority === "low" ? 5 : t.xpReward,
+              }
+            : t
+        )
+      );
+      return { prev };
+    },
+    onSuccess: () => {
+      utils.tasks.list.invalidate();
+      closeEditDialog();
+      toast.success("Task updated!");
+    },
+    onError: (_, __, ctx) => {
+      if (ctx?.prev) utils.tasks.list.setData({ roleContext: activeRole }, ctx.prev);
+      toast.error("Failed to update task");
+    },
+  });
+
+  const handleEditTask = () => {
+    if (!editingTask || !editTitle.trim()) return;
+    editTask.mutate({
+      id: editingTask.id,
+      title: editTitle.trim(),
+      notes: editNotes || undefined,
+      priority: editPriority,
+      energyRequired: editEnergy,
+      dueDate: editDueDate || "",
+    });
+  };
+
   const updateDueDate = trpc.tasks.update.useMutation({
     onMutate: async ({ id, dueDate }) => {
       await utils.tasks.list.cancel();
@@ -802,6 +871,15 @@ export default function Dashboard() {
                               )}
                             </button>
                           )}
+                          {!isDone && (
+                            <button
+                              onClick={() => openEditDialog(task)}
+                              title="Edit task"
+                              className="p-1.5 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                            >
+                              <Pencil size={14} />
+                            </button>
+                          )}
                           <button
                             onClick={() => deleteTask.mutate({ id: task.id })}
                             className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
@@ -1023,6 +1101,88 @@ export default function Dashboard() {
             <Button onClick={handleAddTask} disabled={!newTitle.trim() || createTask.isPending} className="gap-2">
               {createTask.isPending ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
               Add Task
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Task Dialog */}
+      <Dialog open={!!editingTask} onOpenChange={(open) => { if (!open) closeEditDialog(); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Pencil size={18} className="text-primary" />
+              Edit Task
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Input
+                placeholder="Task title"
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleEditTask()}
+                className="text-base"
+                autoFocus
+              />
+            </div>
+            <div>
+              <Textarea
+                placeholder="Notes (optional)"
+                value={editNotes}
+                onChange={(e) => setEditNotes(e.target.value)}
+                rows={2}
+                className="resize-none"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Priority</label>
+                <Select value={editPriority} onValueChange={(v) => setEditPriority(v as Priority)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Energy needed</label>
+                <Select value={editEnergy} onValueChange={(v) => setEditEnergy(v as EnergyRequired)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">🌿 Low</SelectItem>
+                    <SelectItem value="medium">🔋 Medium</SelectItem>
+                    <SelectItem value="high">⚡ High</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Due date (optional)</label>
+              <Input
+                type="date"
+                value={editDueDate}
+                onChange={(e) => setEditDueDate(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={closeEditDialog}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleEditTask}
+              disabled={!editTitle.trim() || editTask.isPending}
+              className="gap-2"
+            >
+              {editTask.isPending ? <Loader2 size={14} className="animate-spin" /> : <Pencil size={14} />}
+              Save Changes
             </Button>
           </DialogFooter>
         </DialogContent>
