@@ -12,6 +12,7 @@ import { transcribeAudio } from "./_core/voiceTranscription";
 import { storagePut } from "./storage";
 import { notifyOwner } from "./_core/notification";
 import { recordFailedAttempt, clearAttempts, isLockedOut, MAX_ATTEMPTS, LOCKOUT_MS } from "./adminRateLimiter";
+import { buildNextTaskInstance } from "./recurrence";
 import {
   createSurveyResponse,
   createTask,
@@ -131,6 +132,8 @@ export const appRouter = router({
         dueDate: z.string().optional(),
         dueTime: z.string().optional(),
         steps: z.array(z.object({ id: z.string(), text: z.string(), done: z.boolean() })).optional(),
+        recurrenceType: z.enum(["daily", "weekly", "monthly", "days_of_week", "after_completion"]).optional(),
+        recurrenceDays: z.string().optional(), // comma-separated day numbers 0-6
       }))
       .mutation(async ({ ctx, input }) => {
         const task = await createTask({
@@ -144,6 +147,8 @@ export const appRouter = router({
           dueTime: input.dueTime,
           steps: input.steps ?? [],
           xpReward: input.priority === "high" ? 20 : input.priority === "medium" ? 10 : 5,
+          recurrenceType: input.recurrenceType,
+          recurrenceDays: input.recurrenceDays,
         });
         return task;
       }),
@@ -160,6 +165,8 @@ export const appRouter = router({
         dueDate: z.string().optional(),
         dueTime: z.string().optional(),
         steps: z.array(z.object({ id: z.string(), text: z.string(), done: z.boolean() })).optional(),
+        recurrenceType: z.enum(["daily", "weekly", "monthly", "days_of_week", "after_completion"]).optional(),
+        recurrenceDays: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const { id, ...data } = input;
@@ -213,7 +220,38 @@ export const appRouter = router({
             }
           }
         }
-        return { success: true, xpGained: xpGain, newAchievements };
+        // ── Recurring task: spawn the next instance ──────────────────────────
+        let spawnedRecurring = false;
+        if (task && task.recurrenceType) {
+          // Check there is not already a pending (todo) instance of this recurring task
+          const pendingInstance = allTasks.find(
+            t =>
+              t.id !== task.id &&
+              t.parentTaskId === task.id &&
+              (t.status === "todo" || t.status === "in_progress")
+          );
+          if (!pendingInstance) {
+            const nextData = buildNextTaskInstance(
+              {
+                userId: ctx.user.id,
+                title: task.title,
+                notes: task.notes,
+                roleContext: task.roleContext,
+                priority: task.priority,
+                energyRequired: task.energyRequired,
+                dueTime: task.dueTime,
+                xpReward: task.xpReward,
+                recurrenceType: task.recurrenceType,
+                recurrenceDays: task.recurrenceDays,
+                id: task.id,
+              },
+              new Date()
+            );
+            await createTask(nextData);
+            spawnedRecurring = true;
+          }
+        }
+        return { success: true, xpGained: xpGain, newAchievements, spawnedRecurring };
       }),
 
     delete: protectedProcedure

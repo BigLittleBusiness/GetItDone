@@ -1,0 +1,9 @@
+{
+  "query": "INSERT IGNORE INTO `__drizzle_migrations` (hash, created_at) SELECT '0007_worthless_blizzard', UNIX_TIMESTAMP() * 1000 WHERE NOT EXISTS (SELECT 1 FROM `__drizzle_migrations` WHERE hash = '0007_worthless_blizzard');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user ssbex3qTpoaXVqM.8e073d5188c5 --database maeA52JBNKsvSZamfPFaVJ --execute INSERT IGNORE INTO `__drizzle_migrations` (hash, created_at) SELECT '0007_worthless_blizzard', UNIX_TIMESTAMP() * 1000 WHERE NOT EXISTS (SELECT 1 FROM `__drizzle_migrations` WHERE hash = '0007_worthless_blizzard');",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1538
+}

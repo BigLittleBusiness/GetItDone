@@ -124,3 +124,5 @@
 - [x] Rate-limit admin login: lock out IP after 5 incorrect attempts
 - [x] Add task editing: edit dialog for title, notes, priority, energy level, and due date
 - [x] Fill in Privacy Policy and Terms of Service with legal entity details
+- [ ] Implement per-user email reminders via Resend (streak + due-date)
+- [x] Add recurring tasks with ADHD-first design (after-completion trigger, roll-forward, daily/weekly/monthly/specific days)

@@ -63,6 +63,13 @@ export const tasks = mysqlTable("tasks", {
   dueTime: varchar("dueTime", { length: 5 }),  // HH:MM
   // Breakdown: sub-steps stored as JSON array of {id, text, done}
   steps: json("steps").$type<{ id: string; text: string; done: boolean }[]>(),
+  // Recurrence
+  // recurrenceType: null = one-off, 'daily' | 'weekly' | 'monthly' | 'days_of_week' | 'after_completion'
+  recurrenceType: mysqlEnum("recurrenceType", ["daily", "weekly", "monthly", "days_of_week", "after_completion"]),
+  // For days_of_week: comma-separated day numbers 0=Sun..6=Sat, e.g. "1,3,5"
+  recurrenceDays: varchar("recurrenceDays", { length: 13 }),
+  // ID of the parent recurring task template (null on the template itself)
+  parentTaskId: int("parentTaskId"),
   // Gamification
   xpReward: int("xpReward").default(10).notNull(),
   completedAt: timestamp("completedAt"),

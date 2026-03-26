@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE `tasks` ADD COLUMN IF NOT EXISTS `recurrenceType` enum('daily','weekly','monthly','days_of_week','after_completion');\nALTER TABLE `tasks` ADD COLUMN IF NOT EXISTS `recurrenceDays` varchar(13);\nALTER TABLE `tasks` ADD COLUMN IF NOT EXISTS `parentTaskId` int;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user ssbex3qTpoaXVqM.8e073d5188c5 --database maeA52JBNKsvSZamfPFaVJ --execute ALTER TABLE `tasks` ADD COLUMN IF NOT EXISTS `recurrenceType` enum('daily','weekly','monthly','days_of_week','after_completion');\nALTER TABLE `tasks` ADD COLUMN IF NOT EXISTS `recurrenceDays` varchar(13);\nALTER TABLE `tasks` ADD COLUMN IF NOT EXISTS `parentTaskId` int;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2653
+}

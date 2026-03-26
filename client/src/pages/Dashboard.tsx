@@ -43,6 +43,7 @@ import {
   MicOff,
   CalendarClock,
   AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import { getLoginUrl } from "@/const";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
@@ -63,6 +64,9 @@ interface Task {
   dueDate?: string | null;
   xpReward: number;
   steps?: { id: string; text: string; done: boolean }[] | null;
+  recurrenceType?: string | null;
+  recurrenceDays?: string | null;
+  parentTaskId?: number | null;
 }
 
 const ROLE_CONFIG: Record<Role, { icon: React.ElementType; label: string; color: string; bg: string; tagline: string }> = {
@@ -202,6 +206,8 @@ export default function Dashboard() {
   const [newPriority, setNewPriority] = useState<Priority>("medium");
   const [newEnergy, setNewEnergy] = useState<EnergyRequired>("medium");
   const [newDueDate, setNewDueDate] = useState("");
+  const [newRecurrenceType, setNewRecurrenceType] = useState<string>("");
+  const [newRecurrenceDays, setNewRecurrenceDays] = useState<string[]>([]);  // 0=Sun..6=Sat
 
   const utils = trpc.useUtils();
 
@@ -328,14 +334,18 @@ export default function Dashboard() {
   const [editPriority, setEditPriority] = useState<Priority>("medium");
   const [editEnergy, setEditEnergy] = useState<EnergyRequired>("medium");
   const [editDueDate, setEditDueDate] = useState("");
+  const [editRecurrenceType, setEditRecurrenceType] = useState<string>("");
+  const [editRecurrenceDays, setEditRecurrenceDays] = useState<string[]>([]);
 
-  const openEditDialog = (task: Task) => {
+  const openEditDialog = (task: Task & { recurrenceType?: string | null; recurrenceDays?: string | null }) => {
     setEditingTask(task);
     setEditTitle(task.title);
     setEditNotes(task.notes ?? "");
     setEditPriority(task.priority);
     setEditEnergy(task.energyRequired);
     setEditDueDate(task.dueDate ?? "");
+    setEditRecurrenceType(task.recurrenceType ?? "");
+    setEditRecurrenceDays(task.recurrenceDays ? task.recurrenceDays.split(",") : []);
   };
 
   const closeEditDialog = () => {
@@ -345,6 +355,8 @@ export default function Dashboard() {
     setEditPriority("medium");
     setEditEnergy("medium");
     setEditDueDate("");
+    setEditRecurrenceType("");
+    setEditRecurrenceDays([]);
   };
 
   const editTask = trpc.tasks.update.useMutation({
@@ -388,6 +400,10 @@ export default function Dashboard() {
       priority: editPriority,
       energyRequired: editEnergy,
       dueDate: editDueDate || "",
+      recurrenceType: editRecurrenceType as "daily" | "weekly" | "monthly" | "days_of_week" | "after_completion" | undefined || undefined,
+      recurrenceDays: editRecurrenceType === "days_of_week" && editRecurrenceDays.length > 0
+        ? editRecurrenceDays.join(",")
+        : undefined,
     });
   };
 
@@ -426,6 +442,8 @@ export default function Dashboard() {
     setNewPriority("medium");
     setNewEnergy("medium");
     setNewDueDate("");
+    setNewRecurrenceType("");
+    setNewRecurrenceDays([]);
   };
 
   const handleAddTask = () => {
@@ -437,6 +455,10 @@ export default function Dashboard() {
       priority: newPriority,
       energyRequired: newEnergy,
       dueDate: newDueDate || undefined,
+      recurrenceType: newRecurrenceType as "daily" | "weekly" | "monthly" | "days_of_week" | "after_completion" | undefined || undefined,
+      recurrenceDays: newRecurrenceType === "days_of_week" && newRecurrenceDays.length > 0
+        ? newRecurrenceDays.join(",")
+        : undefined,
     });
   };
 
@@ -795,6 +817,17 @@ export default function Dashboard() {
                             <span className="text-xs text-amber-600 font-medium ml-auto">
                               +{task.xpReward} XP
                             </span>
+                            {task.recurrenceType && !isDone && (
+                              <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border font-medium text-violet-600 bg-violet-50 border-violet-200 dark:bg-violet-900/30 dark:text-violet-400 dark:border-violet-800">
+                                <RefreshCw size={10} />
+                                {task.recurrenceType === "daily" ? "Daily"
+                                  : task.recurrenceType === "weekly" ? "Weekly"
+                                  : task.recurrenceType === "monthly" ? "Monthly"
+                                  : task.recurrenceType === "after_completion" ? "Repeats after done"
+                                  : task.recurrenceType === "days_of_week" ? "Custom days"
+                                  : "Repeats"}
+                              </span>
+                            )}
                           </div>
                         </div>
 
@@ -1093,6 +1126,53 @@ export default function Dashboard() {
                 onChange={(e) => setNewDueDate(e.target.value)}
               />
             </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Repeat</label>
+              <Select value={newRecurrenceType || "none"} onValueChange={(v) => { setNewRecurrenceType(v === "none" ? "" : v); setNewRecurrenceDays([]); }}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Does not repeat" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Does not repeat</SelectItem>
+                  <SelectItem value="daily">Every day</SelectItem>
+                  <SelectItem value="days_of_week">Specific days of the week</SelectItem>
+                  <SelectItem value="weekly">Every week</SelectItem>
+                  <SelectItem value="monthly">Every month</SelectItem>
+                  <SelectItem value="after_completion">After I finish this one</SelectItem>
+                </SelectContent>
+              </Select>
+              {newRecurrenceType === "days_of_week" && (
+                <div className="flex gap-1.5 mt-2 flex-wrap">
+                  {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((label, i) => {
+                    const dayStr = String(i);
+                    const selected = newRecurrenceDays.includes(dayStr);
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() =>
+                          setNewRecurrenceDays((prev) =>
+                            selected ? prev.filter((d) => d !== dayStr) : [...prev, dayStr]
+                          )
+                        }
+                        className={`w-9 h-9 rounded-full text-xs font-semibold border transition-all ${
+                          selected
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "border-border text-muted-foreground hover:border-primary/40"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+              {newRecurrenceType === "after_completion" && (
+                <p className="text-xs text-muted-foreground mt-1.5">
+                  A new copy appears the day after you complete this one — no pile-up.
+                </p>
+              )}
+            </div>
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => { setShowAddTask(false); resetForm(); }}>
@@ -1170,6 +1250,53 @@ export default function Dashboard() {
                 value={editDueDate}
                 onChange={(e) => setEditDueDate(e.target.value)}
               />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Repeat</label>
+              <Select value={editRecurrenceType || "none"} onValueChange={(v) => { setEditRecurrenceType(v === "none" ? "" : v); setEditRecurrenceDays([]); }}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Does not repeat" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Does not repeat</SelectItem>
+                  <SelectItem value="daily">Every day</SelectItem>
+                  <SelectItem value="days_of_week">Specific days of the week</SelectItem>
+                  <SelectItem value="weekly">Every week</SelectItem>
+                  <SelectItem value="monthly">Every month</SelectItem>
+                  <SelectItem value="after_completion">After I finish this one</SelectItem>
+                </SelectContent>
+              </Select>
+              {editRecurrenceType === "days_of_week" && (
+                <div className="flex gap-1.5 mt-2 flex-wrap">
+                  {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((label, i) => {
+                    const dayStr = String(i);
+                    const selected = editRecurrenceDays.includes(dayStr);
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() =>
+                          setEditRecurrenceDays((prev) =>
+                            selected ? prev.filter((d) => d !== dayStr) : [...prev, dayStr]
+                          )
+                        }
+                        className={`w-9 h-9 rounded-full text-xs font-semibold border transition-all ${
+                          selected
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "border-border text-muted-foreground hover:border-primary/40"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+              {editRecurrenceType === "after_completion" && (
+                <p className="text-xs text-muted-foreground mt-1.5">
+                  A new copy appears the day after you complete this one — no pile-up.
+                </p>
+              )}
             </div>
           </div>
           <DialogFooter>
