@@ -117,3 +117,4 @@
 - [x] Create Privacy Policy page at /privacy and link from footer and cookie banner
 - [x] Add Small/Medium/Large text-size toggle to Settings with per-user persistence
 - [x] Add Text Size selection step to the onboarding flow
+- [x] Create Terms of Service page at /terms and link from footer
