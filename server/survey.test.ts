@@ -1,6 +1,13 @@
-import { describe, expect, it } from "vitest";
-import { appRouter } from "./routers";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import type { TrpcContext } from "./_core/context";
+
+// Mock notifyOwner before importing the router so the spy is in place
+vi.mock("./_core/notification", () => ({
+  notifyOwner: vi.fn().mockResolvedValue(true),
+}));
+
+import { appRouter } from "./routers";
+import * as notificationModule from "./_core/notification";
 
 function createTestContext(): TrpcContext {
   const ctx: TrpcContext = {
@@ -14,6 +21,10 @@ function createTestContext(): TrpcContext {
 
   return ctx;
 }
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 describe("survey.submit", () => {
   it("accepts valid survey responses", async () => {
@@ -123,5 +134,44 @@ describe("survey.getAll", () => {
       expect(firstResponse).toHaveProperty("featureFit");
       expect(firstResponse).toHaveProperty("createdAt");
     }
+  });
+});
+
+describe("survey.submit — owner notification", () => {
+  it("calls notifyOwner after a successful submission", async () => {
+    const ctx = createTestContext();
+    const caller = appRouter.createCaller(ctx);
+
+    await caller.survey.submit({
+      email: "notify-test@example.com",
+      roleValidation: "spot-on",
+      painPoint: "starting",
+      featureFit: "cheerleader",
+    });
+
+    // Allow the fire-and-forget promise to settle
+    await new Promise(r => setTimeout(r, 50));
+
+    expect(notificationModule.notifyOwner).toHaveBeenCalledOnce();
+    const call = (notificationModule.notifyOwner as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(call.title).toContain('waitlist signup');
+    expect(call.content).toContain('notify-test@example.com');
+  });
+
+  it("still returns success even when notifyOwner fails", async () => {
+    // Simulate the notification service being unavailable
+    (notificationModule.notifyOwner as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+      new Error('Service unavailable')
+    );
+
+    const ctx = createTestContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.survey.submit({
+      email: "resilience@example.com",
+    });
+
+    // The user's submission must succeed regardless of notification failure
+    expect(result).toEqual({ success: true });
   });
 });

@@ -119,3 +119,4 @@
 - [x] Add Text Size selection step to the onboarding flow
 - [x] Create Terms of Service page at /terms and link from footer
 - [x] Wire up bottom CTA email form on homepage to save emails to the database
+- [x] Fire owner notification (Manus built-in) on every new waitlist signup

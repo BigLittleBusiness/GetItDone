@@ -9,6 +9,7 @@ import { runStreakReminderJob } from "./streakReminder";
 import { runDueDateReminderJob } from "./dueDateReminder";
 import { transcribeAudio } from "./_core/voiceTranscription";
 import { storagePut } from "./storage";
+import { notifyOwner } from "./_core/notification";
 import {
   createSurveyResponse,
   createTask,
@@ -360,6 +361,22 @@ export const appRouter = router({
           featureFit: input.featureFit,
           email: input.email || undefined,
         });
+
+        // Notify the owner of every new waitlist signup.
+        // Fire-and-forget: a notification failure must never block the user's submission.
+        const emailLine = input.email ? `📧 ${input.email}` : 'No email provided';
+        const detailLines = [
+          emailLine,
+          input.roleValidation ? `Role fit: ${input.roleValidation}` : null,
+          input.painPoint     ? `Pain point: ${input.painPoint}`     : null,
+          input.featureFit    ? `Feature fit: ${input.featureFit}`   : null,
+        ].filter(Boolean).join('\n');
+
+        notifyOwner({
+          title: '🎉 New Get It Done! waitlist signup',
+          content: detailLines,
+        }).catch(err => console.warn('[survey.submit] notifyOwner failed:', err));
+
         return { success: true };
       }),
     getAll: publicProcedure.query(async () => getAllSurveyResponses()),
