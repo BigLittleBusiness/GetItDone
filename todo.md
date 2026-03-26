@@ -118,3 +118,4 @@
 - [x] Add Small/Medium/Large text-size toggle to Settings with per-user persistence
 - [x] Add Text Size selection step to the onboarding flow
 - [x] Create Terms of Service page at /terms and link from footer
+- [x] Wire up bottom CTA email form on homepage to save emails to the database

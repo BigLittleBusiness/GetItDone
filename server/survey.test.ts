@@ -81,6 +81,29 @@ describe("survey.submit", () => {
       })
     ).rejects.toThrow();
   });
+
+  it("accepts email-only submission (CTA waitlist form)", async () => {
+    const ctx = createTestContext();
+    const caller = appRouter.createCaller(ctx);
+
+    // The bottom CTA form submits only an email address with no survey answers
+    const result = await caller.survey.submit({
+      email: "waitlist@example.com",
+    });
+
+    expect(result).toEqual({ success: true });
+  });
+
+  it("rejects invalid email format", async () => {
+    const ctx = createTestContext();
+    const caller = appRouter.createCaller(ctx);
+
+    await expect(
+      caller.survey.submit({
+        email: "not-an-email",
+      })
+    ).rejects.toThrow();
+  });
 });
 
 describe("survey.getAll", () => {

@@ -9,6 +9,7 @@ import MarketingFooter from '@/components/MarketingFooter';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { ArrowRight, Brain, Mic, Trophy, ShieldCheck, Sparkles, Zap, Layout, Heart, BookOpen, Users } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { trpc } from '@/lib/trpc';
 
 const OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
 const SITE_URL = 'https://getitdone-maea52jb.manus.space';
@@ -23,6 +24,24 @@ export default function Home() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
+
+  // Bottom CTA waitlist form state
+  const [ctaEmail, setCtaEmail] = useState('');
+  const [ctaStatus, setCtaStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const submitWaitlist = trpc.survey.submit.useMutation();
+
+  const handleCtaSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!ctaEmail.trim()) return;
+    setCtaStatus('loading');
+    try {
+      await submitWaitlist.mutateAsync({ email: ctaEmail.trim() });
+      setCtaStatus('success');
+      setCtaEmail('');
+    } catch {
+      setCtaStatus('error');
+    }
+  };
   
   // Trigger feedback modal after 45 seconds
   useEffect(() => {
@@ -304,16 +323,33 @@ export default function Home() {
             Join the waitlist today and be the first to experience the productivity OS built for you.
           </p>
           
-          <form className="max-w-md mx-auto flex gap-2 p-2 bg-white/5 border border-white/10 rounded-full backdrop-blur-sm">
-            <input 
-              type="email" 
-              placeholder="Enter your email" 
-              className="flex-1 bg-transparent border-none px-6 py-3 text-white placeholder:text-indigo-300 focus:outline-none"
-            />
-            <button className="bg-white text-[#3B4A6B] px-8 py-3 rounded-full font-semibold hover:bg-indigo-50 transition-colors">
-              Join
-            </button>
-          </form>
+          {ctaStatus === 'success' ? (
+            <div className="max-w-md mx-auto py-4 px-6 bg-green-500/20 border border-green-400/30 rounded-full text-green-300 font-medium">
+              You're on the list! We'll be in touch when we launch. 🎉
+            </div>
+          ) : (
+            <form onSubmit={handleCtaSubmit} className="max-w-md mx-auto flex gap-2 p-2 bg-white/5 border border-white/10 rounded-full backdrop-blur-sm">
+              <input
+                type="email"
+                required
+                value={ctaEmail}
+                onChange={e => { setCtaEmail(e.target.value); setCtaStatus('idle'); }}
+                placeholder="Enter your email"
+                className="flex-1 bg-transparent border-none px-6 py-3 text-white placeholder:text-indigo-300 focus:outline-none"
+                disabled={ctaStatus === 'loading'}
+              />
+              <button
+                type="submit"
+                disabled={ctaStatus === 'loading'}
+                className="bg-white text-[#3B4A6B] px-8 py-3 rounded-full font-semibold hover:bg-indigo-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {ctaStatus === 'loading' ? 'Joining…' : 'Join'}
+              </button>
+            </form>
+          )}
+          {ctaStatus === 'error' && (
+            <p className="mt-3 text-sm text-red-300">Something went wrong — please try again.</p>
+          )}
           <p className="mt-4 text-sm text-indigo-300">
             Free for personal use • No credit card required
           </p>
