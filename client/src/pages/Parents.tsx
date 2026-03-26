@@ -270,6 +270,76 @@ export default function Parents() {
         </div>
       </section>
 
+      {/* ── Reading Theme Callout ─────────────────────────────────────────────── */}
+      <section className="py-24 px-6 bg-[#323F5D] relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="max-w-5xl mx-auto relative z-10">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+
+            {/* Left: copy */}
+            <div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/15 border border-purple-400/20 text-purple-200 text-sm font-medium mb-6">
+                <BookOpen size={14} />
+                Dyslexia &amp; Visual Stress Support
+              </div>
+              <h2 className="text-4xl font-serif mb-6 leading-tight">
+                Reading should feel <span className="text-gradient italic">comfortable</span>, not like hard work
+              </h2>
+              <p className="text-lg text-indigo-100 leading-relaxed mb-5">
+                For many people with dyslexia or visual stress (sometimes called Meares-Irlen syndrome), black text on a white or dark background can cause letters to appear to move, blur, or crowd together. Switching to a softer background colour is one of the simplest and most effective adjustments available.
+              </p>
+              <p className="text-lg text-indigo-100 leading-relaxed mb-8">
+                Get It Done! includes six carefully chosen <strong className="text-white">Reading Themes</strong> — each selected based on research from the British Dyslexia Association and the Irlen Institute. The person using the app chooses the colour that works best for their eyes, and it is applied instantly across every screen.
+              </p>
+              <div className="space-y-3">
+                {[
+                  { label: "Cream", hex: "#FFF8F0", note: "Warm off-white — reduces glare" },
+                  { label: "Sage", hex: "#E8F5E9", note: "Pale green — most commonly cited" },
+                  { label: "Sky", hex: "#E3F2FD", note: "Pale blue — second most cited" },
+                  { label: "Dusk", hex: "#F3E5F5", note: "Soft lavender — reduces visual noise" },
+                  { label: "Sand", hex: "#FFFDE7", note: "Warm yellow — Irlen Institute research" },
+                ].map((t) => (
+                  <div key={t.label} className="flex items-center gap-4">
+                    <span
+                      className="w-8 h-8 rounded-xl border border-white/10 shrink-0"
+                      style={{ backgroundColor: t.hex }}
+                    />
+                    <div>
+                      <span className="font-semibold text-white text-sm">{t.label}</span>
+                      <span className="text-indigo-300 text-sm ml-2">— {t.note}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: visual demo card */}
+            <div className="space-y-4">
+              <p className="text-sm text-indigo-300 font-medium uppercase tracking-widest mb-2">How it looks in the app</p>
+              {[
+                { label: "Default (dark)", hex: "#1e293b", textColor: "#f1f5f9", mutedColor: "#94a3b8" },
+                { label: "Sage", hex: "#E8F5E9", textColor: "#14532d", mutedColor: "#4d7c5f" },
+                { label: "Sky", hex: "#E3F2FD", textColor: "#1e3a5f", mutedColor: "#3b6a9e" },
+                { label: "Cream", hex: "#FFF8F0", textColor: "#292524", mutedColor: "#78716c" },
+              ].map((t) => (
+                <div
+                  key={t.label}
+                  className="rounded-2xl p-5 border border-black/10 transition-all"
+                  style={{ backgroundColor: t.hex }}
+                >
+                  <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: t.mutedColor }}>{t.label}</p>
+                  <p className="text-sm font-medium mb-1" style={{ color: t.textColor }}>Reply to email from school</p>
+                  <p className="text-xs" style={{ color: t.mutedColor }}>Due today &middot; Medium energy</p>
+                </div>
+              ))}
+              <p className="text-xs text-indigo-400 text-center pt-2">
+                The person using the app chooses their own colour — it is their preference, not yours to decide.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── How to Introduce It ───────────────────────────────────────────────── */}
       <section className="py-24 px-6 bg-[#323F5D] relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 pointer-events-none" />

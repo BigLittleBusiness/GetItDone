@@ -113,3 +113,4 @@
 - [x] Build Reading Theme CSS variables and apply globally in DashboardLayout
 - [x] Add Reading Theme selector UI to Settings page
 - [x] Add Reading Theme selection step to the end of the onboarding flow
+- [x] Feature Reading Theme on the For Parents & Carers page as a key selling point
