@@ -116,3 +116,4 @@
 - [x] Feature Reading Theme on the For Parents & Carers page as a key selling point
 - [x] Create Privacy Policy page at /privacy and link from footer and cookie banner
 - [x] Add Small/Medium/Large text-size toggle to Settings with per-user persistence
+- [x] Add Text Size selection step to the onboarding flow

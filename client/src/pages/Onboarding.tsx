@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { useReadingTheme, type ReadingTheme } from "@/contexts/ReadingThemeContext";
+import { useTextSize, type TextSize } from "@/contexts/TextSizeContext";
 import {
   Brain,
   GraduationCap,
@@ -176,7 +177,33 @@ const SAMPLE_TASKS: Record<
   ],
 };
 
-const TOTAL_STEPS = 4;
+const TEXT_SIZES: {
+  value: TextSize;
+  label: string;
+  description: string;
+  previewPx: string;
+}[] = [
+  {
+    value: "small",
+    label: "Small",
+    description: "Compact text — fits more on screen at once. Good if you prefer a denser view.",
+    previewPx: "14px",
+  },
+  {
+    value: "medium",
+    label: "Medium",
+    description: "The default size — balanced and comfortable for most people.",
+    previewPx: "16px",
+  },
+  {
+    value: "large",
+    label: "Large",
+    description: "Bigger text — easier to read for longer sessions or if you prefer more space.",
+    previewPx: "18px",
+  },
+];
+
+const TOTAL_STEPS = 5;
 
 export default function Onboarding() {
   const [step, setStep] = useState(1);
@@ -184,6 +211,7 @@ export default function Onboarding() {
   const [selectedMode, setSelectedMode] = useState<Mode | null>(null);
   const [, setLocation] = useLocation();
   const { readingTheme, setReadingTheme } = useReadingTheme();
+  const { textSize, setTextSize } = useTextSize();
 
   const completeOnboarding = trpc.user.completeOnboarding.useMutation({
     onSuccess: () => {
@@ -197,6 +225,7 @@ export default function Onboarding() {
       activeRole: selectedRole,
       personalityMode: selectedMode,
       readingTheme,
+      textSize,
     });
   };
 
@@ -432,8 +461,79 @@ export default function Onboarding() {
             </div>
           )}
 
-          {/* ── Step 4: Preview & Confirm ──────────────────────────────── */}
-          {step === 4 && selectedRole && selectedMode && (
+          {/* ── Step 4: Text Size ──────────────────────────────────────── */}
+          {step === 4 && (
+            <div className="animate-fade-in-up">
+              <div className="text-center mb-10">
+                <h1 className="text-3xl font-bold text-foreground mb-3">
+                  How big would you like the text?
+                </h1>
+                <p className="text-muted-foreground text-lg max-w-lg mx-auto">
+                  Choose a text size that feels comfortable. You can change this any time in Settings.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 mb-8">
+                {TEXT_SIZES.map((opt) => {
+                  const isSelected = textSize === opt.value;
+                  return (
+                    <button
+                      key={opt.value}
+                      onClick={() => setTextSize(opt.value)}
+                      aria-pressed={isSelected}
+                      className={`
+                        relative flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all duration-200
+                        focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary
+                        ${
+                          isSelected
+                            ? "border-primary ring-2 ring-primary/30 bg-primary/5 scale-[1.03] shadow-lg shadow-primary/10"
+                            : "border-border bg-card hover:border-primary/40 hover:bg-accent/50"
+                        }
+                      `}
+                    >
+                      {/* Live preview of the size */}
+                      <span
+                        className="font-bold text-foreground leading-none"
+                        style={{ fontSize: opt.previewPx }}
+                      >
+                        Aa
+                      </span>
+                      <div className="text-center">
+                        <p className="font-semibold text-foreground text-sm">{opt.label}</p>
+                        <p className="text-xs text-muted-foreground mt-1 leading-snug">{opt.description}</p>
+                      </div>
+                      {isSelected && (
+                        <CheckCircle2 className="absolute top-3 right-3 text-primary" size={16} />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Live preview sentence */}
+              <div className="bg-card border border-border rounded-2xl p-5 mb-8">
+                <p className="text-sm text-muted-foreground mb-2">Preview</p>
+                <p
+                  className="text-foreground leading-relaxed transition-all duration-300"
+                  style={{ fontSize: TEXT_SIZES.find((o) => o.value === textSize)?.previewPx ?? "16px" }}
+                >
+                  Reply to 3 unanswered emails — high priority, medium energy
+                </p>
+              </div>
+
+              <div className="flex justify-between">
+                <Button variant="ghost" onClick={() => setStep(3)} className="gap-2">
+                  <ArrowLeft size={18} /> Back
+                </Button>
+                <Button onClick={() => setStep(5)} size="lg" className="gap-2">
+                  Next <ArrowRight size={18} />
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* ── Step 5: Preview & Confirm ──────────────────────────────── */}
+          {step === 5 && selectedRole && selectedMode && (
             <div className="animate-fade-in-up">
               <div className="text-center mb-10">
                 <h1 className="text-3xl font-bold text-foreground mb-3">
@@ -447,7 +547,7 @@ export default function Onboarding() {
 
               {/* Summary card */}
               <div className="bg-card border border-border rounded-2xl p-5 mb-6">
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div>
                     <p className="text-sm text-muted-foreground mb-0.5">Your role</p>
                     <p className="font-semibold text-foreground capitalize">{selectedRole}</p>
@@ -471,6 +571,12 @@ export default function Onboarding() {
                         {READING_THEMES.find((t) => t.value === readingTheme)?.label ?? "Default"}
                       </p>
                     </div>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-0.5">Text size</p>
+                    <p className="font-semibold text-foreground capitalize">
+                      {TEXT_SIZES.find((o) => o.value === textSize)?.label ?? "Medium"}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -510,7 +616,7 @@ export default function Onboarding() {
               </div>
 
               <div className="flex justify-between">
-                <Button variant="ghost" onClick={() => setStep(3)} className="gap-2">
+                <Button variant="ghost" onClick={() => setStep(4)} className="gap-2">
                   <ArrowLeft size={18} /> Back
                 </Button>
                 <Button

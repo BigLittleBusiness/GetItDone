@@ -73,6 +73,7 @@ export const appRouter = router({
         activeRole: z.enum(["student", "parent", "professional"]),
         personalityMode: z.enum(["cheeky", "positive", "literal"]),
         readingTheme: z.enum(["default", "cream", "sage", "sky", "dusk", "sand"]).optional(),
+        textSize: z.enum(["small", "medium", "large"]).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         await updateUserProfile(ctx.user.id, {
@@ -80,6 +81,7 @@ export const appRouter = router({
           activeRole: input.activeRole,
           personalityMode: input.personalityMode,
           ...(input.readingTheme ? { readingTheme: input.readingTheme } : {}),
+          ...(input.textSize ? { textSize: input.textSize } : {}),
         });
         const unlocked = await unlockAchievement(ctx.user.id, "onboarding_complete");
         if (unlocked) {
