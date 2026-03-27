@@ -129,3 +129,4 @@
 - [x] Add Resend configuration panel to admin dashboard (API key, sender email, test-send button)
 - [x] Rebrand app from GetItDone to Taskbloom (name, logo, all text references)
 - [x] Replace logo with new purple flower logo throughout marketing website (nav, footer, favicon, og image)
+- [x] Generate and deploy favicon from new purple flower logo (32x32, 180x180 apple-touch-icon, 192x192 PWA)
