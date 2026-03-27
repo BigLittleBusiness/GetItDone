@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 const OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
-const SITE_URL = 'https://getitdone-maea52jb.manus.space';
+const SITE_URL = 'https://taskbloom.app';
 
 export default function Mission() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
@@ -33,22 +33,22 @@ export default function Mission() {
   return (
     <div className="min-h-screen bg-[#3B4A6B] text-white overflow-x-hidden selection:bg-indigo-500/30">
       <Helmet>
-        <title>Our Mission — Get It Done!</title>
-        <meta name="description" content="We believe productivity tools should work with neurodivergent brains, not against them. Read about the values and principles behind Get It Done!" />
+        <title>Our Mission — Taskbloom</title>
+        <meta name="description" content="We believe productivity tools should work with neurodivergent brains, not against them. Read about the values and principles behind Taskbloom" />
         {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${SITE_URL}/mission`} />
-        <meta property="og:title" content="Our Mission — Get It Done!" />
-        <meta property="og:description" content="We believe productivity tools should work with neurodivergent brains, not against them. Read about the values and principles behind Get It Done!" />
+        <meta property="og:title" content="Our Mission — Taskbloom" />
+        <meta property="og:description" content="We believe productivity tools should work with neurodivergent brains, not against them. Read about the values and principles behind Taskbloom" />
         <meta property="og:image" content={OG_IMAGE} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:site_name" content="Get It Done!" />
+        <meta property="og:site_name" content="Taskbloom" />
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content={`${SITE_URL}/mission`} />
-        <meta name="twitter:title" content="Our Mission — Get It Done!" />
-        <meta name="twitter:description" content="We believe productivity tools should work with neurodivergent brains, not against them. Read about the values and principles behind Get It Done!" />
+        <meta name="twitter:title" content="Our Mission — Taskbloom" />
+        <meta name="twitter:description" content="We believe productivity tools should work with neurodivergent brains, not against them. Read about the values and principles behind Taskbloom" />
         <meta name="twitter:image" content={OG_IMAGE} />
       </Helmet>
 
@@ -72,7 +72,7 @@ export default function Mission() {
           </h1>
 
           <p className="text-xl text-indigo-100 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:400ms]">
-            Get It Done! exists because the world's productivity tools were built for a specific kind of mind — and that mind isn't yours. We're here to change that.
+            Taskbloom exists because the world's productivity tools were built for a specific kind of mind — and that mind isn't yours. We're here to change that.
           </p>
         </div>
       </section>
@@ -152,7 +152,7 @@ export default function Mission() {
                 <p className="text-2xl font-serif leading-relaxed text-white mb-6">
                   "The right tool doesn't change who you are. It lets you show up as who you already are."
                 </p>
-                <p className="text-indigo-300 text-sm font-medium">— The Get It Done! Team</p>
+                <p className="text-indigo-300 text-sm font-medium">— The Taskbloom Team</p>
               </div>
             </div>
           </div>
@@ -169,7 +169,7 @@ export default function Mission() {
             </div>
             <h2 className="text-4xl font-serif mb-6">The principles behind every decision</h2>
             <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
-              Every feature, every word, and every interaction in Get It Done! is guided by the same five commitments.
+              Every feature, every word, and every interaction in Taskbloom is guided by the same five commitments.
             </p>
           </div>
 
@@ -237,7 +237,7 @@ export default function Mission() {
             </div>
             <h2 className="text-4xl font-serif mb-6">Real people. Real challenges.</h2>
             <p className="text-lg text-indigo-200 max-w-2xl mx-auto">
-              Get It Done! is designed for anyone whose brain makes conventional productivity tools feel like they were built for someone else.
+              Taskbloom is designed for anyone whose brain makes conventional productivity tools feel like they were built for someone else.
             </p>
           </div>
 
@@ -321,7 +321,7 @@ export default function Mission() {
                 We're in this for the long run.
               </h2>
               <p className="text-lg text-indigo-100 leading-relaxed mb-8">
-                Get It Done! is not a side project or a quick experiment. It is a long-term commitment to building infrastructure for neurodivergent productivity — starting with the tools that matter most and growing with the community that shapes them.
+                Taskbloom is not a side project or a quick experiment. It is a long-term commitment to building infrastructure for neurodivergent productivity — starting with the tools that matter most and growing with the community that shapes them.
               </p>
               <button
                 onClick={() => setIsFeedbackOpen(true)}

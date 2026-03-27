@@ -496,13 +496,13 @@ export const appRouter = router({
           body: JSON.stringify({
             from: fromName ? `${fromName} <${fromEmail}>` : fromEmail,
             to: [input.toEmail],
-            subject: 'Get It Done! — Resend connection verified ✓',
+            subject: 'Taskbloom — Resend connection verified ✓',
             html: [
               '<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;">',
               '<h2 style="color:#4f46e5;margin-bottom:8px;">Connection verified!</h2>',
               '<p style="color:#374151;">Your Resend integration is working correctly.</p>',
               '<p style="color:#6b7280;font-size:14px;">',
-              'This test email was sent from the Get It Done! admin dashboard.',
+              'This test email was sent from the Taskbloom admin dashboard.',
               ' You can now activate email reminders for your users.',
               '</p>',
               '</div>',
@@ -549,7 +549,7 @@ export const appRouter = router({
         ].filter(Boolean).join('\n');
 
         notifyOwner({
-          title: '🎉 New Get It Done! waitlist signup',
+          title: '🎉 New Taskbloom waitlist signup',
           content: detailLines,
         }).catch(err => console.warn('[survey.submit] notifyOwner failed:', err));
 

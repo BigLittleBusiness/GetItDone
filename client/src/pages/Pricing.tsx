@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 
 const OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
-const SITE_URL = 'https://getitdone-maea52jb.manus.space';
+const SITE_URL = 'https://taskbloom.app';
 
 // ── Feature comparison data ────────────────────────────────────────────────────
 
@@ -86,7 +86,7 @@ const FAQS = [
     a: "Each time you tap 'Break into steps' on a task, that counts as one AI breakdown use. Each voice recording you submit counts as one voice capture use. Limits reset at midnight in your local timezone.",
   },
   {
-    q: "Can I use Get It Done! for my child or someone I care for?",
+    q: "Can I use Taskbloom for my child or someone I care for?",
     a: "Yes. The app is designed to be used directly by neurodivergent individuals of all ages, and parents or carers are welcome to set it up on behalf of someone they support. Each account is personal, so each person would need their own free account.",
   },
   {
@@ -139,22 +139,22 @@ export default function Pricing() {
   return (
     <div className="min-h-screen bg-[#3B4A6B] text-white overflow-x-hidden selection:bg-indigo-500/30">
       <Helmet>
-        <title>Pricing — Get It Done!</title>
-        <meta name="description" content="Get It Done! is free for personal use. See what's included in the free tier and what's coming in the Pro plan for power users." />
+        <title>Pricing — Taskbloom</title>
+        <meta name="description" content="Taskbloom is free for personal use. See what's included in the free tier and what's coming in the Pro plan for power users." />
         {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${SITE_URL}/pricing`} />
-        <meta property="og:title" content="Pricing — Get It Done!" />
-        <meta property="og:description" content="Get It Done! is free for personal use. See what's included in the free tier and what's coming in the Pro plan for power users." />
+        <meta property="og:title" content="Pricing — Taskbloom" />
+        <meta property="og:description" content="Taskbloom is free for personal use. See what's included in the free tier and what's coming in the Pro plan for power users." />
         <meta property="og:image" content={OG_IMAGE} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:site_name" content="Get It Done!" />
+        <meta property="og:site_name" content="Taskbloom" />
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content={`${SITE_URL}/pricing`} />
-        <meta name="twitter:title" content="Pricing — Get It Done!" />
-        <meta name="twitter:description" content="Get It Done! is free for personal use. See what's included in the free tier and what's coming in the Pro plan for power users." />
+        <meta name="twitter:title" content="Pricing — Taskbloom" />
+        <meta name="twitter:description" content="Taskbloom is free for personal use. See what's included in the free tier and what's coming in the Pro plan for power users." />
         <meta name="twitter:image" content={OG_IMAGE} />
       </Helmet>
 

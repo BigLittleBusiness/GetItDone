@@ -12,7 +12,7 @@ import { useLocation } from 'wouter';
 import { trpc } from '@/lib/trpc';
 
 const OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
-const SITE_URL = 'https://getitdone-maea52jb.manus.space';
+const SITE_URL = 'https://taskbloom.app';
 
 /** Smoothly scrolls to an element by id, accounting for the 80px fixed nav. */
 function scrollToSection(id: string) {
@@ -75,21 +75,21 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#3B4A6B] text-white overflow-x-hidden selection:bg-indigo-500/30">
       <Helmet>
-        <title>Get It Done! — The Productivity OS for Neurodivergent Minds</title>
+        <title>Taskbloom — The Productivity OS for Neurodivergent Minds</title>
         <meta name="description" content="A smart, empathetic task manager designed for ADHD, Autism, and the way you actually think. Voice capture, AI task breakdown, streaks, and more." />
         {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content={SITE_URL} />
-        <meta property="og:title" content="Get It Done! — The Productivity OS for Neurodivergent Minds" />
+        <meta property="og:title" content="Taskbloom — The Productivity OS for Neurodivergent Minds" />
         <meta property="og:description" content="A smart, empathetic task manager designed for ADHD, Autism, and the way you actually think. Voice capture, AI task breakdown, streaks, and more." />
         <meta property="og:image" content={OG_IMAGE} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:site_name" content="Get It Done!" />
+        <meta property="og:site_name" content="Taskbloom" />
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content={SITE_URL} />
-        <meta name="twitter:title" content="Get It Done! — The Productivity OS for Neurodivergent Minds" />
+        <meta name="twitter:title" content="Taskbloom — The Productivity OS for Neurodivergent Minds" />
         <meta name="twitter:description" content="A smart, empathetic task manager designed for ADHD, Autism, and the way you actually think. Voice capture, AI task breakdown, streaks, and more." />
         <meta name="twitter:image" content={OG_IMAGE} />
       </Helmet>
@@ -257,7 +257,7 @@ export default function Home() {
                 You know the person in your life is capable. Sometimes they just need the right tools to get going — and a little less friction between thinking and doing.
               </p>
               <p className="text-lg text-indigo-100 leading-relaxed mb-10">
-                Get It Done! is designed to work with how neurodivergent brains actually operate, not against them. That means fewer reminders that feel like nagging, and more moments that feel like wins.
+                Taskbloom is designed to work with how neurodivergent brains actually operate, not against them. That means fewer reminders that feel like nagging, and more moments that feel like wins.
               </p>
               <button
                 onClick={() => setIsFeedbackOpen(true)}

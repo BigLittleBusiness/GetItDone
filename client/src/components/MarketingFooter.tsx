@@ -6,7 +6,7 @@
  *   <MarketingFooter />
  */
 
-import { Brain } from "lucide-react";
+import { APP_LOGO } from "@/const";
 
 export default function MarketingFooter() {
   return (
@@ -14,8 +14,8 @@ export default function MarketingFooter() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
         {/* Brand */}
         <div className="flex items-center gap-2 opacity-80">
-          <Brain size={20} />
-          <span className="font-serif font-medium">Get It Done!</span>
+          <img src={APP_LOGO} alt="Taskbloom" className="w-6 h-6 rounded-md object-cover" />
+          <span className="font-serif font-medium">Taskbloom</span>
         </div>
 
         {/* Legal links */}
@@ -33,7 +33,7 @@ export default function MarketingFooter() {
 
         {/* Copyright */}
         <div className="text-sm text-indigo-400">
-          © 2026 Get It Done! Built with ❤️ for neurodivergent minds.
+          © 2026 Taskbloom. Built with ❤️ for neurodivergent minds.
         </div>
       </div>
     </footer>

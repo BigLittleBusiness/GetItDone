@@ -26,14 +26,14 @@ import {
 } from "lucide-react";
 
 const OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
-const SITE_URL = 'https://getitdone-maea52jb.manus.space';
+const SITE_URL = 'https://taskbloom.app';
 
 // ── Common Questions ──────────────────────────────────────────────────────────
 
 const QUESTIONS = [
   {
     q: "Does my child need a diagnosis to use this app?",
-    a: "Not at all. Get It Done! is designed for anyone whose brain works differently — whether that is a formal ADHD or Autism diagnosis, a suspected one, or simply someone who has always found traditional productivity tools frustrating. There is no checklist to pass.",
+    a: "Not at all. Taskbloom is designed for anyone whose brain works differently — whether that is a formal ADHD or Autism diagnosis, a suspected one, or simply someone who has always found traditional productivity tools frustrating. There is no checklist to pass.",
   },
   {
     q: "Can I set it up on behalf of someone I care for?",
@@ -91,22 +91,22 @@ export default function Parents() {
   return (
     <div className="min-h-screen bg-[#3B4A6B] text-white overflow-x-hidden selection:bg-indigo-500/30">
       <Helmet>
-        <title>For Parents &amp; Carers — Get It Done!</title>
-        <meta name="description" content="Supporting a neurodivergent child, partner, or family member? Get It Done! works with their brain, not against it — so you can worry a little less and celebrate a little more." />
+        <title>For Parents &amp; Carers — Taskbloom</title>
+        <meta name="description" content="Supporting a neurodivergent child, partner, or family member? Taskbloom works with their brain, not against it — so you can worry a little less and celebrate a little more." />
         {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${SITE_URL}/parents`} />
-        <meta property="og:title" content="For Parents &amp; Carers — Get It Done!" />
-        <meta property="og:description" content="Supporting a neurodivergent child, partner, or family member? Get It Done! works with their brain, not against it — so you can worry a little less and celebrate a little more." />
+        <meta property="og:title" content="For Parents &amp; Carers — Taskbloom" />
+        <meta property="og:description" content="Supporting a neurodivergent child, partner, or family member? Taskbloom works with their brain, not against it — so you can worry a little less and celebrate a little more." />
         <meta property="og:image" content={OG_IMAGE} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:site_name" content="Get It Done!" />
+        <meta property="og:site_name" content="Taskbloom" />
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content={`${SITE_URL}/parents`} />
-        <meta name="twitter:title" content="For Parents &amp; Carers — Get It Done!" />
-        <meta name="twitter:description" content="Supporting a neurodivergent child, partner, or family member? Get It Done! works with their brain, not against it — so you can worry a little less and celebrate a little more." />
+        <meta name="twitter:title" content="For Parents &amp; Carers — Taskbloom" />
+        <meta name="twitter:description" content="Supporting a neurodivergent child, partner, or family member? Taskbloom works with their brain, not against it — so you can worry a little less and celebrate a little more." />
         <meta name="twitter:image" content={OG_IMAGE} />
       </Helmet>
 
@@ -130,7 +130,7 @@ export default function Parents() {
           </h1>
 
           <p className="text-xl text-indigo-100 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:400ms]">
-            Supporting a neurodivergent child, partner, or family member takes patience, creativity, and a whole lot of love. Get It Done! is a tool that works <em>with</em> them — so you can worry a little less and celebrate a little more.
+            Supporting a neurodivergent child, partner, or family member takes patience, creativity, and a whole lot of love. Taskbloom is a tool that works <em>with</em> them — so you can worry a little less and celebrate a little more.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up [animation-delay:600ms]">
@@ -289,7 +289,7 @@ export default function Parents() {
                 For many people with dyslexia or visual stress (sometimes called Meares-Irlen syndrome), black text on a white or dark background can cause letters to appear to move, blur, or crowd together. Switching to a softer background colour is one of the simplest and most effective adjustments available.
               </p>
               <p className="text-lg text-indigo-100 leading-relaxed mb-8">
-                Get It Done! includes six carefully chosen <strong className="text-white">Reading Themes</strong> — each selected based on research from the British Dyslexia Association and the Irlen Institute. The person using the app chooses the colour that works best for their eyes, and it is applied instantly across every screen.
+                Taskbloom includes six carefully chosen <strong className="text-white">Reading Themes</strong> — each selected based on research from the British Dyslexia Association and the Irlen Institute. The person using the app chooses the colour that works best for their eyes, and it is applied instantly across every screen.
               </p>
               <div className="space-y-3">
                 {[
@@ -426,7 +426,7 @@ export default function Parents() {
                 Built with families, not just for them
               </h2>
               <p className="text-lg text-indigo-100 leading-relaxed mb-6">
-                Every design decision in Get It Done! has been shaped by conversations with neurodivergent people and the families who support them. We do not assume — we ask, listen, and build accordingly.
+                Every design decision in Taskbloom has been shaped by conversations with neurodivergent people and the families who support them. We do not assume — we ask, listen, and build accordingly.
               </p>
               <p className="text-lg text-indigo-100 leading-relaxed mb-8">
                 If you have a perspective to share — as a parent, carer, or someone who supports a neurodivergent person — we genuinely want to hear it. Your experience directly shapes what we build next.
@@ -507,7 +507,7 @@ export default function Parents() {
             <span className="italic text-indigo-200">worry about.</span>
           </h2>
           <p className="text-xl text-indigo-100 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Join the waitlist and be among the first to try Get It Done! — a tool that supports the people you love, in the way they actually need.
+            Join the waitlist and be among the first to try Taskbloom — a tool that supports the people you love, in the way they actually need.
           </p>
 
           <form

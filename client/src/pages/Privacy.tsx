@@ -21,7 +21,7 @@ const sections = [
     id: "who-we-are",
     icon: Globe,
     title: "Who we are",
-    content: `Get It Done! is a neurodivergent-friendly productivity application. The data controller responsible for your personal information is:
+    content: `Taskbloom is a neurodivergent-friendly productivity application. The data controller responsible for your personal information is:
 
 Big Little Business Pty Ltd
 Rothschild Street, Glen Huntly, Victoria, 3163, Australia
@@ -137,7 +137,7 @@ No method of transmission over the internet is completely secure. If you believe
     id: "children",
     icon: Shield,
     title: "Children's privacy",
-    content: `Get It Done! is designed to be used by people of all ages, including young people with ADHD, autism, and other neurodivergent profiles. However, we require users to be at least 13 years old to create an account independently.
+    content: `Taskbloom is designed to be used by people of all ages, including young people with ADHD, autism, and other neurodivergent profiles. However, we require users to be at least 13 years old to create an account independently.
 
 For users under 16 in the EU/EEA, or under 13 elsewhere, a parent or guardian must provide consent before an account is created. If you believe a child has created an account without appropriate consent, please contact us and we will delete it promptly.`,
   },
@@ -168,19 +168,19 @@ export default function Privacy() {
   return (
     <div className="min-h-screen bg-[#2A354F] text-white">
       <Helmet>
-        <title>Privacy Policy — Get It Done!</title>
+        <title>Privacy Policy — Taskbloom</title>
         <meta
           name="description"
-          content="How Get It Done! collects, uses, and protects your personal data. Plain-language privacy policy covering GDPR and Australian Privacy Act requirements."
+          content="How Taskbloom collects, uses, and protects your personal data. Plain-language privacy policy covering GDPR and Australian Privacy Act requirements."
         />
-        <meta property="og:title" content="Privacy Policy — Get It Done!" />
+        <meta property="og:title" content="Privacy Policy — Taskbloom" />
         <meta
           property="og:description"
-          content="How Get It Done! collects, uses, and protects your personal data."
+          content="How Taskbloom collects, uses, and protects your personal data."
         />
-        <meta property="og:url" content="https://getitdone-maea52jb.manus.space/privacy" />
+        <meta property="og:url" content="https://taskbloom.app/privacy" />
         <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Privacy Policy — Get It Done!" />
+        <meta name="twitter:title" content="Privacy Policy — Taskbloom" />
       </Helmet>
 
       <MarketingNav onJoinWaitlist={() => setIsFeedbackOpen(true)} />

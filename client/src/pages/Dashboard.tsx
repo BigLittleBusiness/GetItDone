@@ -492,7 +492,7 @@ export default function Dashboard() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
           <Brain className="mx-auto text-primary" size={48} />
-          <h1 className="text-2xl font-bold text-foreground">Sign in to Get It Done!</h1>
+          <h1 className="text-2xl font-bold text-foreground">Sign in to Taskbloom</h1>
           <Button onClick={() => (window.location.href = getLoginUrl())} size="lg">
             Sign In
           </Button>
@@ -560,7 +560,7 @@ export default function Dashboard() {
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
               <Brain className="text-primary-foreground" size={16} />
             </div>
-            <span className="font-bold text-foreground">Get It Done!</span>
+            <span className="font-bold text-foreground">Taskbloom</span>
           </div>
 
           {/* Role switcher */}

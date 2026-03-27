@@ -21,7 +21,7 @@ const sections = [
     id: "acceptance",
     icon: FileText,
     title: "Acceptance of these terms",
-    content: `By accessing or using Get It Done! (the "Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please do not use the Service.
+    content: `By accessing or using Taskbloom (the "Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please do not use the Service.
 
 These Terms apply to all visitors, users, and others who access or use the Service. By creating an account or using any part of the Service, you confirm that you are at least 13 years of age and have the legal capacity to enter into a binding agreement.
 
@@ -31,7 +31,7 @@ If you are using the Service on behalf of an organisation, you represent and war
     id: "description",
     icon: Globe,
     title: "Description of the Service",
-    content: `Get It Done! is a neurodivergent-friendly productivity application designed to help people with ADHD, autism, dyslexia, and related conditions manage tasks, build routines, and reduce cognitive load.
+    content: `Taskbloom is a neurodivergent-friendly productivity application designed to help people with ADHD, autism, dyslexia, and related conditions manage tasks, build routines, and reduce cognitive load.
 
 The Service is operated by Big Little Business Pty Ltd, registered at Rothschild Street, Glen Huntly, Victoria, 3163, Australia ("we", "us", or "our").
 
@@ -84,7 +84,7 @@ We may delete Your Content if it violates these Terms, applicable law, or our co
     title: "Intellectual property",
     content: `The Service and its original content (excluding Your Content), features, and functionality are and will remain the exclusive property of Big Little Business Pty Ltd and its licensors.
 
-Our trademarks, service marks, logos, and trade names — including "Get It Done!" — may not be used in connection with any product or service without our prior written consent.
+Our trademarks, service marks, logos, and trade names — including "Taskbloom" — may not be used in connection with any product or service without our prior written consent.
 
 The Service is protected by copyright, trademark, and other laws of Australia and international conventions. Nothing in these Terms grants you any right to use our intellectual property for any purpose other than using the Service as intended.`,
   },
@@ -96,7 +96,7 @@ The Service is protected by copyright, trademark, and other laws of Australia an
 
 We do not warrant that the Service will be uninterrupted, error-free, or free of viruses or other harmful components. We do not warrant that the results obtained from using the Service will be accurate or reliable.
 
-Get It Done! is a productivity tool and is not a substitute for professional medical, psychological, or therapeutic advice. If you have concerns about ADHD, autism, or any other condition, please consult a qualified healthcare professional.
+Taskbloom is a productivity tool and is not a substitute for professional medical, psychological, or therapeutic advice. If you have concerns about ADHD, autism, or any other condition, please consult a qualified healthcare professional.
 
 To the fullest extent permitted by applicable law, we shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of profits, data, or goodwill, arising out of or in connection with your use of the Service.`,
   },
@@ -149,19 +149,19 @@ export default function Terms() {
   return (
     <div className="min-h-screen bg-[#1a1f3e] text-white">
       <Helmet>
-        <title>Terms of Service — Get It Done!</title>
+        <title>Terms of Service — Taskbloom</title>
         <meta
           name="description"
-          content="Read the Terms of Service for Get It Done!, the neurodivergent-friendly productivity app. Understand your rights and responsibilities when using the platform."
+          content="Read the Terms of Service for Taskbloom, the neurodivergent-friendly productivity app. Understand your rights and responsibilities when using the platform."
         />
-        <meta property="og:title" content="Terms of Service — Get It Done!" />
+        <meta property="og:title" content="Terms of Service — Taskbloom" />
         <meta
           property="og:description"
           content="Plain-language terms covering your account, acceptable use, intellectual property, and more."
         />
-        <meta property="og:url" content="https://getitdone-maea52jb.manus.space/terms" />
+        <meta property="og:url" content="https://taskbloom.app/terms" />
         <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Terms of Service — Get It Done!" />
+        <meta name="twitter:title" content="Terms of Service — Taskbloom" />
       </Helmet>
 
       <MarketingNav onJoinWaitlist={() => setShowFeedback(true)} />

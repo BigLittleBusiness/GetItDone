@@ -51,7 +51,7 @@ export default function RoleExplorer() {
         </h2>
         <p className="text-lg text-indigo-100 max-w-2xl mx-auto">
           Your brain doesn't stop being neurodivergent when you switch from parent to professional. 
-          Get It Done! adapts to your context, filtering out the noise so you can focus on what matters 
+          Taskbloom adapts to your context, filtering out the noise so you can focus on what matters 
           <span className="italic"> right now</span>.
         </p>
       </div>

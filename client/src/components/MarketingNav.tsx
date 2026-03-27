@@ -9,7 +9,8 @@
  * current pathname, so no extra props are needed per page.
  */
 
-import { Brain, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
+import { APP_LOGO } from "@/const";
 import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 
@@ -58,10 +59,10 @@ export default function MarketingNav({ onJoinWaitlist }: MarketingNavProps) {
 
         {/* Logo */}
         <a href="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <Brain className="text-white" size={24} />
+          <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center">
+            <img src={APP_LOGO} alt="Taskbloom logo" className="w-10 h-10 object-cover" />
           </div>
-          <span className="font-serif text-xl font-semibold tracking-tight">Get It Done!</span>
+          <span className="font-serif text-xl font-semibold tracking-tight">Taskbloom</span>
         </a>
 
         {/* Desktop links */}

@@ -14,4 +14,4 @@ Disallow: /settings
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://getitdone-maea52jb.manus.space/sitemap.xml
+Sitemap: https://taskbloom.app/sitemap.xml

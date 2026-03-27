@@ -236,10 +236,10 @@ export default function Onboarding() {
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-5 border-b border-border">
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
-            <Brain className="text-primary-foreground" size={20} />
+          <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center">
+            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-logo-d_2dd90f43.png" alt="Taskbloom" className="w-9 h-9 object-cover" />
           </div>
-          <span className="font-semibold text-foreground">Get It Done!</span>
+          <span className="font-semibold text-foreground">Taskbloom</span>
         </div>
         <div className="text-sm text-muted-foreground">
           Step {step} of {TOTAL_STEPS}
