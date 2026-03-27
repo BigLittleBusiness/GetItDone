@@ -133,3 +133,4 @@
 - [x] Add Logo Management tab to /admin: upload wordmark + icon, preview at correct sizes, propagate to nav/footer/login/onboarding
 - [x] Extend Logo Management tab with OG social image upload slot, wire into site Open Graph meta tags
 - [x] Add last-updated timestamp to each logo card in Logo Management tab
+- [x] Ensure all marketing pages use the database-stored OG image for consistent social media previews

@@ -6,13 +6,16 @@
  *
  */
 
+import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Shield, Mail, Database, Eye, Trash2, Lock, Globe, FileText } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 import MarketingNav from "@/components/MarketingNav";
 import MarketingFooter from "@/components/MarketingFooter";
 import BackToTop from "@/components/BackToTop";
 import CookieConsent from "@/components/CookieConsent";
-import { useState } from "react";
+
+const DEFAULT_OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
 
 const LAST_UPDATED = "March 2026";
 
@@ -164,6 +167,8 @@ We aim to respond to all privacy-related enquiries within 30 days.`,
 
 export default function Privacy() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const { data: logoConfig } = trpc.admin.getLogo.useQuery();
+  const ogImage = logoConfig?.ogImageUrl ?? DEFAULT_OG_IMAGE;
 
   return (
     <div className="min-h-screen bg-[#2A354F] text-white">
@@ -173,14 +178,20 @@ export default function Privacy() {
           name="description"
           content="How Taskbloom collects, uses, and protects your personal data. Plain-language privacy policy covering GDPR and Australian Privacy Act requirements."
         />
+        <meta property="og:type" content="website" />
         <meta property="og:title" content="Privacy Policy — Taskbloom" />
         <meta
           property="og:description"
           content="How Taskbloom collects, uses, and protects your personal data."
         />
         <meta property="og:url" content="https://taskbloom.app/privacy" />
-        <meta name="twitter:card" content="summary" />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="Taskbloom" />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Privacy Policy — Taskbloom" />
+        <meta name="twitter:image" content={ogImage} />
       </Helmet>
 
       <MarketingNav onJoinWaitlist={() => setIsFeedbackOpen(true)} />

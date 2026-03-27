@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { trpc } from "@/lib/trpc";
 import FeedbackModal from "@/components/FeedbackModal";
 import MarketingNav from "@/components/MarketingNav";
 import BackToTop from "@/components/BackToTop";
@@ -25,7 +26,7 @@ import {
   Star,
 } from "lucide-react";
 
-const OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
+const DEFAULT_OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
 const SITE_URL = 'https://taskbloom.app';
 
 // ── Feature comparison data ────────────────────────────────────────────────────
@@ -135,6 +136,8 @@ export default function Pricing() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
+  const { data: logoConfig } = trpc.admin.getLogo.useQuery();
+  const ogImage = logoConfig?.ogImageUrl ?? DEFAULT_OG_IMAGE;
 
   return (
     <div className="min-h-screen bg-[#3B4A6B] text-white overflow-x-hidden selection:bg-indigo-500/30">
@@ -146,7 +149,7 @@ export default function Pricing() {
         <meta property="og:url" content={`${SITE_URL}/pricing`} />
         <meta property="og:title" content="Pricing — Taskbloom" />
         <meta property="og:description" content="Taskbloom is free for personal use. See what's included in the free tier and what's coming in the Pro plan for power users." />
-        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:image" content={ogImage} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="Taskbloom" />
@@ -155,7 +158,7 @@ export default function Pricing() {
         <meta name="twitter:url" content={`${SITE_URL}/pricing`} />
         <meta name="twitter:title" content="Pricing — Taskbloom" />
         <meta name="twitter:description" content="Taskbloom is free for personal use. See what's included in the free tier and what's coming in the Pro plan for power users." />
-        <meta name="twitter:image" content={OG_IMAGE} />
+        <meta name="twitter:image" content={ogImage} />
       </Helmet>
 
       {/* Navigation */}

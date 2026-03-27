@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { trpc } from "@/lib/trpc";
 import FeedbackModal from "@/components/FeedbackModal";
 import MarketingNav from "@/components/MarketingNav";
 import BackToTop from "@/components/BackToTop";
@@ -22,13 +23,15 @@ import {
   Quote,
 } from "lucide-react";
 
-const OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
+const DEFAULT_OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
 const SITE_URL = 'https://taskbloom.app';
 
 export default function Mission() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
+  const { data: logoConfig } = trpc.admin.getLogo.useQuery();
+  const ogImage = logoConfig?.ogImageUrl ?? DEFAULT_OG_IMAGE;
 
   return (
     <div className="min-h-screen bg-[#3B4A6B] text-white overflow-x-hidden selection:bg-indigo-500/30">
@@ -40,7 +43,7 @@ export default function Mission() {
         <meta property="og:url" content={`${SITE_URL}/mission`} />
         <meta property="og:title" content="Our Mission — Taskbloom" />
         <meta property="og:description" content="We believe productivity tools should work with neurodivergent brains, not against them. Read about the values and principles behind Taskbloom" />
-        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:image" content={ogImage} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="Taskbloom" />
@@ -49,7 +52,7 @@ export default function Mission() {
         <meta name="twitter:url" content={`${SITE_URL}/mission`} />
         <meta name="twitter:title" content="Our Mission — Taskbloom" />
         <meta name="twitter:description" content="We believe productivity tools should work with neurodivergent brains, not against them. Read about the values and principles behind Taskbloom" />
-        <meta name="twitter:image" content={OG_IMAGE} />
+        <meta name="twitter:image" content={ogImage} />
       </Helmet>
 
       {/* Navigation */}

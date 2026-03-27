@@ -6,13 +6,16 @@
  *
  */
 
+import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { FileText, AlertCircle, Shield, Ban, Scale, Mail, RefreshCw, Globe } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 import MarketingNav from "@/components/MarketingNav";
 import MarketingFooter from "@/components/MarketingFooter";
 import BackToTop from "@/components/BackToTop";
 import CookieConsent from "@/components/CookieConsent";
-import { useState } from "react";
+
+const DEFAULT_OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
 
 const LAST_UPDATED = "March 2026";
 
@@ -145,6 +148,8 @@ We aim to respond to all enquiries within 5 business days.`,
 
 export default function Terms() {
   const [showFeedback, setShowFeedback] = useState(false);
+  const { data: logoConfig } = trpc.admin.getLogo.useQuery();
+  const ogImage = logoConfig?.ogImageUrl ?? DEFAULT_OG_IMAGE;
 
   return (
     <div className="min-h-screen bg-[#1a1f3e] text-white">
@@ -154,14 +159,20 @@ export default function Terms() {
           name="description"
           content="Read the Terms of Service for Taskbloom, the neurodivergent-friendly productivity app. Understand your rights and responsibilities when using the platform."
         />
+        <meta property="og:type" content="website" />
         <meta property="og:title" content="Terms of Service — Taskbloom" />
         <meta
           property="og:description"
           content="Plain-language terms covering your account, acceptable use, intellectual property, and more."
         />
         <meta property="og:url" content="https://taskbloom.app/terms" />
-        <meta name="twitter:card" content="summary" />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="Taskbloom" />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Terms of Service — Taskbloom" />
+        <meta name="twitter:image" content={ogImage} />
       </Helmet>
 
       <MarketingNav onJoinWaitlist={() => setShowFeedback(true)} />
