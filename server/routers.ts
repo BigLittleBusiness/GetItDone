@@ -473,15 +473,21 @@ export const appRouter = router({
       }),
 
     // ── Logo Management ──────────────────────────────────────────────────────
-    // Returns the stored logo URLs (wordmark + icon + OG image).
+    // Returns the stored logo URLs (wordmark + icon + OG image) with last-updated timestamps.
     getLogo: publicProcedure.query(async () => {
       const wordmarkUrl = await getSetting('logo_wordmark_url');
       const iconUrl = await getSetting('logo_icon_url');
       const ogImageUrl = await getSetting('logo_og_image_url');
+      const wordmarkUpdatedAt = await getSetting('logo_wordmark_updated_at');
+      const iconUpdatedAt = await getSetting('logo_icon_updated_at');
+      const ogImageUpdatedAt = await getSetting('logo_og_image_updated_at');
       return {
         wordmarkUrl: wordmarkUrl ?? 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-wordmark-dark_ffbd6a10.webp',
         iconUrl: iconUrl ?? 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-logo-new_ca1f7308.png',
         ogImageUrl: ogImageUrl ?? null,
+        wordmarkUpdatedAt: wordmarkUpdatedAt ? Number(wordmarkUpdatedAt) : null,
+        iconUpdatedAt: iconUpdatedAt ? Number(iconUpdatedAt) : null,
+        ogImageUpdatedAt: ogImageUpdatedAt ? Number(ogImageUpdatedAt) : null,
       };
     }),
 
@@ -493,9 +499,19 @@ export const appRouter = router({
         ogImageUrl: z.string().url().optional(),
       }))
       .mutation(async ({ input }) => {
-        if (input.wordmarkUrl) await setSetting('logo_wordmark_url', input.wordmarkUrl);
-        if (input.iconUrl) await setSetting('logo_icon_url', input.iconUrl);
-        if (input.ogImageUrl) await setSetting('logo_og_image_url', input.ogImageUrl);
+        const now = String(Date.now());
+        if (input.wordmarkUrl) {
+          await setSetting('logo_wordmark_url', input.wordmarkUrl);
+          await setSetting('logo_wordmark_updated_at', now);
+        }
+        if (input.iconUrl) {
+          await setSetting('logo_icon_url', input.iconUrl);
+          await setSetting('logo_icon_updated_at', now);
+        }
+        if (input.ogImageUrl) {
+          await setSetting('logo_og_image_url', input.ogImageUrl);
+          await setSetting('logo_og_image_updated_at', now);
+        }
         return { success: true };
       }),
 
@@ -516,8 +532,11 @@ export const appRouter = router({
         const key = `logos/${input.type}-${Date.now()}.${ext}`;
         const { url } = await storagePut(key, buffer, mimeType);
         const settingKey = input.type === 'wordmark' ? 'logo_wordmark_url' : input.type === 'icon' ? 'logo_icon_url' : 'logo_og_image_url';
+        const tsKey = input.type === 'wordmark' ? 'logo_wordmark_updated_at' : input.type === 'icon' ? 'logo_icon_updated_at' : 'logo_og_image_updated_at';
+        const now = String(Date.now());
         await setSetting(settingKey, url);
-        return { url };
+        await setSetting(tsKey, now);
+        return { url, updatedAt: Number(now) };
       }),
 
     // Sends a test email using the stored Resend credentials to verify they work.

@@ -132,3 +132,4 @@
 - [x] Generate and deploy favicon from new purple flower logo (32x32, 180x180 apple-touch-icon, 192x192 PWA)
 - [x] Add Logo Management tab to /admin: upload wordmark + icon, preview at correct sizes, propagate to nav/footer/login/onboarding
 - [x] Extend Logo Management tab with OG social image upload slot, wire into site Open Graph meta tags
+- [x] Add last-updated timestamp to each logo card in Logo Management tab

@@ -1,8 +1,21 @@
 import { useState, useRef, useCallback } from 'react';
 import { trpc } from '@/lib/trpc';
 import {
-  Upload, CheckCircle2, AlertCircle, RefreshCw, Image as ImageIcon, Info,
+  Upload, CheckCircle2, AlertCircle, RefreshCw, Image as ImageIcon, Info, Clock,
 } from 'lucide-react';
+
+// ── Timestamp helper ──────────────────────────────────────────────────────────
+function formatTimestamp(ts: number | null | undefined): string | null {
+  if (!ts) return null;
+  const date = new Date(ts);
+  return date.toLocaleString(undefined, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type UploadState = 'idle' | 'uploading' | 'success' | 'error';
@@ -67,10 +80,13 @@ function readFileAsDataUrl(file: File): Promise<string> {
 function LogoCard({
   slot,
   currentUrl,
+  updatedAt,
   onUploaded,
 }: {
   slot: LogoSlot;
   currentUrl: string | undefined | null;
+  /** UTC ms timestamp of last upload, or null if never uploaded */
+  updatedAt: number | null | undefined;
   onUploaded: (url: string) => void;
 }) {
   const [dragOver, setDragOver] = useState(false);
@@ -79,9 +95,13 @@ function LogoCard({
   const [errorMsg, setErrorMsg] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const [localUpdatedAt, setLocalUpdatedAt] = useState<number | null>(null);
+  const displayUpdatedAt = localUpdatedAt ?? updatedAt;
+
   const uploadMutation = trpc.admin.uploadLogo.useMutation({
-    onSuccess: ({ url }) => {
+    onSuccess: ({ url, updatedAt: ts }) => {
       setUploadState('success');
+      setLocalUpdatedAt(ts ?? Date.now());
       onUploaded(url);
       setTimeout(() => setUploadState('idle'), 3000);
     },
@@ -124,9 +144,17 @@ function LogoCard({
   return (
     <div className="bg-black/20 rounded-3xl border border-white/5 p-8 space-y-6">
       {/* Header */}
-      <div>
-        <h3 className="text-lg font-serif text-white mb-1">{slot.label}</h3>
-        <p className="text-indigo-300 text-sm">{slot.description}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="text-lg font-serif text-white mb-1">{slot.label}</h3>
+          <p className="text-indigo-300 text-sm">{slot.description}</p>
+        </div>
+        {formatTimestamp(displayUpdatedAt) && (
+          <div className="flex items-center gap-1.5 shrink-0 text-xs text-indigo-400 bg-white/5 rounded-xl px-3 py-1.5 border border-white/5">
+            <Clock size={12} className="shrink-0" />
+            <span>{formatTimestamp(displayUpdatedAt)}</span>
+          </div>
+        )}
       </div>
 
       {/* Current preview */}
@@ -261,11 +289,13 @@ export function LogoManagementTab() {
         <LogoCard
           slot={SLOTS[0]}
           currentUrl={effectiveWordmark}
+          updatedAt={logoConfig?.wordmarkUpdatedAt ?? null}
           onUploaded={(url) => { setWordmarkUrl(url); refetch(); }}
         />
         <LogoCard
           slot={SLOTS[1]}
           currentUrl={effectiveIcon}
+          updatedAt={logoConfig?.iconUpdatedAt ?? null}
           onUploaded={(url) => { setIconUrl(url); refetch(); }}
         />
       </div>
@@ -274,6 +304,7 @@ export function LogoManagementTab() {
       <LogoCard
         slot={SLOTS[2]}
         currentUrl={effectiveOgImage}
+        updatedAt={logoConfig?.ogImageUpdatedAt ?? null}
         onUploaded={(url) => { setOgImageUrl(url); refetch(); }}
       />
     </div>
