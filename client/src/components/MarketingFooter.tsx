@@ -6,16 +6,16 @@
  *   <MarketingFooter />
  */
 
-import { APP_LOGO } from "@/const";
+import { useLogo } from "@/hooks/useLogo";
 
 export default function MarketingFooter() {
+  const { wordmarkUrl } = useLogo();
   return (
     <footer className="bg-[#1E2639] py-12 px-6 border-t border-white/5">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-        {/* Brand */}
-        <div className="flex items-center gap-2 opacity-80">
-          <img src={APP_LOGO} alt="Taskbloom" className="w-6 h-6 object-contain" />
-          <span className="font-serif font-medium">Taskbloom</span>
+        {/* Brand — wordmark pulled from admin logo settings */}
+        <div className="flex items-center opacity-80">
+          <img src={wordmarkUrl} alt="Taskbloom" className="h-7 w-auto object-contain" />
         </div>
 
         {/* Legal links */}

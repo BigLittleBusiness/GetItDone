@@ -3,12 +3,13 @@ import { trpc } from '@/lib/trpc';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import {
   Lock, RefreshCw, Download, LogOut, ShieldCheck, ShieldAlert,
-  BarChart2, Mail, CheckCircle2, AlertCircle, Eye, EyeOff, Send, Save,
+  BarChart2, Mail, CheckCircle2, AlertCircle, Eye, EyeOff, Send, Save, ImageIcon,
 } from 'lucide-react';
+import { LogoManagementTab } from './LogoManagementTab';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#0088FE', '#00C49F'];
 
-type Tab = 'survey' | 'email-config';
+type Tab = 'survey' | 'email-config' | 'logo';
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -203,6 +204,7 @@ export default function AdminDashboard() {
           {([
             { id: 'survey', label: 'Survey Results', icon: BarChart2 },
             { id: 'email-config', label: 'Email Configuration', icon: Mail },
+            { id: 'logo', label: 'Logo Management', icon: ImageIcon },
           ] as { id: Tab; label: string; icon: React.ElementType }[]).map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -224,6 +226,7 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-8 py-8">
         {activeTab === 'survey' && <SurveyTab data={data} processData={processData} />}
         {activeTab === 'email-config' && <EmailConfigTab />}
+        {activeTab === 'logo' && <LogoManagementTab />}
       </div>
     </div>
   );

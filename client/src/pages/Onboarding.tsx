@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { useLogo } from "@/hooks/useLogo";
 import { Button } from "@/components/ui/button";
 import { useReadingTheme, type ReadingTheme } from "@/contexts/ReadingThemeContext";
 import { useTextSize, type TextSize } from "@/contexts/TextSizeContext";
@@ -230,6 +231,7 @@ export default function Onboarding() {
   };
 
   const progress = (step / TOTAL_STEPS) * 100;
+  const { iconUrl } = useLogo();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -237,7 +239,7 @@ export default function Onboarding() {
       <div className="flex items-center justify-between px-6 py-5 border-b border-border">
         <div className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center">
-            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-logo-new_ca1f7308.png" alt="Taskbloom" className="w-9 h-9 object-contain" />
+            <img src={iconUrl} alt="Taskbloom" className="w-9 h-9 object-contain" />
           </div>
           <span className="font-semibold text-foreground">Taskbloom</span>
         </div>

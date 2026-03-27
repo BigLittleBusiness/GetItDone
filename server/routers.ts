@@ -472,6 +472,50 @@ export const appRouter = router({
         return { success: true };
       }),
 
+    // ── Logo Management ──────────────────────────────────────────────────────
+    // Returns the stored logo URLs (wordmark + icon).
+    getLogo: publicProcedure.query(async () => {
+      const wordmarkUrl = await getSetting('logo_wordmark_url');
+      const iconUrl = await getSetting('logo_icon_url');
+      return {
+        wordmarkUrl: wordmarkUrl ?? 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-wordmark-dark_ffbd6a10.webp',
+        iconUrl: iconUrl ?? 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-logo-new_ca1f7308.png',
+      };
+    }),
+
+    // Saves logo URLs directly (for URL-based updates).
+    saveLogo: publicProcedure
+      .input(z.object({
+        wordmarkUrl: z.string().url().optional(),
+        iconUrl: z.string().url().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        if (input.wordmarkUrl) await setSetting('logo_wordmark_url', input.wordmarkUrl);
+        if (input.iconUrl) await setSetting('logo_icon_url', input.iconUrl);
+        return { success: true };
+      }),
+
+    // Accepts a base64-encoded image, uploads it to S3, saves the URL.
+    uploadLogo: publicProcedure
+      .input(z.object({
+        type: z.enum(['wordmark', 'icon']),
+        dataUrl: z.string().min(1),   // data:image/...;base64,...
+        fileName: z.string().min(1),
+      }))
+      .mutation(async ({ input }) => {
+        // Decode base64 data URL
+        const matches = input.dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+        if (!matches) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Invalid image data' });
+        const mimeType = matches[1];
+        const buffer = Buffer.from(matches[2], 'base64');
+        const ext = input.fileName.split('.').pop() ?? 'png';
+        const key = `logos/${input.type}-${Date.now()}.${ext}`;
+        const { url } = await storagePut(key, buffer, mimeType);
+        const settingKey = input.type === 'wordmark' ? 'logo_wordmark_url' : 'logo_icon_url';
+        await setSetting(settingKey, url);
+        return { url };
+      }),
+
     // Sends a test email using the stored Resend credentials to verify they work.
     testResendEmail: publicProcedure
       .input(z.object({ toEmail: z.string().email() }))

@@ -10,9 +10,9 @@
  */
 
 import { Menu } from "lucide-react";
-import { APP_LOGO } from "@/const";
 import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useLogo } from "@/hooks/useLogo";
 
 interface MarketingNavProps {
   /** Called when the "Join Waitlist" button is clicked. */
@@ -30,6 +30,7 @@ const NAV_LINKS = [
 export default function MarketingNav({ onJoinWaitlist }: MarketingNavProps) {
   const { isAuthenticated } = useAuth();
   const [pathname, setLocation] = useLocation();
+  const { wordmarkUrl } = useLogo();
 
   /** Returns true when the nav link should be styled as active. */
   function isActive(href: string): boolean {
@@ -57,12 +58,9 @@ export default function MarketingNav({ onJoinWaitlist }: MarketingNavProps) {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#3B4A6B]/80 backdrop-blur-lg border-b border-white/5">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
 
-        {/* Logo */}
-        <a href="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 flex items-center justify-center">
-            <img src={APP_LOGO} alt="Taskbloom logo" className="w-10 h-10 object-contain" />
-          </div>
-          <span className="font-serif text-xl font-semibold tracking-tight">Taskbloom</span>
+        {/* Logo — wordmark pulled from admin logo settings */}
+        <a href="/" className="flex items-center">
+          <img src={wordmarkUrl} alt="Taskbloom" className="h-10 w-auto object-contain" />
         </a>
 
         {/* Desktop links */}
