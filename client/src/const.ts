@@ -4,7 +4,7 @@ export const APP_TITLE = import.meta.env.VITE_APP_TITLE || "Taskbloom";
 
 export const APP_LOGO =
   import.meta.env.VITE_APP_LOGO ||
-  "https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-logo-new_ca1f7308.png";
+  "https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-logo-transparent_d83d8acc.png";
 
 // Generate login URL at runtime so redirect URI reflects the current origin.
 export const getLoginUrl = () => {

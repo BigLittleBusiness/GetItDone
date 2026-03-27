@@ -8,9 +8,9 @@
 import { trpc } from '@/lib/trpc';
 
 const DEFAULT_WORDMARK =
-  'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-wordmark-dark_ffbd6a10.webp';
+  'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-wordmark-light-transparent_2697a5ed.png';
 const DEFAULT_ICON =
-  'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-logo-new_ca1f7308.png';
+  'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-logo-transparent_d83d8acc.png';
 
 export function useLogo() {
   const { data } = trpc.admin.getLogo.useQuery(undefined, {

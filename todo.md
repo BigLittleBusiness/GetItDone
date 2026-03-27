@@ -135,3 +135,4 @@
 - [x] Add last-updated timestamp to each logo card in Logo Management tab
 - [x] Ensure all marketing pages use the database-stored OG image for consistent social media previews
 - [x] Add Copy URL button with clipboard feedback to each logo card in Logo Management admin tab
+- [x] Apply transparent wordmark PNG to header (nav) and transparent icon PNG to footer

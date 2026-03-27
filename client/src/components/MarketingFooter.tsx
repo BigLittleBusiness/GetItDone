@@ -15,7 +15,7 @@ export default function MarketingFooter() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
         {/* Brand — wordmark pulled from admin logo settings */}
         <div className="flex items-center opacity-80">
-          <img src={wordmarkUrl} alt="Taskbloom" className="h-7 w-auto object-contain" />
+          <img src={wordmarkUrl} alt="Taskbloom" className="h-8 w-auto max-w-[160px] object-contain" />
         </div>
 
         {/* Legal links */}

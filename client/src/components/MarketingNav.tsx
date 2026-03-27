@@ -60,7 +60,7 @@ export default function MarketingNav({ onJoinWaitlist }: MarketingNavProps) {
 
         {/* Logo — wordmark pulled from admin logo settings */}
         <a href="/" className="flex items-center">
-          <img src={wordmarkUrl} alt="Taskbloom" className="h-10 w-auto object-contain" />
+          <img src={wordmarkUrl} alt="Taskbloom" className="h-9 w-auto max-w-[180px] object-contain" />
         </a>
 
         {/* Desktop links */}
