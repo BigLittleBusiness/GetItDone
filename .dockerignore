@@ -1,0 +1,10 @@
+node_modules
+.pnpm-store
+dist
+.git
+.gitignore
+*.md
+*.log
+.env*
+coverage
+drizzle/migrations

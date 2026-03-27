@@ -1,0 +1,9 @@
+{
+  "query": "\nINSERT INTO app_settings (`key`, `value`) \nVALUES \n  ('logo_wordmark_url', 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-wordmark-light-transparent_2697a5ed.png'),\n  ('logo_wordmark_updated_at', CAST(UNIX_TIMESTAMP(NOW()) * 1000 AS CHAR))\nON DUPLICATE KEY UPDATE \n  `value` = VALUES(`value`);\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user ssbex3qTpoaXVqM.8e073d5188c5 --database maeA52JBNKsvSZamfPFaVJ --execute \nINSERT INTO app_settings (`key`, `value`) \nVALUES \n  ('logo_wordmark_url', 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-wordmark-light-transparent_2697a5ed.png'),\n  ('logo_wordmark_updated_at', CAST(UNIX_TIMESTAMP(NOW()) * 1000 AS CHAR))\nON DUPLICATE KEY UPDATE \n  `value` = VALUES(`value`);\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1616
+}

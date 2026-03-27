@@ -37,6 +37,14 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
+
+  // ── Health check ──────────────────────────────────────────────────────────
+  // Used by AWS ALB/ECS/App Runner target health checks and Docker HEALTHCHECK.
+  // Returns 200 with a JSON body so load balancers can verify the process is up.
+  app.get('/health', (_req, res) => {
+    res.status(200).json({ status: 'ok', uptime: process.uptime() });
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",

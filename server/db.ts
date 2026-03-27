@@ -261,3 +261,9 @@ export async function setSetting(key: string, value: string): Promise<void> {
     .values({ key, value })
     .onDuplicateKeyUpdate({ set: { value } });
 }
+
+export async function deleteSetting(key: string): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(appSettings).where(eq(appSettings.key, key));
+}

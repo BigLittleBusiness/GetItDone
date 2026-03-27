@@ -37,6 +37,22 @@ export default function AdminDashboard() {
     return () => clearInterval(id);
   }, [lockedUntil]);
 
+  // Call the server-side logout to clear the httpOnly admin session cookie.
+  const logoutMutation = trpc.admin.logout.useMutation({
+    onSettled: () => setIsAuthenticated(false),
+  });
+
+  // On mount, attempt to fetch survey data to check if an active session cookie
+  // already exists (e.g. after a page refresh). If it succeeds, skip the login form.
+  const sessionCheck = trpc.admin.getSurveyResponses.useQuery(undefined, {
+    enabled: !isAuthenticated,
+    retry: false,
+  });
+
+  useEffect(() => {
+    if (sessionCheck.isSuccess) setIsAuthenticated(true);
+  }, [sessionCheck.isSuccess]);
+
   const loginMutation = trpc.admin.login.useMutation({
     onSuccess: () => {
       setIsAuthenticated(true);
@@ -189,10 +205,11 @@ export default function AdminDashboard() {
               </>
             )}
             <button
-              onClick={() => setIsAuthenticated(false)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white/10 text-indigo-200 rounded-xl hover:bg-white/20 transition-colors font-medium text-sm"
+              onClick={() => logoutMutation.mutate()}
+              disabled={logoutMutation.isPending}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white/10 text-indigo-200 rounded-xl hover:bg-white/20 transition-colors font-medium text-sm disabled:opacity-50"
             >
-              <LogOut size={16} /> Log out
+              <LogOut size={16} /> {logoutMutation.isPending ? 'Logging out…' : 'Log out'}
             </button>
           </div>
         </div>

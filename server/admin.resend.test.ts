@@ -13,6 +13,16 @@ vi.mock('./db', async (importOriginal) => {
     ...actual,
     getSetting: vi.fn(),
     setSetting: vi.fn().mockResolvedValue(undefined),
+    deleteSetting: vi.fn().mockResolvedValue(undefined),
+  };
+});
+
+// ── Mock verifyAdminSession so adminProcedure passes in tests ─────────────────
+vi.mock('./_core/adminSession', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./_core/adminSession')>();
+  return {
+    ...actual,
+    verifyAdminSession: vi.fn(async () => true),
   };
 });
 
@@ -23,13 +33,16 @@ import type { TrpcContext } from './_core/context';
 function createTestContext(): TrpcContext {
   return {
     user: null,
-    req: { protocol: 'https', headers: {} } as TrpcContext['req'],
-    res: {} as TrpcContext['res'],
+    req: { protocol: 'https', headers: {}, cookies: {} } as TrpcContext['req'],
+    res: {
+      cookie: vi.fn(),
+      clearCookie: vi.fn(),
+    } as unknown as TrpcContext['res'],
   };
 }
 
-// Admin procedures are public (no auth required — the client verifies the
-// password separately via admin.login), so we pass a minimal context.
+// Admin procedures now require a valid admin session cookie.
+// verifyAdminSession is mocked above to always return true.
 const caller = appRouter.createCaller(createTestContext());
 
 const mockGetSetting = getSetting as ReturnType<typeof vi.fn>;

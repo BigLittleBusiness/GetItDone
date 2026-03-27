@@ -2,16 +2,42 @@ import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 
+// ── Mock the DB helpers so rate-limiter and settings calls don't need a real DB ──
+const fakeDb = new Map<string, string>();
+vi.mock("./db", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./db")>();
+  return {
+    ...actual,
+    getSetting: vi.fn(async (key: string) => fakeDb.get(key) ?? null),
+    setSetting: vi.fn(async (key: string, value: string) => { fakeDb.set(key, value); }),
+    deleteSetting: vi.fn(async (key: string) => { fakeDb.delete(key); }),
+    getAllSurveyResponses: vi.fn(async () => []),
+  };
+});
+
+// ── Mock verifyAdminSession so adminProcedure passes in tests ─────────────────
+vi.mock("./_core/adminSession", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./_core/adminSession")>();
+  return {
+    ...actual,
+    verifyAdminSession: vi.fn(async () => true),
+  };
+});
+
 function createTestContext(): TrpcContext {
   return {
     user: null,
-    req: { protocol: "https", headers: {} } as TrpcContext["req"],
-    res: {} as TrpcContext["res"],
+    req: { protocol: "https", headers: {}, cookies: {} } as TrpcContext["req"],
+    res: {
+      cookie: vi.fn(),
+      clearCookie: vi.fn(),
+    } as unknown as TrpcContext["res"],
   };
 }
 
 describe("admin.login", () => {
   beforeEach(() => {
+    fakeDb.clear();
     vi.stubEnv("ADMIN_PASSWORD", "super-secret-password-123");
   });
 

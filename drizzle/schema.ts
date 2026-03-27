@@ -1,5 +1,6 @@
 import {
   boolean,
+  index,
   int,
   json,
   mysqlEnum,
@@ -48,7 +49,7 @@ export type InsertUser = typeof users.$inferInsert;
 // ─── Tasks ────────────────────────────────────────────────────────────────────
 export const tasks = mysqlTable("tasks", {
   id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: 'cascade' }),
   title: text("title").notNull(),
   notes: text("notes"),
   // Which role context does this task belong to?
@@ -75,7 +76,14 @@ export const tasks = mysqlTable("tasks", {
   completedAt: timestamp("completedAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
+}, (t) => ({
+  // Most queries filter by userId — this index is critical for performance.
+  userIdIdx: index("tasks_userId_idx").on(t.userId),
+  // Filtering active tasks by status is the most common dashboard query.
+  userStatusIdx: index("tasks_userId_status_idx").on(t.userId, t.status),
+  // Due-date reminder job queries by dueDate.
+  dueDateIdx: index("tasks_dueDate_idx").on(t.dueDate),
+}));
 
 export type Task = typeof tasks.$inferSelect;
 export type InsertTask = typeof tasks.$inferInsert;
@@ -83,11 +91,14 @@ export type InsertTask = typeof tasks.$inferInsert;
 // ─── Achievements / Badges ────────────────────────────────────────────────────
 export const achievements = mysqlTable("achievements", {
   id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: 'cascade' }),
   // Slug identifies the achievement type, e.g. "first_task", "streak_7", "level_5"
   slug: varchar("slug", { length: 64 }).notNull(),
   unlockedAt: timestamp("unlockedAt").defaultNow().notNull(),
-});
+}, (t) => ({
+  // Checking whether a user already has a specific achievement is the hot path.
+  userSlugIdx: index("achievements_userId_slug_idx").on(t.userId, t.slug),
+}));
 
 export type Achievement = typeof achievements.$inferSelect;
 

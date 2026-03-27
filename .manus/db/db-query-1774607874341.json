@@ -1,0 +1,18 @@
+{
+  "query": "SELECT `key`, `value` FROM app_settings WHERE `key` IN ('logo_wordmark_url', 'logo_wordmark_updated_at', 'logo_icon_url');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user ssbex3qTpoaXVqM.8e073d5188c5 --database maeA52JBNKsvSZamfPFaVJ --execute SELECT `key`, `value` FROM app_settings WHERE `key` IN ('logo_wordmark_url', 'logo_wordmark_updated_at', 'logo_icon_url');",
+  "rows": [
+    {
+      "key": "logo_wordmark_url",
+      "value": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-wordmark-light-transparent_2697a5ed.png"
+    },
+    {
+      "key": "logo_wordmark_updated_at",
+      "value": "1774607866000"
+    }
+  ],
+  "messages": [],
+  "stdout": "key\tvalue\nlogo_wordmark_url\thttps://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-wordmark-light-transparent_2697a5ed.png\nlogo_wordmark_updated_at\t1774607866000\n",
+  "stderr": "",
+  "execution_time_ms": 1666
+}

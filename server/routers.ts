@@ -3,7 +3,8 @@ import { COOKIE_NAME } from "@shared/const";
 import { ENV } from "./_core/env";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { adminProcedure, protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { issueAdminSession, clearAdminSession } from "./_core/adminSession";
 import { TRPCError } from "@trpc/server";
 import { invokeLLM } from "./_core/llm";
 import { runStreakReminderJob } from "./streakReminder";
@@ -12,6 +13,7 @@ import { transcribeAudio } from "./_core/voiceTranscription";
 import { storagePut } from "./storage";
 import { notifyOwner } from "./_core/notification";
 import { recordFailedAttempt, clearAttempts, isLockedOut, MAX_ATTEMPTS, LOCKOUT_MS } from "./adminRateLimiter";
+import { timingSafeEqual } from "crypto";
 import { buildNextTaskInstance } from "./recurrence";
 import {
   createSurveyResponse,
@@ -393,7 +395,7 @@ export const appRouter = router({
     // The password is read from ENV.adminPassword (never exposed to the browser).
     login: publicProcedure
       .input(z.object({ password: z.string().min(1) }))
-      .mutation(({ input, ctx }) => {
+      .mutation(async ({ input, ctx }) => {
         // Derive the client IP from the request (falls back to 'unknown').
         const ip: string =
           (ctx.req.headers['x-forwarded-for'] as string | undefined)?.split(',')[0]?.trim() ??
@@ -401,7 +403,7 @@ export const appRouter = router({
           'unknown';
 
         // Reject immediately if the IP is already locked out.
-        const lockCheck = isLockedOut(ip);
+        const lockCheck = await isLockedOut(ip);
         if (lockCheck.locked) {
           const retryAfterSec = Math.ceil((lockCheck.lockedUntil! - Date.now()) / 1000);
           throw new TRPCError({
@@ -419,15 +421,18 @@ export const appRouter = router({
           });
         }
 
-        // Constant-time comparison to prevent timing attacks.
-        const expected = adminPassword;
-        const provided = input.password;
+        // Constant-time comparison to prevent timing attacks (crypto.timingSafeEqual).
+        // Buffers must be the same byte length, so we compare UTF-8 encoded buffers.
+        // If lengths differ we still do the comparison against a dummy to avoid
+        // short-circuit leaking the length.
+        const expectedBuf = Buffer.from(adminPassword, 'utf8');
+        const providedBuf = Buffer.from(input.password, 'utf8');
         const isCorrect =
-          provided.length === expected.length &&
-          provided.split('').every((c, i) => c === expected[i]);
+          expectedBuf.length === providedBuf.length &&
+          timingSafeEqual(expectedBuf, providedBuf);
 
         if (!isCorrect) {
-          const result = recordFailedAttempt(ip);
+          const result = await recordFailedAttempt(ip);
           const message = result.allowed
             ? `Incorrect password. ${result.attemptsLeft} attempt${result.attemptsLeft === 1 ? '' : 's'} remaining before lockout.`
             : `Too many failed attempts. Try again in ${Math.ceil(LOCKOUT_MS / 1000 / 60)} minutes.`;
@@ -435,17 +440,25 @@ export const appRouter = router({
         }
 
         // Success — clear any previous failed attempts for this IP.
-        clearAttempts(ip);
+        await clearAttempts(ip);
+
+        // Issue a signed httpOnly admin session cookie.
+        await issueAdminSession(ctx.req, ctx.res);
         return { success: true };
       }),
 
-    // Returns all survey responses — only callable after the client has
-    // verified the password via admin.login above.
-    getSurveyResponses: publicProcedure.query(() => getAllSurveyResponses()),
+    // Clears the admin session cookie.
+    logout: publicProcedure.mutation(({ ctx }) => {
+      clearAdminSession(ctx.req, ctx.res);
+      return { success: true };
+    }),
+
+    // Returns all survey responses — only callable with a valid admin session.
+    getSurveyResponses: adminProcedure.query(() => getAllSurveyResponses()),
 
     // ── Resend Configuration ────────────────────────────────────────────────
     // Returns the stored Resend credentials (API key is masked for display).
-    getResendConfig: publicProcedure.query(async () => {
+    getResendConfig: adminProcedure.query(async () => {
       const apiKey = await getSetting('resend_api_key');
       const fromEmail = await getSetting('resend_from_email');
       const fromName = await getSetting('resend_from_name');
@@ -459,7 +472,7 @@ export const appRouter = router({
     }),
 
     // Saves the Resend credentials to the app_settings table.
-    saveResendConfig: publicProcedure
+    saveResendConfig: adminProcedure
       .input(z.object({
         apiKey: z.string().min(1, 'API key is required'),
         fromEmail: z.string().email('Must be a valid email address'),
@@ -474,6 +487,7 @@ export const appRouter = router({
 
     // ── Logo Management ──────────────────────────────────────────────────────
     // Returns the stored logo URLs (wordmark + icon + OG image) with last-updated timestamps.
+    // This is public so the nav/footer/OG tags can read it without an admin session.
     getLogo: publicProcedure.query(async () => {
       const wordmarkUrl = await getSetting('logo_wordmark_url');
       const iconUrl = await getSetting('logo_icon_url');
@@ -492,7 +506,7 @@ export const appRouter = router({
     }),
 
     // Saves logo URLs directly (for URL-based updates).
-    saveLogo: publicProcedure
+    saveLogo: adminProcedure
       .input(z.object({
         wordmarkUrl: z.string().url().optional(),
         iconUrl: z.string().url().optional(),
@@ -516,7 +530,7 @@ export const appRouter = router({
       }),
 
     // Accepts a base64-encoded image, uploads it to S3, saves the URL.
-    uploadLogo: publicProcedure
+    uploadLogo: adminProcedure
       .input(z.object({
         type: z.enum(['wordmark', 'icon', 'og-image']),
         dataUrl: z.string().min(1),   // data:image/...;base64,...
@@ -540,7 +554,7 @@ export const appRouter = router({
       }),
 
     // Sends a test email using the stored Resend credentials to verify they work.
-    testResendEmail: publicProcedure
+    testResendEmail: adminProcedure
       .input(z.object({ toEmail: z.string().email() }))
       .mutation(async ({ input }) => {
         const apiKey = await getSetting('resend_api_key');

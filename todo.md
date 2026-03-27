@@ -136,3 +136,11 @@
 - [x] Ensure all marketing pages use the database-stored OG image for consistent social media previews
 - [x] Add Copy URL button with clipboard feedback to each logo card in Logo Management admin tab
 - [x] Apply transparent wordmark PNG to header (nav) and transparent icon PNG to footer
+- [x] Upload transparent wordmark to Logo Management tab database slot
+
+## Security & Infrastructure Fixes (Code Review)
+- [ ] #1 Add adminProcedure middleware and secure all admin endpoints with httpOnly session cookie
+- [ ] #2 Add Dockerfile, .dockerignore, and /health endpoint for AWS deployment
+- [ ] #3 Replace admin password comparison with crypto.timingSafeEqual
+- [ ] #4 Add database indexes on tasks and achievements tables
+- [ ] #5 Persist rate-limiter state to MySQL database

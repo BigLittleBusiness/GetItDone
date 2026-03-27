@@ -1,0 +1,9 @@
+{
+  "query": "\nINSERT IGNORE INTO __drizzle_migrations (hash, created_at) VALUES\n  ('0003_wild_mister_fear', 1774000000000),\n  ('0004_purple_mister_fear', 1774100000000),\n  ('0005_orange_mister_fear', 1774200000000),\n  ('0006_dusty_microchip', 1774492625530),\n  ('0007_worthless_blizzard', 1774520497895),\n  ('0008_amused_firedrake', 1774522168231);\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user ssbex3qTpoaXVqM.8e073d5188c5 --database maeA52JBNKsvSZamfPFaVJ --execute \nINSERT IGNORE INTO __drizzle_migrations (hash, created_at) VALUES\n  ('0003_wild_mister_fear', 1774000000000),\n  ('0004_purple_mister_fear', 1774100000000),\n  ('0005_orange_mister_fear', 1774200000000),\n  ('0006_dusty_microchip', 1774492625530),\n  ('0007_worthless_blizzard', 1774520497895),\n  ('0008_amused_firedrake', 1774522168231);\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1737
+}
