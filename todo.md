@@ -128,3 +128,4 @@
 - [x] Add recurring tasks with ADHD-first design (after-completion trigger, roll-forward, daily/weekly/monthly/specific days)
 - [x] Add Resend configuration panel to admin dashboard (API key, sender email, test-send button)
 - [x] Rebrand app from GetItDone to Taskbloom (name, logo, all text references)
+- [x] Replace logo with new purple flower logo throughout marketing website (nav, footer, favicon, og image)

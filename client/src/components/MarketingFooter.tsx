@@ -14,7 +14,7 @@ export default function MarketingFooter() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
         {/* Brand */}
         <div className="flex items-center gap-2 opacity-80">
-          <img src={APP_LOGO} alt="Taskbloom" className="w-6 h-6 rounded-md object-cover" />
+          <img src={APP_LOGO} alt="Taskbloom" className="w-6 h-6 object-contain" />
           <span className="font-serif font-medium">Taskbloom</span>
         </div>
 

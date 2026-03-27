@@ -59,8 +59,8 @@ export default function MarketingNav({ onJoinWaitlist }: MarketingNavProps) {
 
         {/* Logo */}
         <a href="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center">
-            <img src={APP_LOGO} alt="Taskbloom logo" className="w-10 h-10 object-cover" />
+          <div className="w-10 h-10 flex items-center justify-center">
+            <img src={APP_LOGO} alt="Taskbloom logo" className="w-10 h-10 object-contain" />
           </div>
           <span className="font-serif text-xl font-semibold tracking-tight">Taskbloom</span>
         </a>

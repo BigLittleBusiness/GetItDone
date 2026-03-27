@@ -237,7 +237,7 @@ export default function Onboarding() {
       <div className="flex items-center justify-between px-6 py-5 border-b border-border">
         <div className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center">
-            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-logo-d_2dd90f43.png" alt="Taskbloom" className="w-9 h-9 object-cover" />
+            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-logo-new_ca1f7308.png" alt="Taskbloom" className="w-9 h-9 object-contain" />
           </div>
           <span className="font-semibold text-foreground">Taskbloom</span>
         </div>
