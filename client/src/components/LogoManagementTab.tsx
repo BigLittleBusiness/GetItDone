@@ -6,17 +6,20 @@ import {
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type UploadState = 'idle' | 'uploading' | 'success' | 'error';
+type LogoType = 'wordmark' | 'icon' | 'og-image';
 
 interface LogoSlot {
-  type: 'wordmark' | 'icon';
+  type: LogoType;
   label: string;
   description: string;
-  /** Where this logo appears in the UI */
+  /** Where this asset appears in the UI / on the web */
   usages: string[];
   /** Recommended dimensions */
   recommended: string;
   /** Preview container aspect ratio class */
   previewClass: string;
+  /** Max width for the preview box */
+  previewMaxW: string;
 }
 
 const SLOTS: LogoSlot[] = [
@@ -27,6 +30,7 @@ const SLOTS: LogoSlot[] = [
     usages: ['Navigation bar', 'Footer'],
     recommended: 'Landscape image, e.g. 400 × 80 px. PNG, WebP, or SVG.',
     previewClass: 'aspect-[5/1]',
+    previewMaxW: 'max-w-xs',
   },
   {
     type: 'icon',
@@ -35,6 +39,17 @@ const SLOTS: LogoSlot[] = [
     usages: ['Login dialog', 'Onboarding header', 'App icon fallback'],
     recommended: 'Square image, e.g. 256 × 256 px. PNG or WebP.',
     previewClass: 'aspect-square',
+    previewMaxW: 'max-w-[8rem]',
+  },
+  {
+    type: 'og-image',
+    label: 'Open Graph / Social Image',
+    description:
+      'The image shown when the site is shared on LinkedIn, Twitter/X, iMessage, Slack, and other platforms that support Open Graph previews.',
+    usages: ['LinkedIn', 'Twitter / X', 'iMessage', 'Slack', 'Facebook'],
+    recommended: '1200 × 630 px recommended. PNG or JPEG. Max 5 MB.',
+    previewClass: 'aspect-[1200/630]',
+    previewMaxW: 'max-w-sm',
   },
 ];
 
@@ -55,7 +70,7 @@ function LogoCard({
   onUploaded,
 }: {
   slot: LogoSlot;
-  currentUrl: string | undefined;
+  currentUrl: string | undefined | null;
   onUploaded: (url: string) => void;
 }) {
   const [dragOver, setDragOver] = useState(false);
@@ -117,7 +132,7 @@ function LogoCard({
       {/* Current preview */}
       <div>
         <p className="text-xs font-medium text-indigo-400 uppercase tracking-widest mb-2">Current</p>
-        <div className={`${slot.previewClass} w-full max-w-xs bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center overflow-hidden`}>
+        <div className={`${slot.previewClass} ${slot.previewMaxW} w-full bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center overflow-hidden`}>
           {displayUrl ? (
             <img
               src={displayUrl}
@@ -127,7 +142,7 @@ function LogoCard({
           ) : (
             <div className="flex flex-col items-center gap-2 text-indigo-500 p-4">
               <ImageIcon size={28} />
-              <span className="text-xs">No logo set</span>
+              <span className="text-xs">No image set</span>
             </div>
           )}
         </div>
@@ -174,7 +189,7 @@ function LogoCard({
           )}
           <p className="text-sm text-indigo-300 text-center">
             {uploadState === 'uploading' && 'Uploading…'}
-            {uploadState === 'success' && 'Logo updated successfully!'}
+            {uploadState === 'success' && 'Image updated successfully!'}
             {uploadState === 'error' && (errorMsg || 'Upload failed. Please try again.')}
             {uploadState === 'idle' && (
               <>
@@ -191,7 +206,23 @@ function LogoCard({
       {/* Tip */}
       <div className="flex gap-2 text-xs text-indigo-400 bg-white/5 rounded-xl px-4 py-3">
         <Info size={14} className="shrink-0 mt-0.5" />
-        <span>Changes take effect immediately across the site — no restart required.</span>
+        {slot.type === 'og-image' ? (
+          <span>
+            This image is read by social platforms when someone shares your URL. Changes may take
+            up to 30 minutes to appear in cached previews — use the{' '}
+            <a
+              href="https://www.opengraph.xyz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-indigo-200"
+            >
+              OpenGraph.xyz debugger
+            </a>{' '}
+            to force-refresh.
+          </span>
+        ) : (
+          <span>Changes take effect immediately across the site — no restart required.</span>
+        )}
       </div>
     </div>
   );
@@ -202,10 +233,12 @@ export function LogoManagementTab() {
   const { data: logoConfig, isLoading, refetch } = trpc.admin.getLogo.useQuery();
   const [wordmarkUrl, setWordmarkUrl] = useState<string | undefined>(undefined);
   const [iconUrl, setIconUrl] = useState<string | undefined>(undefined);
+  const [ogImageUrl, setOgImageUrl] = useState<string | undefined | null>(undefined);
 
-  // Sync from server on first load
+  // Prefer locally-updated URLs over stale server data
   const effectiveWordmark = wordmarkUrl ?? logoConfig?.wordmarkUrl;
   const effectiveIcon = iconUrl ?? logoConfig?.iconUrl;
+  const effectiveOgImage = ogImageUrl !== undefined ? ogImageUrl : logoConfig?.ogImageUrl;
 
   if (isLoading) {
     return (
@@ -219,10 +252,11 @@ export function LogoManagementTab() {
     <div className="space-y-8">
       {/* Intro */}
       <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-2xl px-6 py-4 text-sm text-indigo-200">
-        Upload your logos below. Each image is stored securely and served via CDN.
-        The wordmark appears in the nav and footer; the icon appears in the login dialog and onboarding screen.
+        Upload your brand assets below. Each image is stored securely and served via CDN.
+        The wordmark and icon update the site immediately; the OG image updates social link previews.
       </div>
 
+      {/* Wordmark + Icon side by side */}
       <div className="grid md:grid-cols-2 gap-8">
         <LogoCard
           slot={SLOTS[0]}
@@ -235,6 +269,13 @@ export function LogoManagementTab() {
           onUploaded={(url) => { setIconUrl(url); refetch(); }}
         />
       </div>
+
+      {/* OG image full-width below */}
+      <LogoCard
+        slot={SLOTS[2]}
+        currentUrl={effectiveOgImage}
+        onUploaded={(url) => { setOgImageUrl(url); refetch(); }}
+      />
     </div>
   );
 }

@@ -34,19 +34,22 @@ const DEFAULT_ICON =
 async function getLogoHandler() {
   const wordmarkUrl = await getSetting('logo_wordmark_url');
   const iconUrl = await getSetting('logo_icon_url');
+  const ogImageUrl = await getSetting('logo_og_image_url');
   return {
     wordmarkUrl: wordmarkUrl ?? DEFAULT_WORDMARK,
     iconUrl: iconUrl ?? DEFAULT_ICON,
+    ogImageUrl: ogImageUrl ?? null,
   };
 }
 
-async function saveLogoHandler(input: { wordmarkUrl?: string; iconUrl?: string }) {
+async function saveLogoHandler(input: { wordmarkUrl?: string; iconUrl?: string; ogImageUrl?: string }) {
   if (input.wordmarkUrl) await setSetting('logo_wordmark_url', input.wordmarkUrl);
   if (input.iconUrl) await setSetting('logo_icon_url', input.iconUrl);
+  if (input.ogImageUrl) await setSetting('logo_og_image_url', input.ogImageUrl);
   return { success: true };
 }
 
-async function uploadLogoHandler(input: { type: 'wordmark' | 'icon'; dataUrl: string; fileName: string }) {
+async function uploadLogoHandler(input: { type: 'wordmark' | 'icon' | 'og-image'; dataUrl: string; fileName: string }) {
   const matches = input.dataUrl.match(/^data:([^;]+);base64,(.+)$/);
   if (!matches) throw new Error('Invalid image data');
   const mimeType = matches[1];
@@ -54,7 +57,7 @@ async function uploadLogoHandler(input: { type: 'wordmark' | 'icon'; dataUrl: st
   const ext = input.fileName.split('.').pop() ?? 'png';
   const key = `logos/${input.type}-test.${ext}`;
   const { url } = await (storagePut as ReturnType<typeof vi.fn>)(key, buffer, mimeType);
-  const settingKey = input.type === 'wordmark' ? 'logo_wordmark_url' : 'logo_icon_url';
+  const settingKey = input.type === 'wordmark' ? 'logo_wordmark_url' : input.type === 'icon' ? 'logo_icon_url' : 'logo_og_image_url';
   await setSetting(settingKey, url);
   return { url };
 }
@@ -69,6 +72,7 @@ describe('admin.getLogo', () => {
     const result = await getLogoHandler();
     expect(result.wordmarkUrl).toBe(DEFAULT_WORDMARK);
     expect(result.iconUrl).toBe(DEFAULT_ICON);
+    expect(result.ogImageUrl).toBeNull();
   });
 
   it('returns stored URLs when settings exist', async () => {
@@ -95,6 +99,13 @@ describe('admin.saveLogo', () => {
     (setSetting as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
     const result = await saveLogoHandler({ iconUrl: 'https://example.com/icon.png' });
     expect(setSetting).toHaveBeenCalledWith('logo_icon_url', 'https://example.com/icon.png');
+    expect(result.success).toBe(true);
+  });
+
+  it('saves OG image URL to app_settings', async () => {
+    (setSetting as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+    const result = await saveLogoHandler({ ogImageUrl: 'https://example.com/og.png' });
+    expect(setSetting).toHaveBeenCalledWith('logo_og_image_url', 'https://example.com/og.png');
     expect(result.success).toBe(true);
   });
 
@@ -136,5 +147,16 @@ describe('admin.uploadLogo', () => {
 
     expect(setSetting).toHaveBeenCalledWith('logo_wordmark_url', 'https://cdn.example.com/wm.webp');
     expect(result.url).toBe('https://cdn.example.com/wm.webp');
+  });
+
+  it('uploads og-image and saves to logo_og_image_url', async () => {
+    (storagePut as ReturnType<typeof vi.fn>).mockResolvedValue({ url: 'https://cdn.example.com/og.png' });
+    (setSetting as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+
+    const dataUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+    const result = await uploadLogoHandler({ type: 'og-image', dataUrl, fileName: 'og.png' });
+
+    expect(setSetting).toHaveBeenCalledWith('logo_og_image_url', 'https://cdn.example.com/og.png');
+    expect(result.url).toBe('https://cdn.example.com/og.png');
   });
 });

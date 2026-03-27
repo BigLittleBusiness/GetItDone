@@ -11,7 +11,7 @@ import { ArrowRight, Brain, Mic, Trophy, ShieldCheck, Sparkles, Zap, Layout, Hea
 import { useLocation } from 'wouter';
 import { trpc } from '@/lib/trpc';
 
-const OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
+const DEFAULT_OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
 const SITE_URL = 'https://taskbloom.app';
 
 /** Smoothly scrolls to an element by id, accounting for the 80px fixed nav. */
@@ -24,6 +24,8 @@ export default function Home() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
+  const { data: logoConfig } = trpc.admin.getLogo.useQuery(undefined, { staleTime: 5 * 60 * 1000 });
+  const ogImage = logoConfig?.ogImageUrl ?? DEFAULT_OG_IMAGE;
 
   // Bottom CTA waitlist form state
   const [ctaEmail, setCtaEmail] = useState('');
@@ -82,7 +84,7 @@ export default function Home() {
         <meta property="og:url" content={SITE_URL} />
         <meta property="og:title" content="Taskbloom — The Productivity OS for Neurodivergent Minds" />
         <meta property="og:description" content="A smart, empathetic task manager designed for ADHD, Autism, and the way you actually think. Voice capture, AI task breakdown, streaks, and more." />
-        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:image" content={ogImage} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="Taskbloom" />
@@ -91,7 +93,7 @@ export default function Home() {
         <meta name="twitter:url" content={SITE_URL} />
         <meta name="twitter:title" content="Taskbloom — The Productivity OS for Neurodivergent Minds" />
         <meta name="twitter:description" content="A smart, empathetic task manager designed for ADHD, Autism, and the way you actually think. Voice capture, AI task breakdown, streaks, and more." />
-        <meta name="twitter:image" content={OG_IMAGE} />
+        <meta name="twitter:image" content={ogImage} />
       </Helmet>
       {/* Navigation */}
       <MarketingNav onJoinWaitlist={() => setIsFeedbackOpen(true)} />

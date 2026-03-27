@@ -473,13 +473,15 @@ export const appRouter = router({
       }),
 
     // ── Logo Management ──────────────────────────────────────────────────────
-    // Returns the stored logo URLs (wordmark + icon).
+    // Returns the stored logo URLs (wordmark + icon + OG image).
     getLogo: publicProcedure.query(async () => {
       const wordmarkUrl = await getSetting('logo_wordmark_url');
       const iconUrl = await getSetting('logo_icon_url');
+      const ogImageUrl = await getSetting('logo_og_image_url');
       return {
         wordmarkUrl: wordmarkUrl ?? 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-wordmark-dark_ffbd6a10.webp',
         iconUrl: iconUrl ?? 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/taskbloom-logo-new_ca1f7308.png',
+        ogImageUrl: ogImageUrl ?? null,
       };
     }),
 
@@ -488,17 +490,19 @@ export const appRouter = router({
       .input(z.object({
         wordmarkUrl: z.string().url().optional(),
         iconUrl: z.string().url().optional(),
+        ogImageUrl: z.string().url().optional(),
       }))
       .mutation(async ({ input }) => {
         if (input.wordmarkUrl) await setSetting('logo_wordmark_url', input.wordmarkUrl);
         if (input.iconUrl) await setSetting('logo_icon_url', input.iconUrl);
+        if (input.ogImageUrl) await setSetting('logo_og_image_url', input.ogImageUrl);
         return { success: true };
       }),
 
     // Accepts a base64-encoded image, uploads it to S3, saves the URL.
     uploadLogo: publicProcedure
       .input(z.object({
-        type: z.enum(['wordmark', 'icon']),
+        type: z.enum(['wordmark', 'icon', 'og-image']),
         dataUrl: z.string().min(1),   // data:image/...;base64,...
         fileName: z.string().min(1),
       }))
@@ -511,7 +515,7 @@ export const appRouter = router({
         const ext = input.fileName.split('.').pop() ?? 'png';
         const key = `logos/${input.type}-${Date.now()}.${ext}`;
         const { url } = await storagePut(key, buffer, mimeType);
-        const settingKey = input.type === 'wordmark' ? 'logo_wordmark_url' : 'logo_icon_url';
+        const settingKey = input.type === 'wordmark' ? 'logo_wordmark_url' : input.type === 'icon' ? 'logo_icon_url' : 'logo_og_image_url';
         await setSetting(settingKey, url);
         return { url };
       }),
