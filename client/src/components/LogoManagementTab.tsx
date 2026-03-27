@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { trpc } from '@/lib/trpc';
 import {
-  Upload, CheckCircle2, AlertCircle, RefreshCw, Image as ImageIcon, Info, Clock,
+  Upload, CheckCircle2, AlertCircle, RefreshCw, Image as ImageIcon, Info, Clock, Copy, Check,
 } from 'lucide-react';
 
 // ── Timestamp helper ──────────────────────────────────────────────────────────
@@ -97,6 +97,28 @@ function LogoCard({
 
   const [localUpdatedAt, setLocalUpdatedAt] = useState<number | null>(null);
   const displayUpdatedAt = localUpdatedAt ?? updatedAt;
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyUrl = useCallback(() => {
+    const url = currentUrl;
+    if (!url) return;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {
+      // Fallback for browsers that block clipboard API
+      const el = document.createElement('textarea');
+      el.value = url;
+      el.style.position = 'fixed';
+      el.style.opacity = '0';
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }, [currentUrl]);
 
   const uploadMutation = trpc.admin.uploadLogo.useMutation({
     onSuccess: ({ url, updatedAt: ts }) => {
@@ -149,12 +171,28 @@ function LogoCard({
           <h3 className="text-lg font-serif text-white mb-1">{slot.label}</h3>
           <p className="text-indigo-300 text-sm">{slot.description}</p>
         </div>
-        {formatTimestamp(displayUpdatedAt) && (
-          <div className="flex items-center gap-1.5 shrink-0 text-xs text-indigo-400 bg-white/5 rounded-xl px-3 py-1.5 border border-white/5">
-            <Clock size={12} className="shrink-0" />
-            <span>{formatTimestamp(displayUpdatedAt)}</span>
-          </div>
-        )}
+        <div className="flex items-center gap-2 shrink-0">
+          {currentUrl && (
+            <button
+              onClick={handleCopyUrl}
+              title="Copy CDN URL"
+              className={`flex items-center gap-1.5 text-xs rounded-xl px-3 py-1.5 border transition-all ${
+                copied
+                  ? 'bg-green-500/15 border-green-500/30 text-green-400'
+                  : 'bg-white/5 border-white/5 text-indigo-400 hover:bg-white/10 hover:text-indigo-200'
+              }`}
+            >
+              {copied ? <Check size={12} className="shrink-0" /> : <Copy size={12} className="shrink-0" />}
+              <span>{copied ? 'Copied!' : 'Copy URL'}</span>
+            </button>
+          )}
+          {formatTimestamp(displayUpdatedAt) && (
+            <div className="flex items-center gap-1.5 shrink-0 text-xs text-indigo-400 bg-white/5 rounded-xl px-3 py-1.5 border border-white/5">
+              <Clock size={12} className="shrink-0" />
+              <span>{formatTimestamp(displayUpdatedAt)}</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Current preview */}

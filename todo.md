@@ -134,3 +134,4 @@
 - [x] Extend Logo Management tab with OG social image upload slot, wire into site Open Graph meta tags
 - [x] Add last-updated timestamp to each logo card in Logo Management tab
 - [x] Ensure all marketing pages use the database-stored OG image for consistent social media previews
+- [x] Add Copy URL button with clipboard feedback to each logo card in Logo Management admin tab
