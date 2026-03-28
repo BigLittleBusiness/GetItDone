@@ -12,18 +12,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Mock the db helpers ───────────────────────────────────────────────────────
-vi.mock('./db', () => ({
+vi.mock('../db', () => ({
   getSetting: vi.fn(),
   setSetting: vi.fn(),
 }));
 
 // ── Mock storagePut ───────────────────────────────────────────────────────────
-vi.mock('./storage', () => ({
+vi.mock('../storage', () => ({
   storagePut: vi.fn(),
 }));
 
-import { getSetting, setSetting } from './db';
-import { storagePut } from './storage';
+import { getSetting, setSetting } from '../db';
+import { storagePut } from '../storage';
 
 // ── Inline the procedure logic so we can unit-test it without a full tRPC stack ──
 

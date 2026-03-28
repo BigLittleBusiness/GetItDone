@@ -1,20 +1,20 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import AdminDashboard from "@/components/AdminDashboard";
+import AdminDashboard from "@/components/admin/AdminDashboard";
 import { Route, Switch } from "wouter";
-import ErrorBoundary from "./components/ErrorBoundary";
+import ErrorBoundary from "./components/shared/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
-import Onboarding from "./pages/Onboarding";
-import Dashboard from "./pages/Dashboard";
-import Settings from "./pages/Settings";
-import Mission from "./pages/Mission";
-import Pricing from "./pages/Pricing";
-import Parents from "./pages/Parents";
-import Privacy from "./pages/Privacy";
-import Terms from "./pages/Terms";
-import { QuickAdd } from "./components/QuickAdd";
+import Home from "./pages/marketing/Home";
+import Onboarding from "./pages/app/Onboarding";
+import Dashboard from "./pages/app/Dashboard";
+import Settings from "./pages/app/Settings";
+import Mission from "./pages/marketing/Mission";
+import Pricing from "./pages/marketing/Pricing";
+import Parents from "./pages/marketing/Parents";
+import Privacy from "./pages/marketing/Privacy";
+import Terms from "./pages/marketing/Terms";
+import { QuickAdd } from "./components/tasks/QuickAdd";
 function Router() {
   return (
     <Switch>

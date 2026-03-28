@@ -13,17 +13,17 @@ import {
   MAX_ATTEMPTS,
   WINDOW_MS,
   LOCKOUT_MS,
-} from "./adminRateLimiter";
-import { appRouter } from "./routers";
-import type { TrpcContext } from "./_core/context";
+} from "../adminRateLimiter";
+import { appRouter } from "../routers";
+import type { TrpcContext } from "../_core/context";
 
 // ─── Mock the DB helpers ─────────────────────────────────────────────────────
 
 // In-memory store that simulates the app_settings table for tests.
 const fakeDb = new Map<string, string>();
 
-vi.mock("./db", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("./db")>();
+vi.mock("../db", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../db")>();
   return {
     ...actual,
     getSetting: vi.fn(async (key: string) => fakeDb.get(key) ?? null),

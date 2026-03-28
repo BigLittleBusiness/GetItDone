@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { appRouter } from "./routers";
-import type { TrpcContext } from "./_core/context";
+import { appRouter } from "../routers";
+import type { TrpcContext } from "../_core/context";
 
 // ─── Mock DB helpers ─────────────────────────────────────────────────────────
 
-vi.mock("./db", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("./db")>();
+vi.mock("../db", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../db")>();
   return {
     ...actual,
     getAllTasksForUser: vi.fn().mockResolvedValue([]),
@@ -16,11 +16,11 @@ vi.mock("./db", async (importOriginal) => {
   };
 });
 
-vi.mock("./_core/notification", () => ({
+vi.mock("../_core/notification", () => ({
   notifyOwner: vi.fn().mockResolvedValue(true),
 }));
 
-import * as db from "./db";
+import * as db from "../db";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

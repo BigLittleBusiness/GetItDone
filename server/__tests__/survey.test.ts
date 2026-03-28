@@ -1,19 +1,19 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import type { TrpcContext } from "./_core/context";
+import type { TrpcContext } from "../_core/context";
 
 // Mock notifyOwner before importing the router so the spy is in place
-vi.mock("./_core/notification", () => ({
+vi.mock("../_core/notification", () => ({
   notifyOwner: vi.fn().mockResolvedValue(true),
 }));
 
 // Mock verifyAdminSession so adminProcedure passes in tests that need it
-vi.mock("./_core/adminSession", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("./_core/adminSession")>();
+vi.mock("../_core/adminSession", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../_core/adminSession")>();
   return { ...actual, verifyAdminSession: vi.fn(async () => false) };
 });
 
-import { appRouter } from "./routers";
-import * as notificationModule from "./_core/notification";
+import { appRouter } from "../routers";
+import * as notificationModule from "../_core/notification";
 
 function createTestContext(): TrpcContext {
   const ctx: TrpcContext = {
@@ -125,7 +125,7 @@ describe("survey.submit", () => {
 
 describe("survey.getAll", () => {
   it("returns an array of survey responses when called with an admin session", async () => {
-    const { verifyAdminSession } = await import("./_core/adminSession");
+    const { verifyAdminSession } = await import("../_core/adminSession");
     (verifyAdminSession as ReturnType<typeof vi.fn>).mockResolvedValueOnce(true);
 
     const ctx = createTestContext();

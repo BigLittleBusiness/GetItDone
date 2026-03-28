@@ -7,8 +7,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Mock the db helpers ───────────────────────────────────────────────────────
-vi.mock('./db', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('./db')>();
+vi.mock('../db', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../db')>();
   return {
     ...actual,
     getSetting: vi.fn(),
@@ -18,17 +18,17 @@ vi.mock('./db', async (importOriginal) => {
 });
 
 // ── Mock verifyAdminSession so adminProcedure passes in tests ─────────────────
-vi.mock('./_core/adminSession', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('./_core/adminSession')>();
+vi.mock('../_core/adminSession', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../_core/adminSession')>();
   return {
     ...actual,
     verifyAdminSession: vi.fn(async () => true),
   };
 });
 
-import { getSetting, setSetting } from './db';
-import { appRouter } from './routers';
-import type { TrpcContext } from './_core/context';
+import { getSetting, setSetting } from '../db';
+import { appRouter } from '../routers';
+import type { TrpcContext } from '../_core/context';
 
 function createTestContext(): TrpcContext {
   return {

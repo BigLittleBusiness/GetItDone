@@ -10,10 +10,10 @@ import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { FileText, AlertCircle, Shield, Ban, Scale, Mail, RefreshCw, Globe } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import MarketingNav from "@/components/MarketingNav";
-import MarketingFooter from "@/components/MarketingFooter";
-import BackToTop from "@/components/BackToTop";
-import CookieConsent from "@/components/CookieConsent";
+import MarketingNav from "@/components/layout/MarketingNav";
+import MarketingFooter from "@/components/layout/MarketingFooter";
+import BackToTop from "@/components/shared/BackToTop";
+import CookieConsent from "@/components/shared/CookieConsent";
 
 const DEFAULT_OG_IMAGE = 'https://d2xsxph8kpxj0f.cloudfront.net/310419663031090894/maeA52JBNKsvSZamfPFaVJ/og-default-YNa3mC77hEt2hgiJBT4kDE.png';
 

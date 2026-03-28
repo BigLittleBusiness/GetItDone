@@ -144,3 +144,11 @@
 - [ ] #3 Replace admin password comparison with crypto.timingSafeEqual
 - [ ] #4 Add database indexes on tasks and achievements tables
 - [ ] #5 Persist rate-limiter state to MySQL database
+
+- [x] Split server/routers.ts into domain router modules (server/routers/auth.ts, user.ts, tasks.ts, achievements.ts, notifications.ts, voice.ts, admin.ts, survey.ts, index.ts)
+- [x] Split server/db.ts into domain DB helper modules (server/db/connection.ts, users.ts, tasks.ts, achievements.ts, streaks.ts, dueDates.ts, survey.ts, settings.ts, index.ts)
+- [x] Extract gamification constants and helpers to server/shared/gamification.ts
+- [x] Reorganise client components into domain subdirectories (admin/, layout/, shared/, tasks/)
+- [x] Reorganise client pages into domain subdirectories (marketing/, app/)
+- [x] Move all test files to server/__tests__/ and fix all import paths
+- [x] Add backward-compatibility shims (server/routers.ts, server/db.ts) for zero-disruption migration

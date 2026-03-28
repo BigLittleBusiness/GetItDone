@@ -10,15 +10,15 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { appRouter } from "./routers";
-import type { TrpcContext } from "./_core/context";
+import { appRouter } from "../routers";
+import type { TrpcContext } from "../_core/context";
 
 // ── Shared mocks ──────────────────────────────────────────────────────────────
 
 const fakeDb = new Map<string, string>();
 
-vi.mock("./db", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("./db")>();
+vi.mock("../db", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../db")>();
   return {
     ...actual,
     getSetting: vi.fn(async (key: string) => fakeDb.get(key) ?? null),
@@ -31,8 +31,8 @@ vi.mock("./db", async (importOriginal) => {
   };
 });
 
-vi.mock("./_core/adminSession", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("./_core/adminSession")>();
+vi.mock("../_core/adminSession", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../_core/adminSession")>();
   return {
     ...actual,
     verifyAdminSession: vi.fn(async () => true),
@@ -40,19 +40,19 @@ vi.mock("./_core/adminSession", async (importOriginal) => {
 });
 
 // Mock invokeLLM so tasks.expand doesn't call the real API
-vi.mock("./_core/llm", () => ({
+vi.mock("../_core/llm", () => ({
   invokeLLM: vi.fn(async () => ({
     choices: [{ message: { content: '{"steps":["Step 1","Step 2","Step 3"]}' } }],
   })),
 }));
 
 // Mock transcribeAudio so voice.transcribe doesn't call Whisper
-vi.mock("./_core/voiceTranscription", () => ({
+vi.mock("../_core/voiceTranscription", () => ({
   transcribeAudio: vi.fn(async () => ({ text: "hello world", language: "en", segments: [] })),
 }));
 
 // Mock storagePut so uploadLogo doesn't call S3
-vi.mock("./storage", () => ({
+vi.mock("../storage", () => ({
   storagePut: vi.fn(async () => ({ url: "https://cdn.example.com/test.png", key: "test.png" })),
 }));
 
@@ -81,7 +81,7 @@ beforeEach(() => {
 
 describe("tasks.expand — prompt injection sanitisation", () => {
   it("strips control characters from title before building the LLM prompt", async () => {
-    const { invokeLLM } = await import("./_core/llm");
+    const { invokeLLM } = await import("../_core/llm");
     const caller = appRouter.createCaller(userCtx());
 
     await caller.tasks.expand({
@@ -97,7 +97,7 @@ describe("tasks.expand — prompt injection sanitisation", () => {
   });
 
   it("wraps title and notes in XML delimiters", async () => {
-    const { invokeLLM } = await import("./_core/llm");
+    const { invokeLLM } = await import("../_core/llm");
     const caller = appRouter.createCaller(userCtx());
 
     await caller.tasks.expand({
@@ -180,7 +180,7 @@ describe("admin.uploadLogo — image MIME type allowlist", () => {
   });
 
   it("derives the S3 key extension from the MIME type, not the fileName", async () => {
-    const { storagePut } = await import("./storage");
+    const { storagePut } = await import("../storage");
     const caller = appRouter.createCaller(adminCtx());
     await caller.admin.uploadLogo({
       type: "icon",
@@ -204,7 +204,7 @@ describe("survey.getAll — admin-only access", () => {
   });
 
   it("throws UNAUTHORIZED when called without an admin session", async () => {
-    const { verifyAdminSession } = await import("./_core/adminSession");
+    const { verifyAdminSession } = await import("../_core/adminSession");
     (verifyAdminSession as ReturnType<typeof vi.fn>).mockResolvedValueOnce(false);
 
     const caller = appRouter.createCaller(adminCtx());

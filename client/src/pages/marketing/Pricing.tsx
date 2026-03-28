@@ -3,11 +3,11 @@ import { Helmet } from "react-helmet-async";
 import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
-import FeedbackModal from "@/components/FeedbackModal";
-import MarketingNav from "@/components/MarketingNav";
-import BackToTop from "@/components/BackToTop";
-import CookieConsent from "@/components/CookieConsent";
-import MarketingFooter from "@/components/MarketingFooter";
+import FeedbackModal from "@/components/shared/FeedbackModal";
+import MarketingNav from "@/components/layout/MarketingNav";
+import BackToTop from "@/components/shared/BackToTop";
+import CookieConsent from "@/components/shared/CookieConsent";
+import MarketingFooter from "@/components/layout/MarketingFooter";
 
 import {
   ArrowRight,

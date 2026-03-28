@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computeNextDueDate, buildNextTaskInstance, toDateString } from "./recurrence";
+import { computeNextDueDate, buildNextTaskInstance, toDateString } from "../recurrence";
 
 // Helper: create a Date at midnight UTC for a given YYYY-MM-DD string
 function d(dateStr: string): Date {

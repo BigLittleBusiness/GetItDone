@@ -1,11 +1,11 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
-import { appRouter } from "./routers";
-import type { TrpcContext } from "./_core/context";
+import { appRouter } from "../routers";
+import type { TrpcContext } from "../_core/context";
 
 // ── Mock the DB helpers so rate-limiter and settings calls don't need a real DB ──
 const fakeDb = new Map<string, string>();
-vi.mock("./db", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("./db")>();
+vi.mock("../db", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../db")>();
   return {
     ...actual,
     getSetting: vi.fn(async (key: string) => fakeDb.get(key) ?? null),
@@ -16,8 +16,8 @@ vi.mock("./db", async (importOriginal) => {
 });
 
 // ── Mock verifyAdminSession so adminProcedure passes in tests ─────────────────
-vi.mock("./_core/adminSession", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("./_core/adminSession")>();
+vi.mock("../_core/adminSession", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../_core/adminSession")>();
   return {
     ...actual,
     verifyAdminSession: vi.fn(async () => true),
