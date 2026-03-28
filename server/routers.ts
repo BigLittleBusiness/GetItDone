@@ -161,7 +161,7 @@ export const appRouter = router({
       .input(z.object({
         id: z.number(),
         title: z.string().min(1).max(500).optional(),
-        notes: z.string().optional(),
+        notes: z.string().max(2500).optional(),
         roleContext: z.enum(["student", "parent", "professional", "all"]).optional(),
         status: z.enum(["todo", "in_progress", "done", "archived"]).optional(),
         priority: z.enum(["low", "medium", "high"]).optional(),

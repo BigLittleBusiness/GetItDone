@@ -229,3 +229,21 @@ describe("tasks.create — notes length cap", () => {
     ).rejects.toThrow();
   });
 });
+
+// ── 6. tasks.update — notes capped at 2 500 chars ────────────────────────────
+
+describe("tasks.update — notes length cap", () => {
+  it("accepts notes up to 2 500 characters", async () => {
+    const caller = appRouter.createCaller(userCtx());
+    await expect(
+      caller.tasks.update({ id: 1, notes: "x".repeat(2500) })
+    ).resolves.toBeDefined();
+  });
+
+  it("rejects notes longer than 2 500 characters", async () => {
+    const caller = appRouter.createCaller(userCtx());
+    await expect(
+      caller.tasks.update({ id: 1, notes: "x".repeat(2501) })
+    ).rejects.toThrow();
+  });
+});
