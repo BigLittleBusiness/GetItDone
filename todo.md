@@ -171,3 +171,7 @@
 - [x] Write docker-compose.yml with web, worker, and db services
 - [x] Write .env.example with all required variables documented (in docs/local-development.md)
 - [x] Write docs/local-development.md setup guide
+
+## MySQL Local Tuning Config
+- [x] Write docker/mysql/my.cnf with production-like settings
+- [x] Update docker-compose.yml to mount the config file

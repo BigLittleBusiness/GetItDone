@@ -37,8 +37,8 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
-      # Optional: place custom MySQL config files in ./docker/mysql/
-      # - ./docker/mysql/my.cnf:/etc/mysql/conf.d/custom.cnf:ro
+      # Custom MySQL tuning config — see docker/mysql/my.cnf for all settings
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/taskbloom.cnf:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-rootpassword}"]
       interval: 10s
