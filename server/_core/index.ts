@@ -7,8 +7,9 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
-import { scheduleStreakReminder } from "../streakReminder";
-import { scheduleDueDateReminder } from "../dueDateReminder";
+// Scheduled jobs have been moved to the dedicated worker process.
+// Start with: pnpm worker:dev (development) or pnpm worker:start (production)
+// See server/workers/index.ts for the worker entry point.
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -69,10 +70,8 @@ async function startServer() {
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
-    // Start the daily streak-reminder job
-    scheduleStreakReminder();
-    // Start the due-date reminder job
-    scheduleDueDateReminder();
+    // NOTE: Scheduled jobs (streak reminder, due-date reminder) now run in a
+    // separate worker process. Start it with `pnpm worker:dev` or `pnpm worker:start`.
   });
 }
 

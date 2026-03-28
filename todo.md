@@ -155,3 +155,14 @@
 - [x] Split Dashboard.tsx into focused sub-components (DashboardHeader, UserStatsCard, StreakCard, AchievementPanel, TaskFilterBar, TaskCard, TaskList, TaskFormFields, AddTaskDialog, EditTaskDialog, SettingsDialog)
 - [x] Extract shared dashboard types, constants, and helpers to client/src/types/dashboard.ts
 - [x] Create client/src/components/achievements/ domain directory
+
+## Issue #8 — Worker Process Extraction
+- [x] Create server/workers/shared/timeUtils.ts with deduplicated time helpers
+- [x] Create server/workers/streakReminder.ts domain job module
+- [x] Create server/workers/dueDateReminder.ts domain job module
+- [x] Create server/workers/index.ts worker entry point with graceful shutdown
+- [x] Replace server/streakReminder.ts and server/dueDateReminder.ts with re-export shims
+- [x] Remove job scheduling calls from server/_core/index.ts
+- [x] Add worker:dev, worker:build, worker:start scripts to package.json
+- [x] Write worker tests in server/__tests__/workers/
+- [x] Update Dockerfile to run worker as a separate process
