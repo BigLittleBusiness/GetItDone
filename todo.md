@@ -152,3 +152,6 @@
 - [x] Reorganise client pages into domain subdirectories (marketing/, app/)
 - [x] Move all test files to server/__tests__/ and fix all import paths
 - [x] Add backward-compatibility shims (server/routers.ts, server/db.ts) for zero-disruption migration
+- [x] Split Dashboard.tsx into focused sub-components (DashboardHeader, UserStatsCard, StreakCard, AchievementPanel, TaskFilterBar, TaskCard, TaskList, TaskFormFields, AddTaskDialog, EditTaskDialog, SettingsDialog)
+- [x] Extract shared dashboard types, constants, and helpers to client/src/types/dashboard.ts
+- [x] Create client/src/components/achievements/ domain directory
