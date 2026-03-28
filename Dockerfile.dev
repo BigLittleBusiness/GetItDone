@@ -1,0 +1,28 @@
+# ─── Development Image ────────────────────────────────────────────────────────
+#
+# Used exclusively by docker-compose.yml for local development.
+# The project directory is bind-mounted at /app so changes are reflected
+# immediately without rebuilding the image.
+#
+# This image is NOT used for production — see Dockerfile for the multi-stage
+# production build that produces the 'web' and 'worker' images.
+#
+FROM node:22-alpine AS dev
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+WORKDIR /app
+
+# Copy dependency manifests and install all deps (including devDependencies).
+# This layer is cached as long as package.json / pnpm-lock.yaml don't change.
+# The bind mount in docker-compose.yml will overlay the rest of the source.
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+# The actual source files are provided by the bind mount in docker-compose.yml.
+# We do not COPY . . here so that the image stays small and the layer cache
+# is not invalidated on every source file change.
+
+# Default command — overridden per-service in docker-compose.yml
+CMD ["pnpm", "dev"]

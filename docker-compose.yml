@@ -1,0 +1,126 @@
+# ─── TaskBloom — Local Development Stack ─────────────────────────────────────
+#
+# Services:
+#   db      MySQL 8 database with a named volume for data persistence
+#   web     Express web server + Vite HMR (hot-reload via tsx watch)
+#   worker  Background job worker (streak & due-date reminders, tsx watch)
+#
+# Quick start:
+#   1. cp .env.example .env
+#   2. Fill in the required values in .env (see .env.example for guidance)
+#   3. docker compose up
+#
+# The web server is available at http://localhost:3000
+# Vite HMR is forwarded on port 5173 for fast frontend iteration.
+#
+# To run only the database (e.g., while developing with pnpm dev locally):
+#   docker compose up db
+#
+# To rebuild after dependency changes:
+#   docker compose build --no-cache web worker
+#
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── MySQL 8 Database ────────────────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_NAME:-taskbloom}
+      MYSQL_USER: ${DB_USER:-taskbloom}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-taskbloom_dev}
+    ports:
+      # Expose MySQL on the host so you can connect with a GUI client (e.g. TablePlus)
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      # Optional: place custom MySQL config files in ./docker/mysql/
+      # - ./docker/mysql/my.cnf:/etc/mysql/conf.d/custom.cnf:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # ── Web Server (Express + Vite) ──────────────────────────────────────────────
+  #
+  # Runs `pnpm dev` (tsx watch) for hot-reload on server changes.
+  # Vite HMR is also forwarded so the browser receives instant updates.
+  #
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: dev
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      # Database — points to the compose db service
+      DATABASE_URL: mysql://${DB_USER:-taskbloom}:${DB_PASSWORD:-taskbloom_dev}@db:3306/${DB_NAME:-taskbloom}
+      # Auth & session
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      # Manus OAuth (required for login flow; use placeholder values for UI-only work)
+      VITE_APP_ID: ${VITE_APP_ID:-local-dev}
+      OAUTH_SERVER_URL: ${OAUTH_SERVER_URL:-https://api.manus.im}
+      VITE_OAUTH_PORTAL_URL: ${VITE_OAUTH_PORTAL_URL:-https://manus.im}
+      OWNER_OPEN_ID: ${OWNER_OPEN_ID:-}
+      OWNER_NAME: ${OWNER_NAME:-Local Dev}
+      # Manus built-in APIs (LLM, storage, notifications)
+      BUILT_IN_FORGE_API_URL: ${BUILT_IN_FORGE_API_URL:-}
+      BUILT_IN_FORGE_API_KEY: ${BUILT_IN_FORGE_API_KEY:-}
+      VITE_FRONTEND_FORGE_API_URL: ${VITE_FRONTEND_FORGE_API_URL:-}
+      VITE_FRONTEND_FORGE_API_KEY: ${VITE_FRONTEND_FORGE_API_KEY:-}
+      # Analytics (optional — leave blank to disable)
+      VITE_ANALYTICS_ENDPOINT: ${VITE_ANALYTICS_ENDPOINT:-}
+      VITE_ANALYTICS_WEBSITE_ID: ${VITE_ANALYTICS_WEBSITE_ID:-}
+    ports:
+      - "3000:3000"   # Express API + static assets
+      - "5173:5173"   # Vite HMR websocket
+    volumes:
+      # Mount the entire project so tsx watch picks up file changes instantly.
+      # node_modules is excluded to use the container's installed copy.
+      - .:/app
+      - /app/node_modules
+    command: pnpm dev
+
+  # ── Background Worker ────────────────────────────────────────────────────────
+  #
+  # Runs `pnpm worker:dev` (tsx watch) for hot-reload on worker changes.
+  # Shares the same environment as the web service.
+  #
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: dev
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      # Database — same connection as web
+      DATABASE_URL: mysql://${DB_USER:-taskbloom}:${DB_PASSWORD:-taskbloom_dev}@db:3306/${DB_NAME:-taskbloom}
+      # Auth & notifications
+      JWT_SECRET: ${JWT_SECRET}
+      OWNER_OPEN_ID: ${OWNER_OPEN_ID:-}
+      OWNER_NAME: ${OWNER_NAME:-Local Dev}
+      BUILT_IN_FORGE_API_URL: ${BUILT_IN_FORGE_API_URL:-}
+      BUILT_IN_FORGE_API_KEY: ${BUILT_IN_FORGE_API_KEY:-}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: pnpm worker:dev
+
+volumes:
+  db_data:
+    driver: local

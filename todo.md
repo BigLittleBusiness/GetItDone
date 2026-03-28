@@ -166,3 +166,8 @@
 - [x] Add worker:dev, worker:build, worker:start scripts to package.json
 - [x] Write worker tests in server/__tests__/workers/
 - [x] Update Dockerfile to run worker as a separate process
+
+## docker-compose Local Development
+- [x] Write docker-compose.yml with web, worker, and db services
+- [x] Write .env.example with all required variables documented (in docs/local-development.md)
+- [x] Write docs/local-development.md setup guide
