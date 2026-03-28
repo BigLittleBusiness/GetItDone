@@ -6,6 +6,12 @@ vi.mock("./_core/notification", () => ({
   notifyOwner: vi.fn().mockResolvedValue(true),
 }));
 
+// Mock verifyAdminSession so adminProcedure passes in tests that need it
+vi.mock("./_core/adminSession", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./_core/adminSession")>();
+  return { ...actual, verifyAdminSession: vi.fn(async () => false) };
+});
+
 import { appRouter } from "./routers";
 import * as notificationModule from "./_core/notification";
 
@@ -118,7 +124,10 @@ describe("survey.submit", () => {
 });
 
 describe("survey.getAll", () => {
-  it("returns an array of survey responses", async () => {
+  it("returns an array of survey responses when called with an admin session", async () => {
+    const { verifyAdminSession } = await import("./_core/adminSession");
+    (verifyAdminSession as ReturnType<typeof vi.fn>).mockResolvedValueOnce(true);
+
     const ctx = createTestContext();
     const caller = appRouter.createCaller(ctx);
 

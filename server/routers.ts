@@ -129,7 +129,7 @@ export const appRouter = router({
     create: protectedProcedure
       .input(z.object({
         title: z.string().min(1).max(500),
-        notes: z.string().optional(),
+        notes: z.string().max(2000).optional(),
         roleContext: z.enum(["student", "parent", "professional", "all"]).default("all"),
         priority: z.enum(["low", "medium", "high"]).default("medium"),
         energyRequired: z.enum(["low", "medium", "high"]).default("medium"),
@@ -287,19 +287,24 @@ export const appRouter = router({
     expand: protectedProcedure
       .input(z.object({
         taskId: z.number(),
-        title: z.string(),
-        notes: z.string().optional(),
+        title: z.string().min(1).max(500),
+        notes: z.string().max(2000).optional(),
         role: z.enum(["student", "parent", "professional", "all"]).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const roleContext = input.role && input.role !== "all" ? input.role : "general";
+        // Sanitise user-controlled strings before interpolating into the LLM prompt.
+        // Strip control characters and limit length to prevent prompt-injection attacks.
+        const sanitise = (s: string) => s.replace(/[\x00-\x1F\x7F]/g, ' ').trim();
+        const safeTitle = sanitise(input.title).slice(0, 500);
+        const safeNotes = input.notes ? sanitise(input.notes).slice(0, 2000) : '';
         const prompt = [
           `You are a compassionate ADHD/neurodivergent productivity coach.`,
           `Break down the following task into exactly 3 to 5 concrete, tiny, immediately actionable micro-steps.`,
           `Each step should be a single physical action (e.g. "Open Gmail", "Click Reply", "Type one sentence").`,
           `No vague steps like "think about it" or "plan". No motivational fluff.`,
           `Context: the user is a ${roleContext}.`,
-          `Task: "${input.title}"${input.notes ? `. Notes: ${input.notes}` : ""}.`,
+          `<task>${safeTitle}</task>${safeNotes ? `<notes>${safeNotes}</notes>` : ''}`,
           `Respond ONLY with a JSON object: { "steps": ["step 1", "step 2", ...] }`,
         ].join(" ");
 
@@ -366,7 +371,8 @@ export const appRouter = router({
     transcribe: protectedProcedure
       .input(z.object({
         audioBase64: z.string(),
-        mimeType: z.string().default("audio/webm"),
+        // Restrict to supported audio MIME types to prevent arbitrary Content-Type injection.
+        mimeType: z.enum(["audio/webm", "audio/mp4", "audio/ogg", "audio/wav", "audio/mpeg"]).default("audio/webm"),
       }))
       .mutation(async ({ ctx, input }) => {
         // Decode base64 audio and upload to S3
@@ -534,15 +540,26 @@ export const appRouter = router({
       .input(z.object({
         type: z.enum(['wordmark', 'icon', 'og-image']),
         dataUrl: z.string().min(1),   // data:image/...;base64,...
-        fileName: z.string().min(1),
+        // fileName is used for display only; the S3 extension is derived from the MIME type.
+        fileName: z.string().min(1).max(255),
       }))
       .mutation(async ({ input }) => {
         // Decode base64 data URL
         const matches = input.dataUrl.match(/^data:([^;]+);base64,(.+)$/);
         if (!matches) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Invalid image data' });
-        const mimeType = matches[1];
+        const rawMime = matches[1];
+        // Allowlist MIME types to prevent arbitrary Content-Type injection into S3.
+        const ALLOWED_IMAGE_MIMES: Record<string, string> = {
+          'image/png': 'png',
+          'image/jpeg': 'jpg',
+          'image/webp': 'webp',
+          'image/gif': 'gif',
+          'image/svg+xml': 'svg',
+        };
+        const ext = ALLOWED_IMAGE_MIMES[rawMime];
+        if (!ext) throw new TRPCError({ code: 'BAD_REQUEST', message: `Unsupported image type: ${rawMime}. Allowed: PNG, JPEG, WebP, GIF, SVG.` });
+        const mimeType = rawMime;
         const buffer = Buffer.from(matches[2], 'base64');
-        const ext = input.fileName.split('.').pop() ?? 'png';
         const key = `logos/${input.type}-${Date.now()}.${ext}`;
         const { url } = await storagePut(key, buffer, mimeType);
         const settingKey = input.type === 'wordmark' ? 'logo_wordmark_url' : input.type === 'icon' ? 'logo_icon_url' : 'logo_og_image_url';
@@ -636,7 +653,8 @@ export const appRouter = router({
 
         return { success: true };
       }),
-    getAll: publicProcedure.query(async () => getAllSurveyResponses()),
+    // Returns all survey responses — admin only to protect respondent email addresses.
+    getAll: adminProcedure.query(async () => getAllSurveyResponses()),
   }),
 });
 

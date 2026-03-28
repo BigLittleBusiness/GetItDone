@@ -42,6 +42,9 @@ export interface UseVoiceInputReturn {
   toggle: () => Promise<void>;
 }
 
+/** Allowed MIME types accepted by the server's voice.transcribe procedure. */
+type AllowedAudioMime = "audio/webm" | "audio/mp4" | "audio/ogg" | "audio/wav" | "audio/mpeg";
+
 /** Pick the best supported MIME type for this browser. */
 function getBestMimeType(): string {
   const candidates = [
@@ -55,6 +58,19 @@ function getBestMimeType(): string {
     if (MediaRecorder.isTypeSupported(type)) return type;
   }
   return ""; // Let the browser choose
+}
+
+/**
+ * Normalise a browser MIME type (which may include codec parameters) to one of
+ * the values accepted by the server's allowlist.
+ */
+function normaliseAudioMime(raw: string): AllowedAudioMime {
+  if (raw.includes("webm")) return "audio/webm";
+  if (raw.includes("ogg")) return "audio/ogg";
+  if (raw.includes("mp4") || raw.includes("m4a")) return "audio/mp4";
+  if (raw.includes("wav")) return "audio/wav";
+  if (raw.includes("mpeg") || raw.includes("mp3")) return "audio/mpeg";
+  return "audio/webm"; // safe default
 }
 
 /** Convert a Blob to a base64 string. */
@@ -136,7 +152,7 @@ export function useVoiceInput({ onTranscript, onError }: UseVoiceInputOptions): 
           const base64 = await blobToBase64(blob);
           transcribeMutation.mutate({
             audioBase64: base64,
-            mimeType: mimeType || "audio/webm",
+            mimeType: normaliseAudioMime(mimeType || "audio/webm"),
           });
         } catch {
           const msg = "Failed to process audio — please try again.";
